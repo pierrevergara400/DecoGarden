@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DecoGarden — Bonsáis vivos, con quien te enseñe a cuidarlos</title>
+
+<!--
+════════════════════════════════════════════════════════════════════
+  EDITA ESTO ANTES DE PUBLICAR (usa Buscar y reemplazar, Ctrl/Cmd+F):
+
+  1. 593XXXXXXXXX   → tu número de WhatsApp con código de país,
+                       sin + ni espacios. Ej: 593991234567
+  2. $XX / $XXX     → tus precios reales
+  3. @decogarden    → tu usuario real de Instagram
+  4. Testimonios    → reemplaza por reseñas reales de tus clientes
+
+  ── CATÁLOGO DE BONSÁIS (la sección nueva) ──
+  5. Crea una carpeta llamada  fotos  junto a este archivo y sube ahí
+     la imagen de cada bonsái (recomendado 1080×1350px, vertical).
+     El nombre del archivo debe coincidir con el src de cada card,
+     ej:  fotos/ficus-ginseng.jpg
+  6. En cada <article class="bonsai-card"> edita: nombre, especie,
+     precio, disponibilidad (badge) y el nombre dentro del enlace de
+     WhatsApp para que te llegue "me interesa el [nombre]".
+  7. Para AÑADIR un bonsái: copia un bloque completo
+     <article class="bonsai-card">…</article> y cámbiale los datos.
+     data-cat="entrada"  → aparece en "Para empezar"
+     data-cat="coleccion"→ aparece en "De colección"
+════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#EAE7DB;
+    --paper-deep:#E1DCCC;
+    --pine:#1E2F27;
+    --pine-soft:#2B4237;
+    --moss:#55705C;
+    --sage:#93A08C;
+    --copper:#A96C3B;
+    --copper-line:rgba(169,108,59,.42);
+    --ink:#243029;
+    --muted:#6C7268;
+    --display:'Cormorant Garamond', Georgia, serif;
+    --body:'Karla', -apple-system, system-ui, sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-weight:400;
+    line-height:1.65;
+    font-size:17px;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+
+  /* ── type ── */
+  h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.06;color:var(--pine);letter-spacing:-.01em}
+  .eyebrow{
+    font-family:var(--body);font-size:12.5px;font-weight:600;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--copper);
+    display:inline-flex;align-items:center;gap:12px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--copper);opacity:.6}
+
+  /* ── buttons ── */
+  .btn{
+    display:inline-flex;align-items:center;gap:11px;
+    font-family:var(--body);font-weight:600;font-size:15.5px;letter-spacing:.01em;
+    padding:16px 30px;border-radius:2px;text-decoration:none;cursor:pointer;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), background .3s, color .3s, box-shadow .3s;
+    border:1px solid transparent;
+  }
+  .btn-primary{background:var(--pine);color:var(--paper);box-shadow:0 1px 0 var(--copper)}
+  .btn-primary:hover{background:var(--pine-soft);transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(30,47,39,.55),0 1px 0 var(--copper)}
+  .btn-ghost{background:transparent;color:var(--pine);border-color:var(--copper-line)}
+  .btn-ghost:hover{border-color:var(--copper);color:var(--copper)}
+  .btn svg{width:19px;height:19px;flex-shrink:0}
+
+  /* ── hero ── */
+  .hero{position:relative;padding:34px 0 96px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:8px 0 66px}
+  .brand{font-family:var(--display);font-size:25px;font-weight:600;color:var(--pine);letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+  .brand .leaf{width:19px;height:19px;color:var(--copper)}
+  .topbar .navlink{font-size:14px;font-weight:600;color:var(--pine);text-decoration:none;letter-spacing:.02em}
+  .topbar .navlink:hover{color:var(--copper)}
+
+  .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:48px;align-items:center}
+  .hero h1{font-size:clamp(44px,6vw,78px);font-weight:300;margin:22px 0 0}
+  .hero h1 em{font-style:italic;color:var(--moss)}
+  .hero .lead{font-size:19px;color:var(--ink);max-width:33ch;margin:26px 0 34px;line-height:1.6}
+  .hero .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero .micro{margin-top:20px;font-size:13.5px;color:var(--muted);letter-spacing:.02em;display:flex;align-items:center;gap:9px}
+  .hero .micro .dot{width:5px;height:5px;border-radius:50%;background:var(--moss)}
+
+  /* signature: the bonsai + copper wire */
+  .hero-art{position:relative;display:flex;justify-content:center;align-items:center;min-height:420px}
+  .hero-art .disc{
+    position:absolute;width:340px;height:340px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #F3F0E6 0%, #DAD5C2 62%, #CFC9B4 100%);
+    box-shadow:inset 0 0 60px rgba(30,47,39,.06);
+  }
+  .hero-art .ring{position:absolute;width:392px;height:392px;border-radius:50%;border:1px solid var(--copper-line)}
+  .hero-art svg{position:relative;width:300px;height:auto;z-index:2}
+
+  /* ── trust bar ── */
+  .trust{background:var(--pine);color:var(--paper)}
+  .trust .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;padding:26px 28px}
+  .trust .item{display:flex;flex-direction:column;gap:3px}
+  .trust .item b{font-family:var(--body);font-weight:700;font-size:14.5px;color:#F1EEE2;letter-spacing:.01em}
+  .trust .item span{font-size:13px;color:#A9B6A5}
+  .trust .item{position:relative;padding-left:20px}
+  .trust .item::before{content:"";position:absolute;left:0;top:4px;width:8px;height:8px;border-left:1.5px solid var(--copper);border-bottom:1.5px solid var(--copper);transform:rotate(-45deg)}
+
+  /* ── section base ── */
+  section.blk{padding:96px 0}
+  .kicker-wrap{max-width:640px}
+  .sec-title{font-size:clamp(32px,4.4vw,50px);font-weight:300;margin:18px 0 0}
+  .sec-title em{font-style:italic;color:var(--moss)}
+  .sec-sub{color:var(--muted);font-size:18px;margin-top:18px;max-width:56ch;line-height:1.6}
+
+  /* ── fear section ── */
+  .fear{background:var(--pine);color:var(--paper);position:relative;overflow:hidden}
+  .fear .eyebrow{color:#D9A574}
+  .fear .eyebrow::before{background:#D9A574}
+  .fear h2{color:#F3F0E6;font-size:clamp(34px,5vw,60px);font-weight:300}
+  .fear h2 em{color:#C9AE86;font-style:italic}
+  .fear .fear-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .fear p{color:#C4CEBF;font-size:18px;line-height:1.72;margin-top:22px;max-width:44ch}
+  .fear p strong{color:#F3F0E6;font-weight:600}
+  .fear .wire{
+    position:relative;padding:34px 0 34px 34px;border-left:1px solid var(--copper-line);
+  }
+  .fear .wire .q{font-family:var(--display);font-style:italic;font-size:27px;color:#EDE9DC;line-height:1.4;font-weight:400}
+  .fear .wire .q::before{content:"“";color:var(--copper);font-size:34px;margin-right:2px}
+  .fear .wire .a{margin-top:20px;font-size:16.5px;color:#B7C2B2;line-height:1.7}
+
+  /* ── includes / value stack ── */
+  .includes{background:var(--paper-deep)}
+  .stack{margin-top:52px;border-top:1px solid var(--copper-line)}
+  .stack .row{
+    display:grid;grid-template-columns:44px 1fr auto;gap:26px;align-items:baseline;
+    padding:26px 6px;border-bottom:1px solid rgba(30,47,39,.1);
+  }
+  .stack .row .n{font-family:var(--display);font-size:19px;color:var(--copper);font-weight:500}
+  .stack .row h3{font-size:24px;font-weight:500}
+  .stack .row .d{color:var(--muted);font-size:15.5px;margin-top:4px;line-height:1.55;max-width:52ch}
+  .stack .row .tag{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--moss);white-space:nowrap;align-self:center}
+
+  /* ── how it works ── */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:54px;background:var(--copper-line)}
+  .step{background:var(--paper);padding:38px 30px}
+  .step .sn{font-family:var(--display);font-size:15px;letter-spacing:.2em;color:var(--copper);font-weight:600}
+  .step h3{font-size:26px;font-weight:400;margin:16px 0 12px}
+  .step p{color:var(--muted);font-size:15.5px;line-height:1.6}
+
+  /* ── catálogo (vitrina de bonsáis) ── */
+  .catalog{background:var(--pine)}
+  .catalog .eyebrow{color:#D9A574}.catalog .eyebrow::before{background:#D9A574}
+  .catalog .sec-title{color:#F3F0E6}
+  .catalog .sec-sub{color:#B7C2B2}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-top:36px}
+  .filter-tab{
+    font-family:var(--body);font-size:13.5px;font-weight:600;letter-spacing:.03em;
+    color:#C4CEBF;background:transparent;border:1px solid rgba(147,160,140,.34);
+    padding:10px 22px;border-radius:100px;cursor:pointer;transition:background .3s,color .3s,border-color .3s;
+  }
+  .filter-tab:hover{border-color:var(--copper);color:#EDE9DC}
+  .filter-tab.active{background:var(--copper);border-color:var(--copper);color:#1E2F27}
+
+  .catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+
+  .bonsai-card{
+    background:var(--paper);border:1px solid rgba(147,160,140,.2);
+    display:flex;flex-direction:column;overflow:hidden;
+    transition:transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s;
+  }
+  .bonsai-card:hover{transform:translateY(-4px);box-shadow:0 22px 48px -22px rgba(0,0,0,.55)}
+
+  .shot{position:relative;aspect-ratio:4/5;overflow:hidden;background:linear-gradient(150deg,#DFE1D4,#CFD3C2)}
+  .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:block}
+  .shot .ph{
+    position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;gap:7px;
+    align-items:center;justify-content:center;text-align:center;padding:16px;
+    color:var(--moss);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  }
+  .shot .ph em{font-family:var(--body);font-style:normal;font-size:11px;letter-spacing:.02em;text-transform:none;color:var(--muted);opacity:.85}
+
+  .badge{
+    position:absolute;top:14px;left:14px;z-index:3;
+    font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:6px 12px;border-radius:2px;
+  }
+  .badge.ok{background:rgba(85,112,92,.94);color:#EDE9DC}
+  .badge.last{background:rgba(169,108,59,.96);color:#F3F0E6}
+  .badge.sold{background:rgba(30,47,39,.86);color:#B7C2B2}
+
+  .bonsai-card .info{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1}
+  .bonsai-card .chip{font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--copper)}
+  .bonsai-card h3{font-size:26px;font-weight:500;margin:9px 0 4px;color:var(--pine)}
+  .bonsai-card .meta{font-size:13.5px;color:var(--muted);letter-spacing:.01em}
+  .bonsai-card .desc{font-size:14.5px;color:var(--ink);opacity:.85;line-height:1.55;margin:12px 0 0}
+  .bonsai-card .price{font-family:var(--display);font-size:27px;color:var(--pine);margin:16px 0 18px;line-height:1}
+  .bonsai-card .price small{font-family:var(--body);font-size:12.5px;color:var(--muted);letter-spacing:.02em}
+  .bonsai-card .buy{margin-top:auto}
+  .bonsai-card .buy .btn{width:100%;justify-content:center;padding:14px 22px;font-size:14.5px}
+  .bonsai-card.reserved{opacity:.82}
+
+  .catalog-note{margin-top:38px;text-align:center;color:#93A08C;font-size:15px}
+  .catalog-note a{color:#D9A574;font-weight:600;text-decoration:none;border-bottom:1px solid var(--copper-line);padding-bottom:2px;transition:color .3s}
+  .catalog-note a:hover{color:#EDE9DC}
+
+  .more-wrap{display:flex;justify-content:center;margin-top:40px}
+  .btn-more{
+    font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:.02em;
+    color:#EDE9DC;background:transparent;border:1px solid rgba(147,160,140,.4);
+    padding:15px 34px;border-radius:2px;cursor:pointer;
+    transition:border-color .3s,color .3s,transform .35s;
+  }
+  .btn-more:hover{border-color:var(--copper);color:var(--copper);transform:translateY(-2px)}
+
+  /* ── proof ── */
+  .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:52px}
+  .card{background:var(--paper-deep);padding:30px 28px;border-top:2px solid var(--copper)}
+  .card .stars{color:var(--copper);letter-spacing:3px;font-size:14px}
+  .card .quote{font-family:var(--display);font-size:20px;font-style:italic;color:var(--pine);line-height:1.45;margin:14px 0 18px}
+  .card .who{font-size:13.5px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+  .photo-slot{
+    aspect-ratio:4/5;background:linear-gradient(150deg,#DFE1D4,#CFD3C2);
+    display:flex;align-items:center;justify-content:center;color:var(--moss);
+    font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    border:1px dashed var(--sage);
+  }
+  .proof-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+
+  /* ── faq ── */
+  .faq{background:var(--paper-deep)}
+  .faq-list{margin-top:46px;border-top:1px solid var(--copper-line)}
+  details{border-bottom:1px solid rgba(30,47,39,.12)}
+  summary{
+    list-style:none;cursor:pointer;padding:24px 4px;display:flex;justify-content:space-between;
+    align-items:center;gap:20px;font-family:var(--display);font-size:23px;color:var(--pine);font-weight:500;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary .plus{width:22px;height:22px;flex-shrink:0;position:relative;transition:transform .3s}
+  summary .plus::before,summary .plus::after{content:"";position:absolute;background:var(--copper);left:50%;top:50%}
+  summary .plus::before{width:16px;height:1.5px;transform:translate(-50%,-50%)}
+  summary .plus::after{width:1.5px;height:16px;transform:translate(-50%,-50%);transition:opacity .3s}
+  details[open] summary .plus::after{opacity:0}
+  details[open] summary .plus{transform:rotate(90deg)}
+  details p{padding:0 4px 26px;color:var(--muted);font-size:16px;line-height:1.7;max-width:64ch}
+
+  /* ── final cta ── */
+  .final{background:var(--pine);text-align:center;position:relative;overflow:hidden}
+  .final .wrap{position:relative;z-index:2}
+  .final .eyebrow{color:#D9A574;justify-content:center}.final .eyebrow::before{background:#D9A574}
+  .final h2{color:#F3F0E6;font-size:clamp(36px,5.5vw,64px);font-weight:300;margin:20px auto 0;max-width:16ch}
+  .final h2 em{font-style:italic;color:#C9AE86}
+  .final p{color:#B7C2B2;font-size:18px;margin:24px auto 38px;max-width:48ch}
+  .final .btn-primary{background:var(--copper);color:#1E2F27;box-shadow:none;font-size:16.5px;padding:19px 40px}
+  .final .btn-primary:hover{background:#BC7C48;transform:translateY(-2px);box-shadow:0 16px 36px -14px rgba(0,0,0,.5)}
+  .final .micro{margin-top:20px;color:#93A08C;font-size:13.5px;letter-spacing:.02em}
+  .final .glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(169,108,59,.16),transparent 68%);top:-160px;left:50%;transform:translateX(-50%)}
+
+  /* ── footer ── */
+  footer{background:#182620;color:#8A9683;padding:52px 0 40px}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  footer .brand{color:#EDE9DC;font-size:22px}
+  footer .brand .leaf{color:var(--copper)}
+  footer a{color:#8A9683;text-decoration:none;font-size:14px;font-weight:500}
+  footer a:hover{color:var(--copper)}
+  footer .fnav{display:flex;gap:26px;align-items:center}
+  footer .loc{font-size:13.5px;color:#6C7869;width:100%;padding-top:24px;margin-top:12px;border-top:1px solid rgba(147,160,140,.14)}
+
+  /* ── float whatsapp ── */
+  .float{
+    position:fixed;bottom:24px;right:24px;z-index:60;
+    display:inline-flex;align-items:center;gap:10px;background:var(--pine);color:var(--paper);
+    padding:13px 20px 13px 16px;border-radius:100px;text-decoration:none;font-weight:600;font-size:14.5px;
+    box-shadow:0 10px 30px -8px rgba(30,47,39,.5);border:1px solid var(--copper-line);
+    transition:transform .3s, background .3s;
+  }
+  .float:hover{transform:translateY(-2px);background:var(--pine-soft)}
+  .float svg{width:20px;height:20px}
+
+  /* ── reveal ── */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ── responsive ── */
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:20px}
+    .hero-art{min-height:320px;order:-1}
+    .hero-art svg{width:230px}.hero-art .disc{width:270px;height:270px}.hero-art .ring{width:312px;height:312px}
+    .trust .wrap{grid-template-columns:1fr 1fr;gap:22px}
+    .fear .fear-inner{grid-template-columns:1fr;gap:32px}
+    .steps{grid-template-columns:1fr}
+    .catalog-grid{grid-template-columns:1fr 1fr}
+    .proof-grid{grid-template-columns:1fr}
+    .proof-photos{grid-template-columns:repeat(3,1fr)}
+  }
+  @media(max-width:560px){
+    body{font-size:16px}
+    .wrap{padding:0 20px}
+    section.blk{padding:70px 0}
+    .topbar{padding-bottom:44px}
+    .topbar .navlink{display:none}
+    .hero .cta-row{flex-direction:column;align-items:stretch}
+    .hero .btn{justify-content:center}
+    .trust .wrap{grid-template-columns:1fr}
+    .stack .row{grid-template-columns:30px 1fr;gap:16px}
+    .stack .row .tag{grid-column:2;justify-self:start}
+    .catalog-grid{grid-template-columns:1fr}
+    .float span{display:none}
+    .float{padding:14px;border-radius:50%}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto}
+    .rv{opacity:1;transform:none;transition:none}
+    .btn:hover,.bonsai-card:hover,.float:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <svg class="leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c0-6 3-11 8-13-1 7-4 11-8 13Z" fill="currentColor" stroke="none" opacity=".9"/><path d="M12 21C12 13 8 6 4 4c1 8 4 14 8 17Z" fill="currentColor" stroke="none" opacity=".55"/></svg>
+        DecoGarden
+      </div>
+      <nav style="display:flex;gap:28px;align-items:center">
+        <a class="navlink" href="#catalogo">Catálogo</a>
+        <a class="navlink" href="#incluye">Qué incluye</a>
+        <a class="navlink" href="#faq">Preguntas</a>
+        <a class="navlink" href="#cierre" style="color:var(--copper)">Escríbeme →</a>
+      </nav>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">DecoGarden · San Antonio de Ibarra</span>
+        <h1>Un bonsái vivo — y <em>alguien</em> que te enseñe a cuidarlo.</h1>
+        <p class="lead">Elige tu árbol del catálogo y te lo aparto hoy. Llega sano a tu puerta, con su ficha de cuidado y acompañamiento por WhatsApp durante sus primeros 30 días. Aunque nunca hayas cuidado una planta en tu vida.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#catalogo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+            Ver bonsáis disponibles
+          </a>
+          <a class="btn btn-ghost" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20vi%20su%20p%C3%A1gina%20y%20quiero%20un%20bons%C3%A1i%20que%20pueda%20cuidar%20sin%20miedo.%20%C2%BFMe%20ayudan%20a%20elegir%3F">Escríbeme por WhatsApp</a>
+        </div>
+        <div class="micro"><span class="dot"></span> Respuesta el mismo día · Envíos a todo el Ecuador</div>
+      </div>
+
+      <div class="hero-art">
+        <div class="ring"></div>
+        <div class="disc"></div>
+        <svg viewBox="0 0 300 300" fill="none" aria-label="Bonsái">
+          <!-- pot -->
+          <path d="M92 252h116l-14 26H106z" fill="#2B4237"/>
+          <rect x="88" y="244" width="124" height="10" rx="2" fill="#1E2F27"/>
+          <!-- trunk -->
+          <path d="M150 244c-2-30 8-46-4-70-10-20 6-34 14-46" stroke="#3D3228" stroke-width="11" stroke-linecap="round"/>
+          <path d="M158 150c14-8 30-4 42-16" stroke="#3D3228" stroke-width="8" stroke-linecap="round"/>
+          <path d="M150 190c-14-2-30 4-44-6" stroke="#3D3228" stroke-width="7" stroke-linecap="round"/>
+          <!-- copper wire signature -->
+          <path d="M148 236c8-6 2-16 8-24s-4-18 4-28 0-20 6-30" stroke="#A96C3B" stroke-width="1.8" fill="none" opacity=".9"/>
+          <!-- canopy -->
+          <ellipse cx="170" cy="72" rx="52" ry="30" fill="#55705C"/>
+          <ellipse cx="196" cy="120" rx="34" ry="21" fill="#4A6250"/>
+          <ellipse cx="98" cy="176" rx="38" ry="22" fill="#4A6250"/>
+          <ellipse cx="150" cy="58" rx="34" ry="20" fill="#6A8570"/>
+          <ellipse cx="110" cy="168" rx="20" ry="12" fill="#6A8570" opacity=".85"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ TRUST BAR ══ -->
+<div class="trust">
+  <div class="wrap">
+    <div class="item"><b>Garantía de llegada sana</b><span>o lo reponemos</span></div>
+    <div class="item"><b>Acompañamiento 30 días</b><span>te guío por WhatsApp</span></div>
+    <div class="item"><b>Ficha de cuidado</b><span>según tu especie</span></div>
+    <div class="item"><b>Hecho en Imbabura</b><span>cultivado, no importado</span></div>
+  </div>
+</div>
+
+<!-- ══ FEAR ══ -->
+<section class="fear blk">
+  <div class="wrap">
+    <div class="fear-inner">
+      <div class="rv">
+        <span class="eyebrow">Hablemos claro</span>
+        <h2>“¿Y si <em>se me muere</em>?”</h2>
+        <p>Es lo primero que piensa casi todo el que quiere un bonsái. Y es una duda justa: es un árbol vivo, no un adorno.</p>
+        <p><strong>Por eso no te vendo solo la planta.</strong> Te entrego el árbol sano, la guía exacta para tu especie, y me quedo contigo por WhatsApp el primer mes — que es cuando de verdad importa. Si algo se ve raro, me mandas una foto y lo resolvemos.</p>
+      </div>
+      <div class="wire rv">
+        <div class="q">Un bonsái no se muere por difícil. Se muere por solo.</div>
+        <div class="a">La mayoría no falla por falta de talento, sino porque nadie les dijo cuánta agua, cuánta luz y cuándo. Ese es exactamente el hueco que llenamos: tú pones el gusto, yo pongo el oficio.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ INCLUDES ══ -->
+<section class="includes blk" id="incluye">
+  <div class="wrap">
+    <div class="kicker-wrap rv">
+      <span class="eyebrow">Lo que te llevas</span>
+      <h2 class="sec-title">No es una maceta. Es un <em>acompañamiento</em>.</h2>
+      <p class="sec-sub">Cada pedido incluye todo lo necesario para que tu árbol no solo llegue bien, sino que siga vivo meses después.</p>
+    </div>
+
+    <div class="stack rv">
+      <div class="row">
+        <span class="n">01</span>
+        <div><h3>Tu bonsái, sano y listo</h3><div class="d">Cultivado y aclimatado aquí en San Antonio de Ibarra. Nada de árboles estresados de bodega: sale de vivero directo a tu casa.</div></div>
+        <span class="tag">Incluido</span>
+      </div>
+      <div class="row">
+        <span class="n">02</span>
+        <div><h3>Ficha de cuidado de tu especie</h3><div class="d">Riego, luz, poda y qué hacer en cada época — específica para el árbol que elijas, no un instructivo genérico de internet.</div></div>
+        <span class="tag">Incluido</span>
+      </div>
+      <div class="row">
+        <span class="n">03</span>
+        <div><h3>Garantía de supervivencia</h3><div class="d">Si tu bonsái llega dañado o no supera sus primeros días pese a seguir la guía, te lo repongo. Compras tranquilo.</div></div>
+        <span class="tag">Incluido</span>
+      </div>
+      <div class="row">
+        <span class="n">04</span>
+        <div><h3>Soporte por WhatsApp · 30 días</h3><div class="d">Me escribes con cualquier duda o una foto si algo te preocupa. Respondo el mismo día. No te dejo solo con el árbol.</div></div>
+        <span class="tag">Incluido</span>
+      </div>
+      <div class="row">
+        <span class="n">05</span>
+        <div><h3>Kit de cuidado</h3><div class="d">Tijera, fertilizante y sustrato para que no tengas que salir a buscar nada. Opcional, se añade a tu pedido.</div></div>
+        <span class="tag" style="color:var(--copper)">Opcional</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW ══ -->
+<section class="blk">
+  <div class="wrap">
+    <div class="kicker-wrap rv">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2 class="sec-title">De la duda a tu árbol, en <em>tres pasos</em>.</h2>
+    </div>
+    <div class="steps rv">
+      <div class="step">
+        <div class="sn">PASO 01</div>
+        <h3>Eliges tu bonsái</h3>
+        <p>Míralos en el catálogo de abajo. Cuando veas el que te gusta, tocas “Lo quiero” y me llega tu mensaje con el nombre del árbol. Yo te lo aparto.</p>
+      </div>
+      <div class="step">
+        <div class="sn">PASO 02</div>
+        <h3>Te llega sano</h3>
+        <p>Empacado para viajar sin sufrir, con su ficha de cuidado adentro. Envíos a todo el Ecuador o retiro aquí en Ibarra.</p>
+      </div>
+      <div class="step">
+        <div class="sn">PASO 03</div>
+        <h3>Te acompaño</h3>
+        <p>Los primeros 30 días me tienes a un mensaje de distancia. Cualquier duda, foto o susto: lo resolvemos juntos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CATÁLOGO ══ -->
+<section class="catalog blk" id="catalogo">
+  <div class="wrap">
+    <div class="kicker-wrap rv">
+      <span class="eyebrow">El vivero</span>
+      <h2 class="sec-title">Elige el tuyo. <em>Te lo aparto hoy.</em></h2>
+      <p class="sec-sub">Cada bonsái es una pieza única y sale directo del vivero en San Antonio de Ibarra. Toca “Lo quiero” en el que te guste y me llega tu mensaje con el nombre del árbol — con ficha, garantía y acompañamiento incluidos.</p>
+    </div>
+
+    <!-- Filtros: no toques data-filter, solo cambia las etiquetas si quieres -->
+    <div class="filters rv">
+      <button class="filter-tab active" data-filter="todos">Todos</button>
+      <button class="filter-tab" data-filter="entrada">Para empezar</button>
+      <button class="filter-tab" data-filter="coleccion">De colección</button>
+    </div>
+
+    <div class="catalog-grid rv">
+
+      <!-- ░░░░░ COPIA DESDE AQUÍ PARA AÑADIR UN BONSÁI ░░░░░ -->
+      <article class="bonsai-card" data-cat="entrada">
+        <div class="shot">
+          <!-- Sube tu foto a  fotos/  con este mismo nombre y se muestra sola -->
+          <img src="Images/bonsai-junipero-shakan.webp" alt="Bonsái Ficus Ginseng" onerror="this.remove()">
+          <!-- <span class="ph">Sube tu foto<br><em>fotos/ficus-ginseng.jpg</em></span> -->
+          <span class="badge ok">Disponible</span>
+        </div>
+        <div class="info">
+          <span class="chip">Para empezar</span>
+          <h3>Juniperus Estilo Shakan</h3>
+          <div class="meta">Juniperus Chinensis · 30 cm · 10 años</div>
+          <p class="desc">El más noble para arrancar: aguanta, perdona los descuidos y crece rápido.</p>
+          <div class="price">$40 <small>· ficha + garantía + soporte</small></div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20me%20interesa%20el%20Ficus%20Ginseng.%20%C2%BFEst%C3%A1%20disponible%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Lo quiero
+            </a>
+          </div>
+        </div>
+      </article>
+      <!-- ░░░░░ HASTA AQUÍ ░░░░░ -->
+
+      <article class="bonsai-card" data-cat="entrada">
+        <div class="shot">
+          <!-- Sube tu foto a  fotos/  con este mismo nombre y se muestra sola -->
+          <img src="Images/bonsai-junipero-shakan.webp" alt="Bonsái Ficus Ginseng" onerror="this.remove()">
+          <!-- <span class="ph">Sube tu foto<br><em>fotos/ficus-ginseng.jpg</em></span> -->
+          <span class="badge ok">Disponible</span>
+        </div>
+        <div class="info">
+          <span class="chip">Para empezar</span>
+          <h3>Juniperus Estilo Shakan</h3>
+          <div class="meta">Juniperus Chinensis · 30 cm · 10 años</div>
+          <p class="desc">El más noble para arrancar: aguanta, perdona los descuidos y crece rápido.</p>
+          <div class="price">$40 <small>· ficha + garantía + soporte</small></div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20me%20interesa%20el%20Ficus%20Ginseng.%20%C2%BFEst%C3%A1%20disponible%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Lo quiero
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="bonsai-card" data-cat="entrada">
+        <div class="shot">
+          <img src="Images/bonsai-arbol-del-te.webp" alt="Bonsái Olmo Chino" onerror="this.remove()">
+          <!-- <span class="ph">Sube tu foto<br><em>fotos/olmo-chino.jpg</em></span> -->
+          <span class="badge ok">Disponible</span>
+        </div>
+        <div class="info">
+          <span class="chip">Para empezar</span>
+          <h3>Árbol del Té | Mānuka</h3>
+          <div class="meta">Leptospermum scoparium · 20 cm · 6 años</div>
+          <p class="desc">Hojas finas, flores todo el año. Un clásico ideal para primeras manos.</p>
+          <div class="price">$15 <small>· ficha + garantía + soporte</small></div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20me%20interesa%20el%20Olmo%20Chino.%20%C2%BFEst%C3%A1%20disponible%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Lo quiero
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="bonsai-card" data-cat="entrada">
+        <div class="shot">
+          <img src="Images/bonsai-bequia-imperial.webp" alt="Bonsái Buganvilla en flor" onerror="this.remove()">
+          <!-- <span class="ph">Sube tu foto<br><em>fotos/buganvilla.jpg</em></span> -->
+          <span class="badge last">Última pieza</span>
+        </div>
+        <div class="info">
+          <span class="chip">De colección</span>
+          <h3>Bequia o Árbol de la Vida</h3>
+          <div class="meta">Tsuga canadensis · 60 cm · 24 años</div>
+          <p class="desc">Uno de nuestros bonsáis más grandes y exclusivos. Tamaño Imperial.</p>
+          <div class="price">$150 <small>· ficha + garantía + soporte</small></div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20me%20interesa%20la%20Buganvilla%20en%20flor.%20%C2%BFEst%C3%A1%20disponible%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Lo quiero
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="bonsai-card" data-cat="coleccion">
+        <div class="shot">
+          <img src="fotos/junipero-cascada.jpg" alt="Bonsái Junípero Cascada" onerror="this.remove()">
+          <span class="ph">Sube tu foto<br><em>fotos/junipero-cascada.jpg</em></span>
+          <span class="badge ok">Disponible</span>
+        </div>
+        <div class="info">
+          <span class="chip">De colección</span>
+          <h3>Junípero Cascada</h3>
+          <div class="meta">Juniperus · 40 cm · 9 años</div>
+          <p class="desc">Formado en cascada con años de alambrado. Una pieza con carácter propio.</p>
+          <div class="price">$XXX <small>· pieza única</small></div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20me%20interesa%20el%20Jun%C3%ADpero%20Cascada.%20%C2%BFEst%C3%A1%20disponible%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Lo quiero
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="bonsai-card" data-cat="coleccion">
+        <div class="shot">
+          <img src="fotos/pino-enano.jpg" alt="Bonsái Pino Enano" onerror="this.remove()">
+          <span class="ph">Sube tu foto<br><em>fotos/pino-enano.jpg</em></span>
+          <span class="badge last">Última pieza</span>
+        </div>
+        <div class="info">
+          <span class="chip">De colección</span>
+          <h3>Pino Enano</h3>
+          <div class="meta">Pinus · 35 cm · 12 años</div>
+          <p class="desc">Corteza envejecida y silueta serena. Para quien aprecia el paso del tiempo.</p>
+          <div class="price">$XXX <small>· pieza única</small></div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20me%20interesa%20el%20Pino%20Enano.%20%C2%BFEst%C3%A1%20disponible%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Lo quiero
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <article class="bonsai-card reserved" data-cat="coleccion">
+        <div class="shot">
+          <img src="fotos/serissa.jpg" alt="Bonsái Serissa Mil Estrellas" onerror="this.remove()">
+          <span class="ph">Sube tu foto<br><em>fotos/serissa.jpg</em></span>
+          <span class="badge sold">Reservado</span>
+        </div>
+        <div class="info">
+          <span class="chip">De colección</span>
+          <h3>Serissa Mil Estrellas</h3>
+          <div class="meta">Serissa japonica · 30 cm · 8 años</div>
+          <p class="desc">Floración blanca diminuta y delicada. Este ya se apartó — pregúntame por el próximo.</p>
+          <div class="price">Reservado</div>
+          <div class="buy">
+            <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20vi%20que%20la%20Serissa%20Mil%20Estrellas%20est%C3%A1%20reservada.%20%C2%BFMe%20avisas%20cuando%20tengas%20otra%20similar%3F">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+              Avísame del próximo
+            </a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- El botón aparece solo si hay más de 6 bonsáis visibles (ver LIMIT en el script) -->
+    <div class="more-wrap" style="display:none">
+      <button class="btn-more" id="verMas">Ver más bonsáis</button>
+    </div>
+
+    <p class="catalog-note rv">¿No ves la especie que buscas? <a href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20busco%20una%20especie%20en%20particular.%20%C2%BFMe%20ayudas%3F">Escríbeme y te la consigo →</a></p>
+  </div>
+</section>
+
+<!-- ══ PROOF ══ -->
+<section class="blk">
+  <div class="wrap">
+    <div class="kicker-wrap rv">
+      <span class="eyebrow">Quienes ya lo tienen</span>
+      <h2 class="sec-title">Llegaron sanos. <em>Siguen vivos.</em></h2>
+    </div>
+    <div class="proof-grid rv">
+      <div class="card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">Pensé que se me iba a morir en una semana. Ya lleva meses y hasta le salieron brotes nuevos.</div>
+        <div class="who">— Nombre del cliente, Ibarra</div>
+      </div>
+      <div class="card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">Lo pedí de regalo y llegó impecable. El acompañamiento por WhatsApp fue lo que marcó la diferencia.</div>
+        <div class="who">— Nombre del cliente, Quito</div>
+      </div>
+      <div class="card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">No sabía nada de plantas. Con la ficha y la ayuda de Pierre me animé, y no me arrepiento.</div>
+        <div class="who">— Nombre del cliente, Otavalo</div>
+      </div>
+    </div>
+    <div class="proof-photos rv">
+      <div class="photo-slot">FOTO AQUÍ</div>
+      <div class="photo-slot">FOTO AQUÍ</div>
+      <div class="photo-slot">FOTO AQUÍ</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="faq blk" id="faq">
+  <div class="wrap">
+    <div class="kicker-wrap rv">
+      <span class="eyebrow">Antes de escribirme</span>
+      <h2 class="sec-title">Lo que todos preguntan.</h2>
+    </div>
+    <div class="faq-list rv">
+      <details open>
+        <summary>No sé nada de plantas. ¿Igual puedo?<span class="plus"></span></summary>
+        <p>Sí, y de hecho la mayoría de mis clientes empezó justo ahí. Para eso existe la ficha de cuidado y el soporte de 30 días: te digo exactamente cuánta agua, cuánta luz y cuándo. No necesitas experiencia, necesitas que alguien te guíe — y esa es la parte que yo pongo.</p>
+      </details>
+      <details>
+        <summary>¿Cómo pido un bonsái del catálogo?<span class="plus"></span></summary>
+        <p>Muy fácil: mira el catálogo, toca “Lo quiero” en el árbol que te gustó y se abre WhatsApp con el mensaje ya escrito y el nombre del bonsái. Me llega, te confirmo disponibilidad, coordinamos pago y envío. Mientras tanto te lo aparto.</p>
+      </details>
+      <details>
+        <summary>¿Cómo llega si vivo en otra ciudad?<span class="plus"></span></summary>
+        <p>Empaco cada árbol para que viaje sin estresarse y coordino el envío a todo el Ecuador. Te aviso cuándo sale y cuándo llega. Si prefieres, también puedes retirarlo aquí en San Antonio de Ibarra.</p>
+      </details>
+      <details>
+        <summary>¿La garantía es real?<span class="plus"></span></summary>
+        <p>Real. Si el árbol llega dañado o no supera sus primeros días siguiendo la ficha de cuidado, te lo repongo. No te vendo un árbol y desaparezco: mi negocio depende de que el tuyo viva.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto cuesta?<span class="plus"></span></summary>
+        <p>El precio de cada bonsái está en su tarjeta del catálogo. Los de entrada son más accesibles e incluyen ficha, garantía y soporte; los de colección son piezas únicas con años de formación. Si tienes un presupuesto en mente, escríbeme y te muestro opciones.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tiempo me quita al día?<span class="plus"></span></summary>
+        <p>Menos del que imaginas: un bonsái sano necesita minutos, no horas. Riego según su especie, buena luz y una revisada. Todo eso está en tu ficha, y cualquier duda me la consultas.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FINAL CTA ══ -->
+<section class="final blk" id="cierre">
+  <div class="glow"></div>
+  <div class="wrap">
+    <span class="eyebrow">Empecemos</span>
+    <h2>Cuéntame para quién es y te ayudo a <em>elegirlo</em>.</h2>
+    <p>Un mensaje y arrancamos. Sin compromiso: primero te recomiendo el árbol correcto, después decides.</p>
+    <a class="btn btn-primary" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20quiero%20que%20me%20ayudes%20a%20elegir%20un%20bons%C3%A1i.%20Es%20para%3A%20">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+      Escríbeme por WhatsApp
+    </a>
+    <div class="micro">Respuesta el mismo día · Atendido personalmente por Pierre</div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="leaf" viewBox="0 0 24 24" style="width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c0-6 3-11 8-13-1 7-4 11-8 13Z" fill="currentColor" stroke="none" opacity=".9"/><path d="M12 21C12 13 8 6 4 4c1 8 4 14 8 17Z" fill="currentColor" stroke="none" opacity=".55"/></svg>
+      DecoGarden
+    </div>
+    <div class="fnav">
+      <a href="https://instagram.com/decogarden" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://wa.me/593XXXXXXXXX">WhatsApp</a>
+      <a href="#catalogo">Catálogo</a>
+    </div>
+    <div class="loc">Vivero de bonsáis y plantas · San Antonio de Ibarra, Imbabura — Ecuador · Envíos a todo el país</div>
+  </div>
+</footer>
+
+<!-- ══ FLOAT ══ -->
+<a class="float" href="https://wa.me/593XXXXXXXXX?text=Hola%20DecoGarden%20%F0%9F%8C%BF%20quiero%20info%20de%20sus%20bons%C3%A1is">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m4.52 11.99c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28"/></svg>
+  <span>Escríbeme</span>
+</a>
+
+<script>
+  /* Reveal al hacer scroll */
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.14});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* Filtro del catálogo + botón "Ver más" */
+  const LIMIT = 6;                 // cuántos bonsáis se ven antes del botón. Súbelo o bájalo si quieres.
+  let expanded = false;
+  let current = 'todos';
+  const tabs = document.querySelectorAll('.filter-tab');
+  const cards = [...document.querySelectorAll('.bonsai-card')];
+  const moreWrap = document.querySelector('.more-wrap');
+  const moreBtn = document.getElementById('verMas');
+
+  function render(){
+    const matches = cards.filter(c => current==='todos' || c.dataset.cat===current);
+    cards.forEach(c => c.style.display='none');
+    (expanded ? matches : matches.slice(0, LIMIT)).forEach(c => c.style.display='');
+    if(matches.length > LIMIT){
+      moreWrap.style.display='flex';
+      moreBtn.textContent = expanded ? 'Ver menos' : `Ver más bonsáis (${matches.length - LIMIT})`;
+    } else {
+      moreWrap.style.display='none';
+    }
+  }
+
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      current = tab.dataset.filter;
+      expanded = false;
+      render();
+    });
+  });
+  moreBtn.addEventListener('click', ()=>{ expanded = !expanded; render(); });
+
+  render();
+</script>
+</body>
+</html>
