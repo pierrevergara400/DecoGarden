@@ -1,0 +1,20 @@
+{
+  "name": "DecoGarden — Bonsáis vivos",
+  "short_name": "DecoGarden",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EAE7DB",
+  "theme_color": "#1E2F27",
+  "icons": [
+    {
+      "src": "Icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

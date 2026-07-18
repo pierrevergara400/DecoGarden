@@ -9,6 +9,41 @@ const io = new IntersectionObserver((es) => {
 }, { threshold: .14 });
 document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
+// Header flotante: se esconde al bajar, aparece al subir
+const topbar = document.querySelector('.topbar');
+if (topbar) {
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+  const SCROLL_THRESHOLD = 8;
+  const REVEAL_ZONE = 80; // siempre visible cerca del tope
+
+  const updateHeader = () => {
+    const currentScrollY = window.scrollY;
+    const delta = currentScrollY - lastScrollY;
+    const menuOpen = mainNav && mainNav.classList.contains('open');
+
+    if (!menuOpen) {
+      if (currentScrollY <= REVEAL_ZONE) {
+        topbar.classList.remove('header-hidden');
+      } else if (delta > SCROLL_THRESHOLD) {
+        topbar.classList.add('header-hidden');
+      } else if (delta < -SCROLL_THRESHOLD) {
+        topbar.classList.remove('header-hidden');
+      }
+    }
+
+    lastScrollY = currentScrollY;
+    ticking = false;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateHeader);
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
 // Menú móvil (hamburguesa)
 const navToggle = document.getElementById('navToggle');
 const mainNav = document.getElementById('mainNav');
@@ -182,8 +217,12 @@ async function loadCatalog() {
 // Inicializar pestañas de filtrado
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.remove('active'));
+    tabs.forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-pressed', 'false');
+    });
     tab.classList.add('active');
+    tab.setAttribute('aria-pressed', 'true');
     current = tab.dataset.filter;
     expanded = false;
     renderCatalog();
