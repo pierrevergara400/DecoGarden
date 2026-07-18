@@ -7,6 +7,28 @@
   <title>DecoGarden — Bonsáis vivos, con quien te enseñe a cuidarlos</title>
   <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
 
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="DecoGarden ofrece bonsáis cultivados con dedicación en San Antonio de Ibarra. Cada árbol incluye guía de cuidado, garantía de llegada y acompañamiento personalizado por WhatsApp de 30 días.">
+  <meta name="keywords" content="bonsai, vivero, plantas, ecuador, ibarra, decoracion, jardineria">
+  <meta name="author" content="DecoGarden">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://decogarden.pages.dev/">
+  <meta property="og:title" content="DecoGarden — Bonsáis vivos con asesoría experta">
+  <meta property="og:description"
+    content="Encuentra tu bonsái ideal en nuestro catálogo. Incluye guía de cuidado personalizada y soporte por WhatsApp durante los primeros 30 días. Envíos a todo el Ecuador.">
+  <meta property="og:image" content="https://decogarden.pages.dev/Images/bonsai-bequia-imperial.webp">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://decogarden.pages.dev/">
+  <meta property="twitter:title" content="DecoGarden — Bonsáis vivos con asesoría experta">
+  <meta property="twitter:description"
+    content="Encuentra tu bonsái ideal en nuestro catálogo. Incluye guía de cuidado personalizada y soporte por WhatsApp durante los primeros 30 días. Envíos a todo el Ecuador.">
+  <meta property="twitter:image" content="https://decogarden.pages.dev/Images/bonsai-bequia-imperial.webp">
+
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,1164 +36,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
 
-  <style>
-    :root {
-      --paper: #EAE7DB;
-      --paper-deep: #E1DCCC;
-      --pine: #1E2F27;
-      --pine-soft: #2B4237;
-      --moss: #55705C;
-      --sage: #93A08C;
-      --copper: #A96C3B;
-      --copper-line: rgba(169, 108, 59, .42);
-      --ink: #243029;
-      --muted: #6C7268;
-      --display: 'Cormorant Garamond', Georgia, serif;
-      --body: 'Karla', -apple-system, system-ui, sans-serif;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    html {
-      scroll-behavior: smooth
-    }
-
-    body {
-      background: var(--paper);
-      color: var(--ink);
-      font-family: var(--body);
-      font-weight: 400;
-      line-height: 1.65;
-      font-size: 17px;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-
-    .wrap {
-      max-width: 1160px;
-      margin: 0 auto;
-      padding: 0 28px
-    }
-
-    h1,
-    h2,
-    h3 {
-      font-family: var(--display);
-      font-weight: 400;
-      line-height: 1.06;
-      color: var(--pine);
-      letter-spacing: -.01em
-    }
-
-    .eyebrow {
-      font-family: var(--body);
-      font-size: 12.5px;
-      font-weight: 600;
-      letter-spacing: .24em;
-      text-transform: uppercase;
-      color: var(--copper);
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .eyebrow::before {
-      content: "";
-      width: 26px;
-      height: 1px;
-      background: var(--copper);
-      opacity: .6
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      font-family: var(--body);
-      font-weight: 600;
-      font-size: 15.5px;
-      letter-spacing: .01em;
-      padding: 16px 30px;
-      border-radius: 2px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform .35s cubic-bezier(.2, .8, .2, 1), background .3s, color .3s, box-shadow .3s;
-      border: 1px solid transparent;
-    }
-
-    .btn-primary {
-      background: var(--pine);
-      color: var(--paper);
-      box-shadow: 0 1px 0 var(--copper)
-    }
-
-    .btn-primary:hover {
-      background: var(--pine-soft);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px -12px rgba(30, 47, 39, .55), 0 1px 0 var(--copper)
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--pine);
-      border-color: var(--copper-line)
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--copper);
-      color: var(--copper)
-    }
-
-    .btn svg {
-      width: 19px;
-      height: 19px;
-      flex-shrink: 0
-    }
-
-    .hero {
-      position: relative;
-      padding: 34px 0 96px
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0 66px
-    }
-
-    .brand {
-      font-family: var(--display);
-      font-size: 25px;
-      font-weight: 600;
-      color: var(--pine);
-      letter-spacing: .01em;
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
-
-    .brand .leaf {
-      width: 19px;
-      height: 19px;
-      color: var(--copper)
-    }
-
-    .topbar .navlink {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--pine);
-      text-decoration: none;
-      letter-spacing: .02em
-    }
-
-    .topbar .navlink:hover {
-      color: var(--copper)
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.08fr .92fr;
-      gap: 48px;
-      align-items: center
-    }
-
-    .hero h1 {
-      font-size: clamp(44px, 6vw, 78px);
-      font-weight: 300;
-      margin: 22px 0 0
-    }
-
-    .hero h1 em {
-      font-style: italic;
-      color: var(--moss)
-    }
-
-    .hero .lead {
-      font-size: 19px;
-      color: var(--ink);
-      max-width: 33ch;
-      margin: 26px 0 34px;
-      line-height: 1.6
-    }
-
-    .hero .cta-row {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: center
-    }
-
-    .hero .micro {
-      margin-top: 20px;
-      font-size: 13.5px;
-      color: var(--muted);
-      letter-spacing: .02em;
-      display: flex;
-      align-items: center;
-      gap: 9px
-    }
-
-    .hero .micro .dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--moss)
-    }
-
-    .hero-art {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 420px
-    }
-
-    .hero-art .disc {
-      position: absolute;
-      width: 340px;
-      height: 340px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #F3F0E6 0%, #DAD5C2 62%, #CFC9B4 100%);
-      box-shadow: inset 0 0 60px rgba(30, 47, 39, .06);
-      z-index: 0;
-    }
-
-    .hero-art .ring {
-      position: absolute;
-      width: 392px;
-      height: 392px;
-      border-radius: 50%;
-      border: 1px solid var(--copper-line);
-      z-index: 1
-    }
-
-    .hero-art img {
-      position: relative;
-      width: 300px;
-      height: auto;
-      max-width: 100%;
-      z-index: 2
-    }
-
-    .trust {
-      background: var(--pine);
-      color: var(--paper)
-    }
-
-    .trust .wrap {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 30px;
-      padding: 26px 28px
-    }
-
-    .trust .item {
-      display: flex;
-      flex-direction: column;
-      gap: 3px
-    }
-
-    .trust .item b {
-      font-family: var(--body);
-      font-weight: 700;
-      font-size: 14.5px;
-      color: #F1EEE2;
-      letter-spacing: .01em
-    }
-
-    .trust .item span {
-      font-size: 13px;
-      color: #A9B6A5
-    }
-
-    .trust .item {
-      position: relative;
-      padding-left: 20px
-    }
-
-    .trust .item::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 4px;
-      width: 8px;
-      height: 8px;
-      border-left: 1.5px solid var(--copper);
-      border-bottom: 1.5px solid var(--copper);
-      transform: rotate(-45deg)
-    }
-
-    section.blk {
-      padding: 96px 0
-    }
-
-    .kicker-wrap {
-      max-width: 640px
-    }
-
-    .sec-title {
-      font-size: clamp(32px, 4.4vw, 50px);
-      font-weight: 300;
-      margin: 18px 0 0
-    }
-
-    .sec-title em {
-      font-style: italic;
-      color: var(--moss)
-    }
-
-    .sec-sub {
-      color: var(--muted);
-      font-size: 18px;
-      margin-top: 18px;
-      max-width: 56ch;
-      line-height: 1.6
-    }
-
-    .fear {
-      background: var(--pine);
-      color: var(--paper);
-      position: relative;
-      overflow: hidden
-    }
-
-    .fear .eyebrow {
-      color: #D9A574
-    }
-
-    .fear .eyebrow::before {
-      background: #D9A574
-    }
-
-    .fear h2 {
-      color: #F3F0E6;
-      font-size: clamp(34px, 5vw, 60px);
-      font-weight: 300
-    }
-
-    .fear h2 em {
-      color: #C9AE86;
-      font-style: italic
-    }
-
-    .fear .fear-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center
-    }
-
-    .fear p {
-      color: #C4CEBF;
-      font-size: 18px;
-      line-height: 1.72;
-      margin-top: 22px;
-      max-width: 44ch
-    }
-
-    .fear p strong {
-      color: #F3F0E6;
-      font-weight: 600
-    }
-
-    .fear .wire {
-      position: relative;
-      padding: 34px 0 34px 34px;
-      border-left: 1px solid var(--copper-line);
-    }
-
-    .fear .wire .q {
-      font-family: var(--display);
-      font-style: italic;
-      font-size: 27px;
-      color: #EDE9DC;
-      line-height: 1.4;
-      font-weight: 400
-    }
-
-    .fear .wire .q::before {
-      content: "“";
-      color: var(--copper);
-      font-size: 34px;
-      margin-right: 2px
-    }
-
-    .fear .wire .a {
-      margin-top: 20px;
-      font-size: 16.5px;
-      color: #B7C2B2;
-      line-height: 1.7
-    }
-
-    .includes {
-      background: var(--paper-deep)
-    }
-
-    .stack {
-      margin-top: 52px;
-      border-top: 1px solid var(--copper-line)
-    }
-
-    .stack .row {
-      display: grid;
-      grid-template-columns: 44px 1fr auto;
-      gap: 26px;
-      align-items: baseline;
-      padding: 26px 6px;
-      border-bottom: 1px solid rgba(30, 47, 39, .1);
-    }
-
-    .stack .row .n {
-      font-family: var(--display);
-      font-size: 19px;
-      color: var(--copper);
-      font-weight: 500
-    }
-
-    .stack .row h3 {
-      font-size: 24px;
-      font-weight: 500
-    }
-
-    .stack .row .d {
-      color: var(--muted);
-      font-size: 15.5px;
-      margin-top: 4px;
-      line-height: 1.55;
-      max-width: 52ch
-    }
-
-    .stack .row .tag {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--moss);
-      white-space: nowrap;
-      align-self: center
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      margin-top: 54px;
-      background: var(--copper-line)
-    }
-
-    .step {
-      background: var(--paper);
-      padding: 38px 30px
-    }
-
-    .step .sn {
-      font-family: var(--display);
-      font-size: 15px;
-      letter-spacing: .2em;
-      color: var(--copper);
-      font-weight: 600
-    }
-
-    .step h3 {
-      font-size: 26px;
-      font-weight: 400;
-      margin: 16px 0 12px
-    }
-
-    .step p {
-      color: var(--muted);
-      font-size: 15.5px;
-      line-height: 1.6
-    }
-
-    .catalog {
-      background: var(--pine)
-    }
-
-    .catalog .eyebrow {
-      color: #D9A574
-    }
-
-    .catalog .eyebrow::before {
-      background: #D9A574
-    }
-
-    .catalog .sec-title {
-      color: #F3F0E6
-    }
-
-    .catalog .sec-sub {
-      color: #B7C2B2
-    }
-
-    .filters {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 36px
-    }
-
-    .filter-tab {
-      font-family: var(--body);
-      font-size: 13.5px;
-      font-weight: 600;
-      letter-spacing: .03em;
-      color: #C4CEBF;
-      background: transparent;
-      border: 1px solid rgba(147, 160, 140, .34);
-      padding: 10px 22px;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: background .3s, color .3s, border-color .3s;
-    }
-
-    .filter-tab:hover {
-      border-color: var(--copper);
-      color: #EDE9DC
-    }
-
-    .filter-tab.active {
-      background: var(--copper);
-      border-color: var(--copper);
-      color: #1E2F27
-    }
-
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 40px
-    }
-
-    .bonsai-card {
-      background: var(--paper);
-      border: 1px solid rgba(147, 160, 140, .2);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: transform .4s cubic-bezier(.2, .8, .2, 1), box-shadow .4s;
-    }
-
-    .bonsai-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 22px 48px -22px rgba(0, 0, 0, .55)
-    }
-
-    .shot {
-      position: relative;
-      aspect-ratio: 4/5;
-      overflow: hidden;
-      background: linear-gradient(150deg, #DFE1D4, #CFD3C2)
-    }
-
-    .shot img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 2;
-      display: block
-    }
-
-    .badge {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      z-index: 3;
-      font-family: var(--body);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      padding: 6px 12px;
-      border-radius: 2px;
-    }
-
-    .badge.ok {
-      background: rgba(85, 112, 92, .94);
-      color: #EDE9DC
-    }
-
-    .badge.last {
-      background: rgba(169, 108, 59, .96);
-      color: #F3F0E6
-    }
-
-    .badge.sold {
-      background: rgba(30, 47, 39, .86);
-      color: #B7C2B2
-    }
-
-    .bonsai-card .info {
-      padding: 22px 22px 24px;
-      display: flex;
-      flex-direction: column;
-      flex: 1
-    }
-
-    .bonsai-card .chip {
-      font-family: var(--body);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--copper)
-    }
-
-    .bonsai-card h3 {
-      font-size: 26px;
-      font-weight: 500;
-      margin: 9px 0 4px;
-      color: var(--pine)
-    }
-
-    .bonsai-card .meta {
-      font-size: 13.5px;
-      color: var(--muted);
-      letter-spacing: .01em
-    }
-
-    .bonsai-card .desc {
-      font-size: 14.5px;
-      color: var(--ink);
-      opacity: .85;
-      line-height: 1.55;
-      margin: 12px 0 0
-    }
-
-    .bonsai-card .price {
-      font-family: var(--display);
-      font-size: 27px;
-      color: var(--pine);
-      margin: 16px 0 18px;
-      line-height: 1
-    }
-
-    .bonsai-card .price small {
-      font-family: var(--body);
-      font-size: 12.5px;
-      color: var(--muted);
-      letter-spacing: .02em
-    }
-
-    .bonsai-card .ship-note {
-      font-size: 12px;
-      color: var(--muted);
-      opacity: .75;
-      margin: -12px 0 16px;
-      letter-spacing: .01em
-    }
-
-    .bonsai-card .buy {
-      margin-top: auto
-    }
-
-    .bonsai-card .buy .btn {
-      width: 100%;
-      justify-content: center;
-      padding: 14px 22px;
-      font-size: 14.5px
-    }
-
-    .bonsai-card.reserved {
-      opacity: .82
-    }
-
-    .catalog-note {
-      margin-top: 38px;
-      text-align: center;
-      color: #93A08C;
-      font-size: 15px
-    }
-
-    .catalog-note a {
-      color: #D9A574;
-      font-weight: 600;
-      text-decoration: none;
-      border-bottom: 1px solid var(--copper-line);
-      padding-bottom: 2px;
-      transition: color .3s
-    }
-
-    .catalog-note a:hover {
-      color: #EDE9DC
-    }
-
-    .more-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 40px
-    }
-
-    .btn-more {
-      font-family: var(--body);
-      font-weight: 600;
-      font-size: 15px;
-      letter-spacing: .02em;
-      color: #EDE9DC;
-      background: transparent;
-      border: 1px solid rgba(147, 160, 140, .4);
-      padding: 15px 34px;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: border-color .3s, color .3s, transform .35s;
-    }
-
-    .btn-more:hover {
-      border-color: var(--copper);
-      color: var(--copper);
-      transform: translateY(-2px)
-    }
-
-    .proof-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      margin-top: 52px
-    }
-
-    .card {
-      background: var(--paper-deep);
-      padding: 30px 28px;
-      border-top: 2px solid var(--copper)
-    }
-
-    .card .stars {
-      color: var(--copper);
-      letter-spacing: 3px;
-      font-size: 14px
-    }
-
-    .card .quote {
-      font-family: var(--display);
-      font-size: 20px;
-      font-style: italic;
-      color: var(--pine);
-      line-height: 1.45;
-      margin: 14px 0 18px
-    }
-
-    .card .who {
-      font-size: 13.5px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: .02em
-    }
-
-    .photo-slot {
-      aspect-ratio: 4/5;
-      background: linear-gradient(150deg, #DFE1D4, #CFD3C2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--moss);
-      font-size: 12.5px;
-      font-weight: 600;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      border: 1px dashed var(--sage);
-      width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-
-    .proof-photos {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 22px;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-    }
-
-    .proof-photos>* {
-      min-width: 0;
-    }
-
-    .photo-slot img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .faq {
-      background: var(--paper-deep)
-    }
-
-    .faq-list {
-      margin-top: 46px;
-      border-top: 1px solid var(--copper-line)
-    }
-
-    details {
-      border-bottom: 1px solid rgba(30, 47, 39, .12)
-    }
-
-    summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 24px 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      font-family: var(--display);
-      font-size: 23px;
-      color: var(--pine);
-      font-weight: 500;
-    }
-
-    summary::-webkit-details-marker {
-      display: none
-    }
-
-    summary .plus {
-      width: 22px;
-      height: 22px;
-      flex-shrink: 0;
-      position: relative;
-      transition: transform .3s
-    }
-
-    summary .plus::before,
-    summary .plus::after {
-      content: "";
-      position: absolute;
-      background: var(--copper);
-      left: 50%;
-      top: 50%
-    }
-
-    summary .plus::before {
-      width: 16px;
-      height: 1.5px;
-      transform: translate(-50%, -50%)
-    }
-
-    summary .plus::after {
-      width: 1.5px;
-      height: 16px;
-      transform: translate(-50%, -50%);
-      transition: opacity .3s
-    }
-
-    details[open] summary .plus::after {
-      opacity: 0
-    }
-
-    details[open] summary .plus {
-      transform: rotate(90deg)
-    }
-
-    details p {
-      padding: 0 4px 26px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.7;
-      max-width: 64ch
-    }
-
-    .final {
-      background: var(--pine);
-      text-align: center;
-      position: relative;
-      overflow: hidden
-    }
-
-    .final .wrap {
-      position: relative;
-      z-index: 2
-    }
-
-    .final .eyebrow {
-      color: #D9A574;
-      justify-content: center
-    }
-
-    .final .eyebrow::before {
-      background: #D9A574
-    }
-
-    .final h2 {
-      color: #F3F0E6;
-      font-size: clamp(36px, 5.5vw, 64px);
-      font-weight: 300;
-      margin: 20px auto 0;
-      max-width: 16ch
-    }
-
-    .final h2 em {
-      font-style: italic;
-      color: #C9AE86
-    }
-
-    .final p {
-      color: #B7C2B2;
-      font-size: 18px;
-      margin: 24px auto 38px;
-      max-width: 48ch
-    }
-
-    .final .btn-primary {
-      background: var(--copper);
-      color: #1E2F27;
-      box-shadow: none;
-      font-size: 16.5px;
-      padding: 19px 40px
-    }
-
-    .final .btn-primary:hover {
-      background: #BC7C48;
-      transform: translateY(-2px);
-      box-shadow: 0 16px 36px -14px rgba(0, 0, 0, .5)
-    }
-
-    .final .micro {
-      margin-top: 20px;
-      color: #93A08C;
-      font-size: 13.5px;
-      letter-spacing: .02em
-    }
-
-    .final .glow {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(169, 108, 59, .16), transparent 68%);
-      top: -160px;
-      left: 50%;
-      transform: translateX(-50%)
-    }
-
-    footer {
-      background: #182620;
-      color: #8A9683;
-      padding: 52px 0 40px
-    }
-
-    footer .wrap {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
-      flex-wrap: wrap
-    }
-
-    footer .brand {
-      color: #EDE9DC;
-      font-size: 22px
-    }
-
-    footer .brand .leaf {
-      color: var(--copper)
-    }
-
-    footer a {
-      color: #8A9683;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500
-    }
-
-    footer a:hover {
-      color: var(--copper)
-    }
-
-    footer .fnav {
-      display: flex;
-      gap: 26px;
-      align-items: center;
-      flex-wrap: wrap
-    }
-
-    footer .loc {
-      font-size: 13.5px;
-      color: #6C7869;
-      width: 100%;
-      padding-top: 24px;
-      margin-top: 12px;
-      border-top: 1px solid rgba(147, 160, 140, .14)
-    }
-
-    .float {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 60;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--pine);
-      color: var(--paper);
-      padding: 13px 20px 13px 16px;
-      border-radius: 100px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 14.5px;
-      box-shadow: 0 10px 30px -8px rgba(30, 47, 39, .5);
-      border: 1px solid var(--copper-line);
-      transition: transform .3s, background .3s;
-    }
-
-    .float:hover {
-      transform: translateY(-2px);
-      background: var(--pine-soft)
-    }
-
-    .float svg {
-      width: 20px;
-      height: 20px
-    }
-
-    .rv {
-      opacity: 0;
-      transform: translateY(22px);
-      transition: opacity .8s ease, transform .8s cubic-bezier(.2, .8, .2, 1)
-    }
-
-    .rv.in {
-      opacity: 1;
-      transform: none
-    }
-
-    @media(max-width:900px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-        gap: 20px
-      }
-
-      .hero-art {
-        min-height: 320px;
-        order: -1
-      }
-
-      .hero-art img {
-        width: 230px
-      }
-
-      .hero-art .disc {
-        width: 270px;
-        height: 270px
-      }
-
-      .hero-art .ring {
-        width: 312px;
-        height: 312px
-      }
-
-      .trust .wrap {
-        grid-template-columns: 1fr 1fr;
-        gap: 22px
-      }
-
-      .fear .fear-inner {
-        grid-template-columns: 1fr;
-        gap: 32px
-      }
-
-      .steps {
-        grid-template-columns: 1fr
-      }
-
-      .catalog-grid {
-        grid-template-columns: 1fr 1fr
-      }
-
-      .proof-grid {
-        grid-template-columns: 1fr
-      }
-
-      .proof-photos {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media(max-width:560px) {
-      body {
-        font-size: 16px
-      }
-
-      .wrap {
-        padding: 0 20px
-      }
-
-      section.blk {
-        padding: 70px 0
-      }
-
-      .topbar {
-        padding-bottom: 44px
-      }
-
-      .topbar .navlink {
-        display: none
-      }
-
-      .hero .cta-row {
-        flex-direction: column;
-        align-items: stretch
-      }
-
-      .hero .btn {
-        justify-content: center
-      }
-
-      .trust .wrap {
-        grid-template-columns: 1fr
-      }
-
-      .stack .row {
-        grid-template-columns: 30px 1fr;
-        gap: 16px
-      }
-
-      .stack .row .tag {
-        grid-column: 2;
-        justify-self: start
-      }
-
-      .catalog-grid {
-        grid-template-columns: 1fr
-      }
-
-      .float span {
-        display: none
-      }
-
-      .float {
-        padding: 14px;
-        border-radius: 50%
-      }
-    }
-
-    @media(prefers-reduced-motion:reduce) {
-      * {
-        scroll-behavior: auto
-      }
-
-      .rv {
-        opacity: 1;
-        transform: none;
-        transition: none
-      }
-
-      .btn:hover,
-      .bonsai-card:hover,
-      .float:hover {
-        transform: none
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -1199,13 +64,14 @@
             tu vida.</p>
           <div class="cta-row">
             <a class="btn btn-primary" href="#catalogo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
               </svg>
               Ver bonsáis disponibles
             </a>
             <a class="btn btn-ghost"
-              href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20vi%20su%20pagina%20y%20quiero%20un%20bonsai%20que%20pueda%20cuidar%20sin%20miedo.%20%C2%BFMe%20ayudan%20a%20elegir%3F">Escríbeme
+              href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20vi%20su%20pagina%20y%20quiero%20un%20bonsai%20que%20pueda%20cuidar%20sin%20miedo.%20%C2%BFMe%20ayudan%20a%20elegir%3F"
+              target="_blank" rel="noopener">Escríbeme
               por WhatsApp</a>
           </div>
           <div class="micro"><span class="dot"></span> Respuesta el mismo día · Envíos a todo el Ecuador</div>
@@ -1358,7 +224,8 @@
 
         <article class="bonsai-card" data-cat="entrada">
           <div class="shot">
-            <img src="Images/bonsai-junipero-shakan.webp" alt="Bonsái Juniperus Estilo Shakan" onerror="this.remove()">
+            <img src="Images/bonsai-junipero-shakan.webp" alt="Bonsái Juniperus Estilo Shakan" onerror="this.remove()"
+              loading="lazy" decoding="async">
             <span class="badge ok">Disponible</span>
           </div>
           <div class="info">
@@ -1370,8 +237,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Juniperus%20Estilo%20Shakan.%20%C2%BFEsta%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Juniperus%20Estilo%20Shakan.%20%C2%BFEsta%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1383,7 +251,8 @@
 
         <article class="bonsai-card" data-cat="entrada">
           <div class="shot">
-            <img src="Images/bonsai-guayacan.webp" alt="Bonsái Guayacán" onerror="this.remove()">
+            <img src="Images/bonsai-guayacan.webp" alt="Bonsái Guayacán" onerror="this.remove()" loading="lazy"
+              decoding="async">
             <span class="badge ok">Disponible</span>
           </div>
           <div class="info">
@@ -1395,8 +264,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Guayacan.%20%C2%BFEsta%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Guayacan.%20%C2%BFEsta%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1408,7 +278,8 @@
 
         <article class="bonsai-card" data-cat="entrada">
           <div class="shot">
-            <img src="Images/bonsai-arbol-del-te.webp" alt="Bonsái Árbol del Té Mānuka" onerror="this.remove()">
+            <img src="Images/bonsai-arbol-del-te.webp" alt="Bonsái Árbol del Té Mānuka" onerror="this.remove()"
+              loading="lazy" decoding="async">
             <span class="badge ok">Disponible</span>
           </div>
           <div class="info">
@@ -1420,8 +291,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Arbol%20del%20Te%20Manuka.%20%C2%BFEsta%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Arbol%20del%20Te%20Manuka.%20%C2%BFEsta%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1433,7 +305,8 @@
 
         <article class="bonsai-card" data-cat="entrada">
           <div class="shot">
-            <img src="Images/bonsai-azalea.webp" alt="Bonsái Azalea" onerror="this.remove()">
+            <img src="Images/bonsai-azalea.webp" alt="Bonsái Azalea" onerror="this.remove()" loading="lazy"
+              decoding="async">
             <span class="badge ok">Disponible</span>
           </div>
           <div class="info">
@@ -1445,8 +318,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20Decogarden%2C%20me%20interesa%20el%20Bonsai%20de%20Azalea%2C%20%C2%BFEst%C3%A1%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20Decogarden%2C%20me%20interesa%20el%20Bonsai%20de%20Azalea%2C%20%C2%BFEst%C3%A1%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1458,7 +332,8 @@
 
         <article class="bonsai-card" data-cat="coleccion">
           <div class="shot">
-            <img src="Images/bonsai-bequia-imperial.webp" alt="Bonsái Bequia Imperial" onerror="this.remove()">
+            <img src="Images/bonsai-bequia-imperial.webp" alt="Bonsái Bequia Imperial" onerror="this.remove()"
+              loading="lazy" decoding="async">
             <span class="badge last">Última pieza</span>
           </div>
           <div class="info">
@@ -1470,8 +345,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20la%20Bequia%20o%20Arbol%20de%20la%20Vida.%20%C2%BFEsta%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20la%20Bequia%20o%20Arbol%20de%20la%20Vida.%20%C2%BFEsta%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1496,8 +372,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20la%20Bequia%20o%20Arbol%20de%20la%20Vida%20Mini.%20%C2%BFEsta%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20la%20Bequia%20o%20Arbol%20de%20la%20Vida%20Mini.%20%C2%BFEsta%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1509,7 +386,8 @@
 
         <article class="bonsai-card" data-cat="coleccion">
           <div class="shot">
-            <img src="Images/bonsai-junipero-dorado.webp" alt="Bonsái Pino Cola de Pavo" onerror="this.remove()">
+            <img src="Images/bonsai-junipero-dorado.webp" alt="Bonsái Pino Cola de Pavo" onerror="this.remove()"
+              loading="lazy" decoding="async">
             <span class="badge last">Última pieza</span>
           </div>
           <div class="info">
@@ -1521,8 +399,9 @@
             <p class="ship-note">Precio no incluye envío</p>
             <div class="buy">
               <a class="btn btn-primary"
-                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Pino%20Cola%20de%20Pavo.%20%C2%BFEsta%20disponible%3F">
-                <svg viewBox="0 0 24 24" fill="currentColor">
+                href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Pino%20Cola%20de%20Pavo.%20%C2%BFEsta%20disponible%3F"
+                target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path
                     d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
                 </svg>
@@ -1539,7 +418,8 @@
       </div>
 
       <p class="catalog-note rv">¿No ves la especie que buscas? <a
-          href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20busco%20una%20especie%20en%20particular.%20%C2%BFMe%20ayudas%3F">Escríbeme
+          href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20busco%20una%20especie%20en%20particular.%20%C2%BFMe%20ayudas%3F"
+          target="_blank" rel="noopener">Escríbeme
           y te la consigo →</a></p>
     </div>
   </section>
@@ -1574,13 +454,11 @@
       <div class="proof-photos rv">
         <div class="photo-slot">
           <img src="Images/testimonio-1.webp" alt="Testimonio de cliente con bonsái" onerror="this.remove()"
-            style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
         <div class="photo-slot">
-          <div class="photo-slot">
-            <img src="Images/testimonio-2.webp" alt="Testimonio de cliente con bonsái" onerror="this.remove()"
-              style="width: 100%; height: 100%; object-fit: cover; display: block;">
-          </div>
+          <img src="Images/testimonio-2.webp" alt="Testimonio de cliente con bonsái" onerror="this.remove()"
+            style="width: 100%; height: 100%; object-fit: cover; display: block;" loading="lazy" decoding="async">
         </div>
         <div class="photo-slot">Proximamente</div>
       </div>
@@ -1638,8 +516,9 @@
       <h2>Cuéntame para quién es y te ayudo a <em>elegirlo</em>.</h2>
       <p>Un mensaje y arrancamos. Sin compromiso: primero te recomiendo el árbol correcto, después decides.</p>
       <a class="btn btn-primary"
-        href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20quiero%20que%20me%20ayudes%20a%20elegir%20un%20bonsai.%20Es%20para%3A%20">
-        <svg viewBox="0 0 24 24" fill="currentColor">
+        href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20quiero%20que%20me%20ayudes%20a%20elegir%20un%20bonsai.%20Es%20para%3A%20"
+        target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path
             d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
         </svg>
@@ -1658,7 +537,7 @@
         <a href="https://www.instagram.com/decogarden_ibarra" target="_blank" rel="noopener">Instagram</a>
         <a href="https://www.facebook.com/decogarden.ec" target="_blank" rel="noopener">Facebook</a>
         <a href="https://www.tiktok.com/@decogarden_ibarra" target="_blank" rel="noopener">TikTok</a>
-        <a href="https://wa.me/593963136655">WhatsApp</a>
+        <a href="https://wa.me/593963136655" target="_blank" rel="noopener">WhatsApp</a>
         <a href="#catalogo">Catálogo</a>
       </div>
       <div class="loc">Vivero de bonsáis y plantas · San Antonio de Ibarra, Imbabura — Ecuador · Envíos a todo el país
@@ -1666,122 +545,16 @@
     </div>
   </footer>
 
-  <a class="float" href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20quiero%20info%20de%20sus%20bonsais">
-    <svg viewBox="0 0 24 24" fill="currentColor">
+  <a class="float" href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20quiero%20info%20de%20sus%20bonsais"
+    target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path
         d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m4.52 11.99c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
     </svg>
     <span>Escríbeme</span>
   </a>
 
-  <script>
-    const io = new IntersectionObserver((es) => {
-      es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: .14 });
-    document.querySelectorAll('.rv').forEach(el => io.observe(el));
-
-    const LIMIT = 6;
-    let expanded = false;
-    let current = 'todos';
-    const tabs = document.querySelectorAll('.filter-tab');
-    const cards = [...document.querySelectorAll('.bonsai-card')];
-    const moreWrap = document.querySelector('.more-wrap');
-    const moreBtn = document.getElementById('verMas');
-
-    function render() {
-      const matches = cards.filter(c => current === 'todos' || c.dataset.cat === current);
-      cards.forEach(c => c.style.display = 'none');
-      (expanded ? matches : matches.slice(0, LIMIT)).forEach(c => c.style.display = '');
-      if (matches.length > LIMIT) {
-        moreWrap.style.display = 'flex';
-        moreBtn.textContent = expanded ? 'Ver menos' : `Ver más bonsáis (${matches.length - LIMIT})`;
-      } else {
-        moreWrap.style.display = 'none';
-      }
-    }
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        current = tab.dataset.filter;
-        expanded = false;
-        render();
-      });
-    });
-    moreBtn.addEventListener('click', () => { expanded = !expanded; render(); });
-
-    render();
-
-    const lightboxStyle = document.createElement('style');
-    lightboxStyle.textContent = `
-    .dg-lightbox {
-      position: fixed;
-      inset: 0;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0,0,0,.75);
-      z-index: 1100;
-      padding: 32px;
-    }
-    .dg-lightbox.open { display: flex; }
-    .dg-lightbox .dg-inner {
-      position: relative;
-      max-width: min(1200px, calc(100vw - 64px));
-      max-height: calc(100vh - 64px);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: auto;
-      height: auto;
-      padding: 12px;
-      box-sizing: border-box;
-    }
-    .dg-lightbox img {
-      width: auto;
-      height: auto;
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-      border-radius: 12px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.45);
-      cursor: zoom-out;
-    }
-    .shot img, .proof-photos img { cursor: zoom-in; }
-  `;
-    document.head.appendChild(lightboxStyle);
-
-    const lightbox = document.createElement('div');
-    lightbox.className = 'dg-lightbox';
-    lightbox.innerHTML = '<div class="dg-inner"><img alt=""></div>';
-    document.body.appendChild(lightbox);
-    const lightboxImg = lightbox.querySelector('img');
-    const lightboxInner = lightbox.querySelector('.dg-inner');
-
-    document.querySelectorAll('.shot img, .proof-photos img').forEach(img => {
-      img.addEventListener('click', () => {
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt || '';
-        lightbox.classList.add('open');
-      });
-    });
-
-    lightbox.addEventListener('click', (event) => {
-      if (event.target === lightbox || event.target === lightboxInner) {
-        lightbox.classList.remove('open');
-        lightboxImg.src = '';
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && lightbox.classList.contains('open')) {
-        lightbox.classList.remove('open');
-        lightboxImg.src = '';
-      }
-    });
-  </script>
+  <script src="app.js" defer></script>
 </body>
 
 </html>
