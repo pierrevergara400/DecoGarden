@@ -39,6 +39,33 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="preload" as="fetch" href="catalog.json" crossorigin>
+
+  <!-- Datos estructurados: negocio local -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GardenStore",
+    "name": "DecoGarden",
+    "url": "https://decogarden.pages.dev/",
+    "image": "https://decogarden.pages.dev/Images/bonsai-bequia-imperial.webp",
+    "logo": "https://decogarden.pages.dev/Media/Decogarden%202.svg",
+    "description": "Vivero de bonsáis en San Antonio de Ibarra. Cada árbol incluye ficha de cuidado, garantía de llegada sana y acompañamiento por WhatsApp durante 30 días.",
+    "priceRange": "$$",
+    "telephone": "+593963136655",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "San Antonio de Ibarra",
+      "addressRegion": "Imbabura",
+      "addressCountry": "EC"
+    },
+    "areaServed": "EC",
+    "sameAs": [
+      "https://www.instagram.com/decogarden_ibarra",
+      "https://www.facebook.com/decogarden.ec",
+      "https://www.tiktok.com/@decogarden_ibarra"
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -49,7 +76,11 @@
         <div class="brand">
           <img src="Media/Decogarden 2.svg" style="width: 9rem;" alt="DecoGarden logo">
         </div>
-        <nav style="display:flex;gap:28px;align-items:center">
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false"
+          aria-controls="mainNav">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="mainnav" id="mainNav">
           <a class="navlink" href="#catalogo">Catálogo</a>
           <a class="navlink" href="#incluye">Qué incluye</a>
           <a class="navlink" href="#faq">Preguntas</a>
@@ -222,7 +253,7 @@
         <button class="filter-tab" data-filter="coleccion">De colección</button>
       </div>
 
-      <div class="catalog-grid rv">
+      <div class="catalog-grid">
         <!-- Skeleton mientras carga catalog.json; renderCatalog() en app.js lo reemplaza -->
         <div class="bonsai-card skeleton-card"><div class="shot"></div></div>
         <div class="bonsai-card skeleton-card"><div class="shot"></div></div>

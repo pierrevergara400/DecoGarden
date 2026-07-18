@@ -9,6 +9,28 @@ const io = new IntersectionObserver((es) => {
 }, { threshold: .14 });
 document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
+// Menú móvil (hamburguesa)
+const navToggle = document.getElementById('navToggle');
+const mainNav = document.getElementById('mainNav');
+if (navToggle && mainNav) {
+  const closeMenu = () => {
+    mainNav.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  };
+  navToggle.addEventListener('click', () => {
+    const isOpen = mainNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mainNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+  document.addEventListener('click', (e) => {
+    if (!mainNav.classList.contains('open')) return;
+    if (!mainNav.contains(e.target) && !navToggle.contains(e.target)) closeMenu();
+  });
+}
+
 // Configuración del catálogo dinámico
 const LIMIT = 6;
 let expanded = false;
@@ -19,6 +41,26 @@ const grid = document.querySelector('.catalog-grid');
 const tabs = document.querySelectorAll('.filter-tab');
 const moreWrap = document.querySelector('.more-wrap');
 const moreBtn = document.getElementById('verMas');
+
+// Campos sin los que una tarjeta no se puede mostrar de forma confiable
+const REQUIRED_FIELDS = ['nombre', 'imagen', 'categoria', 'precio', 'whatsappMsg'];
+
+function isValidCatalogItem(item) {
+  if (!item || typeof item !== 'object') return false;
+  const hasRequiredFields = REQUIRED_FIELDS.every(field => typeof item[field] === 'string' && item[field].trim() !== '');
+  if (!hasRequiredFields) return false;
+  if (item.categoria !== 'entrada' && item.categoria !== 'coleccion') return false;
+  return true;
+}
+
+// Completa campos opcionales ausentes para que nunca se imprima "undefined" en una tarjeta
+function normalizeCatalogItem(item) {
+  return {
+    especie: '', altura: '', edad: '', descripcion: '', detallePrecio: '',
+    badgeClass: 'ok', badgeTexto: 'Disponible',
+    ...item
+  };
+}
 
 // Renderizar las tarjetas de bonsáis
 function renderCatalog() {
@@ -78,13 +120,56 @@ function renderCatalog() {
   });
 }
 
+// Inyectar datos estructurados (SEO) de los bonsáis disponibles
+function injectCatalogSchema(items) {
+  const sold = /vendid|agotad|reservad/i;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items.map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Product',
+        name: item.nombre,
+        image: `https://decogarden.pages.dev/${item.imagen}`,
+        description: item.descripcion,
+        category: item.categoria === 'entrada' ? 'Para empezar' : 'De colección',
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'USD',
+          price: (item.precio || '').replace(/[^0-9.]/g, ''),
+          availability: sold.test(item.badgeTexto || '')
+            ? 'https://schema.org/OutOfStock'
+            : 'https://schema.org/InStock',
+          url: 'https://decogarden.pages.dev/#catalogo'
+        }
+      }
+    }))
+  };
+
+  let tag = document.getElementById('catalog-schema');
+  if (!tag) {
+    tag = document.createElement('script');
+    tag.type = 'application/ld+json';
+    tag.id = 'catalog-schema';
+    document.head.appendChild(tag);
+  }
+  tag.textContent = JSON.stringify(schema);
+}
+
 // Cargar catálogo desde JSON
 async function loadCatalog() {
   try {
     const res = await fetch('catalog.json');
     if (!res.ok) throw new Error('Error al cargar catálogo');
-    catalogData = await res.json();
+    const data = await res.json();
+    catalogData = Array.isArray(data) ? data.filter(isValidCatalogItem).map(normalizeCatalogItem) : [];
+    if (Array.isArray(data) && catalogData.length !== data.length) {
+      console.warn(`Catálogo: se omitieron ${data.length - catalogData.length} bonsái(s) con datos incompletos.`);
+    }
     renderCatalog();
+    injectCatalogSchema(catalogData);
   } catch (err) {
     console.error('Error cargando los bonsáis:', err);
     // Fallback: mostrar mensaje en el catálogo
