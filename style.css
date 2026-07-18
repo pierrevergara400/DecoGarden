@@ -562,6 +562,22 @@
       box-shadow: 0 22px 48px -22px rgba(0, 0, 0, .55)
     }
 
+    .skeleton-card {
+      min-height: 420px;
+    }
+
+    .skeleton-card .shot {
+      height: 100%;
+      background: linear-gradient(100deg, var(--paper-deep) 30%, #ECE9DD 50%, var(--paper-deep) 70%);
+      background-size: 300% 100%;
+      animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    }
+
+    @keyframes skeleton-shimmer {
+      0% { background-position: 100% 0 }
+      100% { background-position: -100% 0 }
+    }
+
     .shot {
       position: relative;
       aspect-ratio: 4/5;
@@ -1163,6 +1179,10 @@
     @media(prefers-reduced-motion:reduce) {
       * {
         scroll-behavior: auto
+      }
+
+      .skeleton-card .shot {
+        animation: none
       }
 
       .rv {

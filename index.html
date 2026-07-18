@@ -38,6 +38,7 @@
     rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
+  <link rel="preload" as="fetch" href="catalog.json" crossorigin>
 </head>
 
 <body>
@@ -222,7 +223,10 @@
       </div>
 
       <div class="catalog-grid rv">
-        <!-- Renderizado dinámico desde app.js -->
+        <!-- Skeleton mientras carga catalog.json; renderCatalog() en app.js lo reemplaza -->
+        <div class="bonsai-card skeleton-card"><div class="shot"></div></div>
+        <div class="bonsai-card skeleton-card"><div class="shot"></div></div>
+        <div class="bonsai-card skeleton-card"><div class="shot"></div></div>
       </div>
 
       <div class="more-wrap" style="display:none">
