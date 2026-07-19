@@ -170,6 +170,10 @@ function injectCatalogSchema(items) {
         image: `https://decogarden.pages.dev/${item.imagen}`,
         description: item.descripcion,
         category: item.categoria === 'entrada' ? 'Para empezar' : 'De colección',
+        brand: {
+          '@type': 'Brand',
+          name: 'DecoGarden'
+        },
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
