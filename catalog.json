@@ -6,13 +6,13 @@
     "altura": "30 cm",
     "edad": "10 años",
     "categoria": "entrada",
-    "descripcion": "El más noble para arrancar: aguanta, perdona los descuidos y crece rápido.",
+    "descripcion": "El bonsái que perdona tus primeras veces. Un Juniperus fuerte, de raíz noble, que aguanta si te olvidas de regarlo un día y sigue creciendo igual. Ideal si nunca has tenido uno y quieres empezar sin miedo.",
     "precio": "$40",
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-junipero-shakan.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa el Juniperus Estilo Shakan. ¿Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, vi el Juniperus Estilo Shakan y me gustaria empezar con ese. Esta disponible?"
   },
   {
     "id": "guayacan",
@@ -21,13 +21,13 @@
     "altura": "40 cm",
     "edad": "11 años",
     "categoria": "entrada",
-    "descripcion": "El más noble para arrancar: aguanta, perdona los descuidos y crece rápido.",
+    "descripcion": "Un Guayacán con la resistencia de quien ya ha vivido varias estaciones. Crece rápido, perdona los descuidos de principiante y te da la confianza de ver resultados pronto. El primer bonsái de muchos coleccionistas ecuatorianos.",
     "precio": "$20",
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-guayacan.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa el Guayacan. ¿Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me interesa el Guayacan del catalogo. Esta disponible?"
   },
   {
     "id": "arbol-del-te",
@@ -36,13 +36,13 @@
     "altura": "20 cm",
     "edad": "6 años",
     "categoria": "entrada",
-    "descripcion": "Hojas finas, flores todo el año. Un clásico ideal para primeras manos.",
+    "descripcion": "Hojas diminutas, flores blancas casi todo el año: el Mānuka es ese detalle que transforma un escritorio o una repisa vacía en un rincón con vida propia. Pequeño en tamaño, generoso en presencia.",
     "precio": "$15",
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-arbol-del-te.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa el Arbol del Te Manuka. ¿Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, quiero saber mas sobre el Arbol del Te Manuka. Esta disponible?"
   },
   {
     "id": "azalea",
@@ -51,13 +51,13 @@
     "altura": "25 cm",
     "edad": "8 años",
     "categoria": "entrada",
-    "descripcion": "Flores todo el año. Perfecto para decorar tu espacio.",
+    "descripcion": "Un bonsái Azalea que florece como si celebrara algo todo el año. Perfecto para quien quiere color constante en casa sin complicarse, solo cuidado simple y flores que no dejan de aparecer.",
     "precio": "$20",
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-azalea.webp",
-    "whatsappMsg": "Hola Decogarden, me interesa el Bonsai de Azalea, ¿Está disponible?"
+    "whatsappMsg": "Hola DecoGarden, me encanto el Bonsai de Azalea. Esta disponible?"
   },
   {
     "id": "bequia-imperial",
@@ -66,13 +66,13 @@
     "altura": "60 cm",
     "edad": "24 años",
     "categoria": "coleccion",
-    "descripcion": "Uno de nuestros bonsáis más grandes y exclusivos. Tamaño Imperial.",
+    "descripcion": "24 años de historia condensados en un solo árbol. Esta Bequia, el Árbol de la Vida, es de nuestras piezas más grandes y exclusivas: la que eliges cuando quieres algo que se sienta como un legado, no solo una planta.",
     "precio": "$150",
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "last",
     "badgeTexto": "Última pieza",
     "imagen": "Images/bonsai-bequia-imperial.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia o Arbol de la Vida. ¿Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Imperial, el Arbol de la Vida. Esta disponible?"
   },
   {
     "id": "bequia-pequena",
@@ -81,13 +81,13 @@
     "altura": "20 cm",
     "edad": "9 años",
     "categoria": "coleccion",
-    "descripcion": "El árbol de la vida en versión mini, perfecto para cualquier espacio.",
+    "descripcion": "El Árbol de la Vida en su versión más pequeña. Nueve años de formación en un tamaño mini que cabe en cualquier espacio — para quien quiere simbolismo y presencia sin necesitar un lugar grande.",
     "precio": "$20",
     "detallePrecio": "pieza única",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-bequia-pequena.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia o Arbol de la Vida Mini. ¿Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Mini, el Arbol de la Vida mini. Esta disponible?"
   },
   {
     "id": "junipero-dorado",
@@ -96,12 +96,12 @@
     "altura": "20 cm",
     "edad": "8 años",
     "categoria": "coleccion",
-    "descripcion": "Junipero Dorado Variegado, con tonos dorados y verdes.",
+    "descripcion": "Un Junípero Dorado Variegado que mezcla tonos verdes y dorados como si tuviera luz propia. Pieza única para quien busca un bonsái que se note distinto entre los demás.",
     "precio": "$15",
     "detallePrecio": "pieza única",
     "badgeClass": "last",
     "badgeTexto": "Última pieza",
     "imagen": "Images/bonsai-junipero-dorado.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa el Pino Cola de Pavo. ¿Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me interesa el Pino Cola de Pavo dorado. Esta disponible?"
   }
 ]
