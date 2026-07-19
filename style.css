@@ -547,6 +547,21 @@
       line-height: 1.6
     }
 
+    .step a,
+    .faq-list a {
+      color: var(--copper);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid var(--copper-line);
+      padding-bottom: 1px;
+      transition: border-color .3s
+    }
+
+    .step a:hover,
+    .faq-list a:hover {
+      border-color: var(--copper)
+    }
+
     .catalog {
       background: var(--pine)
     }
