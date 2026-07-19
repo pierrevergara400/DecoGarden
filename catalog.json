@@ -1,7 +1,7 @@
 [
   {
     "id": "juniperus-shakan",
-    "nombre": "Juniperus Estilo Shakan",
+    "nombre": "Bonsái Juniperus Estilo Shakan",
     "especie": "Juniperus Chinensis",
     "altura": "30 cm",
     "edad": "10 años",
@@ -16,7 +16,7 @@
   },
   {
     "id": "guayacan",
-    "nombre": "Guayacán",
+    "nombre": "Bonsái Guayacán",
     "especie": "Handroanthus chrysanthus",
     "altura": "40 cm",
     "edad": "11 años",
@@ -31,7 +31,7 @@
   },
   {
     "id": "arbol-del-te",
-    "nombre": "Árbol del Té | Mānuka",
+    "nombre": "Bonsái del Árbol del Té o Mānuka",
     "especie": "Leptospermum scoparium",
     "altura": "20 cm",
     "edad": "6 años",
@@ -61,7 +61,7 @@
   },
   {
     "id": "bequia-imperial",
-    "nombre": "Bequia o Árbol de la Vida",
+    "nombre": "Bonsái Bequia Imperial o Árbol de la Vida",
     "especie": "Tsuga canadensis",
     "altura": "60 cm",
     "edad": "24 años",
@@ -76,7 +76,7 @@
   },
   {
     "id": "bequia-pequena",
-    "nombre": "Bequia o Árbol de la Vida Mini",
+    "nombre": "Bonsái Bequia o Árbol de la Vida Mini",
     "especie": "Tsuga Canadensis",
     "altura": "20 cm",
     "edad": "9 años",
@@ -87,11 +87,11 @@
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-bequia-pequena.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Mini, el Arbol de la Vida mini. Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Mini, el Arbol de la Vida. Esta disponible?"
   },
   {
     "id": "junipero-dorado",
-    "nombre": "Pino Cola de Pavo",
+    "nombre": "Bonsái Pino Cola de Pavo",
     "especie": "Juniperus chinensis 'Variegata'",
     "altura": "20 cm",
     "edad": "8 años",
