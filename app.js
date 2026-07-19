@@ -12,7 +12,7 @@ document.querySelectorAll('.rv').forEach(el => io.observe(el));
 // Header flotante: se esconde al bajar, aparece al subir
 const topbar = document.querySelector('.topbar');
 if (topbar) {
-  let lastScrollY = window.scrollY;
+  let lastScrollY = 0;
   let ticking = false;
   const SCROLL_THRESHOLD = 8;
   const REVEAL_ZONE = 80; // siempre visible cerca del tope
