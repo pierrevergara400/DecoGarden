@@ -41,9 +41,16 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap">
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+  </noscript>
 
   <link rel="stylesheet" href="style.css">
   <link rel="preload" as="fetch" href="catalog.json" crossorigin>
@@ -131,7 +138,7 @@
     <div class="wrap">
       <div class="topbar">
         <a class="brand" href="#" aria-label="Ir al inicio">
-          <img src="Media/Decogarden 2.svg" style="width: 9rem;" alt="DecoGarden logo">
+          <img src="Media/Decogarden 2.svg" style="width: 9rem;" width="144" height="24" alt="DecoGarden logo">
         </a>
         <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false"
           aria-controls="mainNav">
@@ -168,7 +175,8 @@
         </div>
 
         <div class="hero-art">
-          <img src="Media/Decogarden 3.svg" alt="Ilustración de un bonsái" fetchpriority="high" loading="eager" />
+          <img src="Media/Decogarden 3.svg" alt="Ilustración de un bonsái" width="300" height="238"
+            fetchpriority="high" loading="eager" />
           <div class="ring"></div>
           <div class="disc"></div>
         </div>
