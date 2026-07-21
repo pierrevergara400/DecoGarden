@@ -12,7 +12,12 @@
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-junipero-shakan.webp",
-    "whatsappMsg": "Hola DecoGarden, vi el Juniperus Estilo Shakan y me gustaria empezar con ese. Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, vi el Juniperus Estilo Shakan y me gustaria empezar con ese. Esta disponible?",
+    "oferta": {
+      "precioOferta": "$35",
+      "cupoTotal": 10,
+      "cupoRestante": 10
+    }
   },
   {
     "id": "guayacan",
@@ -27,7 +32,12 @@
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-guayacan.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa el Guayacan del catalogo. Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me interesa el Guayacan del catalogo. Esta disponible?",
+    "oferta": {
+      "precioOferta": "$15",
+      "cupoTotal": 5,
+      "cupoRestante": 5
+    }
   },
   {
     "id": "arbol-del-te",
@@ -60,6 +70,21 @@
     "whatsappMsg": "Hola DecoGarden, me encanto el Bonsai de Azalea. Esta disponible?"
   },
   {
+    "id": "pino-estrella",
+    "nombre": "Bonsái Pino Estrella",
+    "especie": "Pinus pentaphylla",
+    "altura": "30 cm",
+    "edad": "10 años",
+    "categoria": "entrada",
+    "descripcion": "Un bonsái Pino Estrella que florece como si celebrara algo todo el año. Perfecto para quien quiere color constante en casa sin complicarse, solo cuidado simple y flores que no dejan de aparecer.",
+    "precio": "$20",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "ok",
+    "badgeTexto": "Disponible",
+    "imagen": "Images/bonsai-pino-estrella.webp",
+    "whatsappMsg": "Hola DecoGarden, me encanto el Bonsai de Pino Estrella. Esta disponible?"
+  },
+  {
     "id": "bequia-imperial",
     "nombre": "Bonsái Bequia Imperial o Árbol de la Vida",
     "especie": "Tsuga canadensis",
@@ -73,6 +98,21 @@
     "badgeTexto": "Última pieza",
     "imagen": "Images/bonsai-bequia-imperial.webp",
     "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Imperial, el Arbol de la Vida. Esta disponible?"
+  },
+  {
+    "id": "bosque-guayacanes",
+    "nombre": "Bonsái Bosque de Guayacanes",
+    "especie": "Handroanthus chrysanthus",
+    "altura": "60 cm",
+    "edad": "24 años",
+    "categoria": "coleccion",
+    "descripcion": "24 años de historia condensados en un solo árbol. Esta Bequia, el Árbol de la Vida, es de nuestras piezas más grandes y exclusivas: la que eliges cuando quieres algo que se sienta como un legado, no solo una planta.",
+    "precio": "$150",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "last",
+    "badgeTexto": "Última pieza",
+    "imagen": "Images/bonsai-bosque-guayacanes.webp",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Bosque de Guayacanes. Esta disponible?"
   },
   {
     "id": "bequia-pequena",
@@ -103,5 +143,35 @@
     "badgeTexto": "Última pieza",
     "imagen": "Images/bonsai-junipero-dorado.webp",
     "whatsappMsg": "Hola DecoGarden, me interesa el Pino Cola de Pavo dorado. Esta disponible?"
+  },
+  {
+    "id": "junipero-shakan-mayor",
+    "nombre": "Bonsái Juniperus Estilo Shakan Mayor",
+    "especie": "Juniperus chinensis",
+    "altura": "20 cm",
+    "edad": "8 años",
+    "categoria": "coleccion",
+    "descripcion": "Un Junípero Dorado Variegado que mezcla tonos verdes y dorados como si tuviera luz propia. Pieza única para quien busca un bonsái que se note distinto entre los demás.",
+    "precio": "$15",
+    "detallePrecio": "pieza única",
+    "badgeClass": "last",
+    "badgeTexto": "Última pieza",
+    "imagen": "Images/bonsai-junipero-shakan-mayor.webp",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Juniperus Estilo Shakan Mayor. Esta disponible?"
+  },
+  {
+    "id": "flor-arana",
+    "nombre": "Bonsái Flor de Araña",
+    "especie": "Juniperus chinensis 'Variegata'",
+    "altura": "20 cm",
+    "edad": "8 años",
+    "categoria": "coleccion",
+    "descripcion": "Un Junípero Dorado Variegado que mezcla tonos verdes y dorados como si tuviera luz propia. Pieza única para quien busca un bonsái que se note distinto entre los demás.",
+    "precio": "$15",
+    "detallePrecio": "pieza única",
+    "badgeClass": "last",
+    "badgeTexto": "Última pieza",
+    "imagen": "Images/bonsai-flor-arana.webp",
+    "whatsappMsg": "Hola DecoGarden, me interesa la Flor de Araña. Esta disponible?"
   }
 ]

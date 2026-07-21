@@ -92,9 +92,15 @@ function isValidCatalogItem(item) {
 function normalizeCatalogItem(item) {
   return {
     especie: '', altura: '', edad: '', descripcion: '', detallePrecio: '',
-    badgeClass: 'ok', badgeTexto: 'Disponible',
+    badgeClass: 'ok', badgeTexto: 'Disponible', oferta: null,
     ...item
   };
+}
+
+// Una oferta solo se muestra mientras queden cupos reales; al agotarse (cupoRestante <= 0)
+// no se repone automáticamente, hay que quitarla o subirla a mano en catalog.json.
+function ofertaActiva(item) {
+  return item.oferta && item.oferta.cupoRestante > 0 ? item.oferta : null;
 }
 
 // Renderizar las tarjetas de bonsáis
@@ -108,19 +114,23 @@ function renderCatalog() {
   const visibleItems = expanded ? matches : matches.slice(0, LIMIT);
   
   // Generar HTML
-  grid.innerHTML = visibleItems.map(item => `
+  grid.innerHTML = visibleItems.map(item => {
+    const oferta = ofertaActiva(item);
+    return `
     <article class="bonsai-card" data-cat="${item.categoria}">
       <div class="shot">
         <img src="${item.imagen}" alt="${item.nombre}" onerror="this.remove()" loading="lazy" decoding="async">
         <span class="badge ${item.badgeClass}">${item.badgeTexto}</span>
       </div>
       <div class="info">
-        <span class="chip">${item.categoria === 'entrada' ? 'Para empezar' : 'De colección'}</span>
+        <div class="card-tags">
+          <span class="chip">${item.categoria === 'entrada' ? 'Para empezar' : 'De colección'}</span>
+          ${oferta ? `<span class="offer-tag">Quedan ${oferta.cupoRestante} de ${oferta.cupoTotal}</span>` : ''}
+        </div>
         <h3>${item.nombre}</h3>
         <div class="meta">${item.especie} · ${item.altura} · ${item.edad}</div>
         <p class="desc">${item.descripcion}</p>
-        <div class="price">${item.precio} <small>· ${item.detallePrecio}</small></div>
-        <p class="ship-note">Precio no incluye envío</p>
+        <div class="price">${oferta ? `<s class="price-original">${item.precio}</s> ${oferta.precioOferta}` : item.precio} <small>· ${item.detallePrecio} · envío aparte</small></div>
         <div class="buy">
           <a class="btn btn-primary"
             href="https://wa.me/593963136655?text=${encodeURIComponent(item.whatsappMsg)}" 
@@ -135,7 +145,8 @@ function renderCatalog() {
         </div>
       </div>
     </article>
-  `).join('');
+  `;
+  }).join('');
 
   // Controlar visibilidad del botón "Ver más"
   if (matches.length > LIMIT) {
@@ -161,30 +172,33 @@ function injectCatalogSchema(items) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    itemListElement: items.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      item: {
-        '@type': 'Product',
-        name: item.nombre,
-        image: `https://decogarden.pages.dev/${item.imagen}`,
-        description: item.descripcion,
-        category: item.categoria === 'entrada' ? 'Para empezar' : 'De colección',
-        brand: {
-          '@type': 'Brand',
-          name: 'DecoGarden'
-        },
-        offers: {
-          '@type': 'Offer',
-          priceCurrency: 'USD',
-          price: (item.precio || '').replace(/[^0-9.]/g, ''),
-          availability: sold.test(item.badgeTexto || '')
-            ? 'https://schema.org/OutOfStock'
-            : 'https://schema.org/InStock',
-          url: 'https://decogarden.pages.dev/#catalogo'
+    itemListElement: items.map((item, i) => {
+      const oferta = ofertaActiva(item);
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: item.nombre,
+          image: `https://decogarden.pages.dev/${item.imagen}`,
+          description: item.descripcion,
+          category: item.categoria === 'entrada' ? 'Para empezar' : 'De colección',
+          brand: {
+            '@type': 'Brand',
+            name: 'DecoGarden'
+          },
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'USD',
+            price: ((oferta ? oferta.precioOferta : item.precio) || '').replace(/[^0-9.]/g, ''),
+            availability: sold.test(item.badgeTexto || '')
+              ? 'https://schema.org/OutOfStock'
+              : 'https://schema.org/InStock',
+            url: 'https://decogarden.pages.dev/#catalogo'
+          }
         }
-      }
-    }))
+      };
+    })
   };
 
   let tag = document.getElementById('catalog-schema');
