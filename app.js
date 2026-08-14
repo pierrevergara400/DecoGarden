@@ -308,10 +308,13 @@ const lightboxInner = lightbox.querySelector('.dg-inner');
 
 // Delegación de eventos para imágenes estáticas y dinámicas
 document.body.addEventListener('click', (event) => {
-  if (event.target.matches('.shot img, .proof-photos img')) {
-    const img = event.target;
-    lightboxImg.src = img.src;
-    lightboxImg.alt = img.alt || '';
+  const zoomBtn = event.target.closest('.gallery-zoom');
+  const target = zoomBtn
+    ? zoomBtn.parentElement.querySelector('.gallery-shot')
+    : event.target.matches('.shot img, .proof-photos img, .gallery-shot') ? event.target : null;
+  if (target) {
+    lightboxImg.src = target.src;
+    lightboxImg.alt = target.alt || '';
     lightbox.classList.add('open');
   }
 });
