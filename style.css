@@ -749,6 +749,19 @@
       width: fit-content;
     }
 
+    .bonsai-card .ship-tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      color: #FFFFFF;
+      background: rgba(85, 112, 92, .94);
+      padding: 4px 10px;
+      border-radius: 100px;
+      width: fit-content;
+    }
+
     .bonsai-card h3 {
       font-size: 26px;
       font-weight: 500;

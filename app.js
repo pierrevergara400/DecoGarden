@@ -125,12 +125,13 @@ function renderCatalog() {
       <div class="info">
         <div class="card-tags">
           <span class="chip">${item.categoria === 'entrada' ? 'Para empezar' : 'De colección'}</span>
+          <span class="ship-tag">Envío gratis</span>
           ${oferta ? `<span class="offer-tag">Quedan ${oferta.cupoRestante} de ${oferta.cupoTotal}</span>` : ''}
         </div>
         <h3>${item.nombre}</h3>
         <div class="meta">${item.especie} · ${item.altura} · ${item.edad}</div>
         <p class="desc">${item.descripcion}</p>
-        <div class="price">${oferta ? `<s class="price-original">${item.precio}</s> ${oferta.precioOferta}` : item.precio} <small>· ${item.detallePrecio} · envío aparte</small></div>
+        <div class="price">${oferta ? `<s class="price-original">${item.precio}</s> ${oferta.precioOferta}` : item.precio} <small>· ${item.detallePrecio}</small></div>
         <div class="buy">
           <a class="btn btn-primary"
             href="https://wa.me/593963136655?text=${encodeURIComponent(item.whatsappMsg)}" 
