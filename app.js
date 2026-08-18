@@ -71,6 +71,8 @@ const LIMIT = 6;
 let expanded = false;
 let current = 'todos';
 let catalogData = [];
+// id -> archivo de su página de producto. Lo genera generar-productos.py.
+let paginasProducto = {};
 
 const grid = document.querySelector('.catalog-grid');
 const tabs = document.querySelectorAll('.filter-tab');
@@ -92,15 +94,9 @@ function isValidCatalogItem(item) {
 function normalizeCatalogItem(item) {
   return {
     especie: '', altura: '', edad: '', descripcion: '', detallePrecio: '',
-    badgeClass: 'ok', badgeTexto: 'Disponible', oferta: null,
+    badgeClass: 'ok', badgeTexto: 'Disponible',
     ...item
   };
-}
-
-// Una oferta solo se muestra mientras queden cupos reales; al agotarse (cupoRestante <= 0)
-// no se repone automáticamente, hay que quitarla o subirla a mano en catalog.json.
-function ofertaActiva(item) {
-  return item.oferta && item.oferta.cupoRestante > 0 ? item.oferta : null;
 }
 
 // Renderizar las tarjetas de bonsáis
@@ -115,34 +111,56 @@ function renderCatalog() {
   
   // Generar HTML
   grid.innerHTML = visibleItems.map(item => {
-    const oferta = ofertaActiva(item);
-    return `
-    <article class="bonsai-card" data-cat="${item.categoria}">
-      <div class="shot">
+    const pagina = paginasProducto[item.id];
+
+    // Con página propia: la foto, el título y el botón llevan al detalle.
+    // Sin página: se mantiene el flujo directo a WhatsApp.
+    const foto = pagina
+      ? `<a class="shot" href="${pagina}" aria-label="Ver ${item.nombre}">
         <img src="${item.imagen}" alt="${item.nombre}" onerror="this.remove()" loading="lazy" decoding="async">
         <span class="badge ${item.badgeClass}">${item.badgeTexto}</span>
-      </div>
-      <div class="info">
-        <div class="card-tags">
-          <span class="chip">${item.categoria === 'entrada' ? 'Para empezar' : 'De colección'}</span>
-          <span class="ship-tag">Envío gratis</span>
-          ${oferta ? `<span class="offer-tag">Quedan ${oferta.cupoRestante} de ${oferta.cupoTotal}</span>` : ''}
-        </div>
-        <h3>${item.nombre}</h3>
-        <div class="meta">${item.especie} · ${item.altura} · ${item.edad}</div>
-        <p class="desc">${item.descripcion}</p>
-        <div class="price">${oferta ? `<s class="price-original">${item.precio}</s> ${oferta.precioOferta}` : item.precio} <small>· ${item.detallePrecio}</small></div>
-        <div class="buy">
-          <a class="btn btn-primary"
-            href="https://wa.me/593963136655?text=${encodeURIComponent(item.whatsappMsg)}" 
-            target="_blank" 
+      </a>`
+      : `<div class="shot">
+        <img src="${item.imagen}" alt="${item.nombre}" onerror="this.remove()" loading="lazy" decoding="async">
+        <span class="badge ${item.badgeClass}">${item.badgeTexto}</span>
+      </div>`;
+
+    const titulo = pagina
+      ? `<h3><a href="${pagina}">${item.nombre}</a></h3>`
+      : `<h3>${item.nombre}</h3>`;
+
+    const cta = pagina
+      ? `<a class="btn btn-primary" href="${pagina}">
+            Ver bonsái
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>`
+      : `<a class="btn btn-primary"
+            href="https://wa.me/593963136655?text=${encodeURIComponent(item.whatsappMsg)}"
+            target="_blank"
             rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
                 d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
             </svg>
             Lo quiero
-          </a>
+          </a>`;
+
+    return `
+    <article class="bonsai-card" data-cat="${item.categoria}">
+      ${foto}
+      <div class="info">
+        <div class="card-tags">
+          <span class="chip">${item.categoria === 'entrada' ? 'Para empezar' : 'De colección'}</span>
+          <span class="ship-tag">Envío gratis</span>
+        </div>
+        ${titulo}
+        <div class="meta">${item.especie} · ${item.altura} · ${item.edad}</div>
+        <p class="desc">${item.descripcion}</p>
+        <div class="price">${item.precio} <small>· ${item.detallePrecio}</small></div>
+        <div class="buy">
+          ${cta}
         </div>
       </div>
     </article>
@@ -174,7 +192,6 @@ function injectCatalogSchema(items) {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     itemListElement: items.map((item, i) => {
-      const oferta = ofertaActiva(item);
       return {
         '@type': 'ListItem',
         position: i + 1,
@@ -191,7 +208,7 @@ function injectCatalogSchema(items) {
           offers: {
             '@type': 'Offer',
             priceCurrency: 'USD',
-            price: ((oferta ? oferta.precioOferta : item.precio) || '').replace(/[^0-9.]/g, ''),
+            price: (item.precio || '').replace(/[^0-9.]/g, ''),
             availability: sold.test(item.badgeTexto || '')
               ? 'https://schema.org/OutOfStock'
               : 'https://schema.org/InStock',
@@ -215,7 +232,14 @@ function injectCatalogSchema(items) {
 // Cargar catálogo desde JSON
 async function loadCatalog() {
   try {
-    const res = await fetch('catalog.json');
+    // paginas.json es opcional: si falta, las tarjetas siguen yendo a WhatsApp.
+    const [res, resPaginas] = await Promise.all([
+      fetch('catalog.json'),
+      fetch('paginas.json').catch(() => null)
+    ]);
+    if (resPaginas && resPaginas.ok) {
+      paginasProducto = await resPaginas.json().catch(() => ({}));
+    }
     if (!res.ok) throw new Error('Error al cargar catálogo');
     const data = await res.json();
     catalogData = Array.isArray(data) ? data.filter(isValidCatalogItem).map(normalizeCatalogItem) : [];
@@ -260,46 +284,7 @@ if (moreBtn) {
 loadCatalog();
 
 // --- Lógica del Lightbox (Event Delegation para compatibilidad dinámica) ---
-const lightboxStyle = document.createElement('style');
-lightboxStyle.textContent = `
-  .dg-lightbox {
-    position: fixed;
-    inset: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,.75);
-    z-index: 1100;
-    padding: 32px;
-  }
-  .dg-lightbox.open { display: flex; }
-  .dg-lightbox .dg-inner {
-    position: relative;
-    max-width: min(1200px, calc(100vw - 64px));
-    max-height: calc(100vh - 64px);
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: auto;
-    height: auto;
-    padding: 12px;
-    box-sizing: border-box;
-  }
-  .dg-lightbox img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    display: block;
-    border-radius: 12px;
-    box-shadow: 0 24px 80px rgba(0,0,0,.45);
-    cursor: zoom-out;
-  }
-  .shot img, .proof-photos img { cursor: zoom-in; }
-`;
-document.head.appendChild(lightboxStyle);
-
+// Los estilos viven en style.css (.dg-lightbox), no se inyectan desde aquí.
 const lightbox = document.createElement('div');
 lightbox.className = 'dg-lightbox';
 lightbox.innerHTML = '<div class="dg-inner"><img alt=""></div>';
@@ -311,9 +296,11 @@ const lightboxInner = lightbox.querySelector('.dg-inner');
 document.body.addEventListener('click', (event) => {
   const zoomBtn = event.target.closest('.gallery-zoom');
   const target = zoomBtn
-    ? zoomBtn.parentElement.querySelector('.gallery-shot')
+    ? zoomBtn.parentElement.querySelector('.gallery-media.is-active:not(video)')
+      || zoomBtn.parentElement.querySelector('.gallery-shot')
     : event.target.matches('.shot img, .proof-photos img, .gallery-shot') ? event.target : null;
-  if (target) {
+  // Si la foto está dentro de un enlace (tarjeta que lleva a su página), dejamos navegar.
+  if (target && !(!zoomBtn && target.closest('a'))) {
     lightboxImg.src = target.src;
     lightboxImg.alt = target.alt || '';
     lightbox.classList.add('open');

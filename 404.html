@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#19532B">
+  <title>Página no encontrada — DecoGarden</title>
+  <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="Icons/apple-touch-icon.png">
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500&family=Karla:wght@400;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .nf {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+      gap: 8px;
+    }
+
+    .nf img {
+      width: 132px;
+      height: auto;
+      opacity: .5;
+      margin-bottom: 8px;
+    }
+
+    .nf h1 {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 300;
+      margin: 0;
+    }
+
+    .nf h1 em {
+      font-style: italic;
+      color: var(--moss);
+    }
+
+    .nf p {
+      font-size: 17px;
+      color: var(--muted-ink);
+      max-width: 44ch;
+      margin: 14px 0 28px;
+      line-height: 1.6;
+    }
+
+    .nf .acciones {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="nf">
+    <img src="Media/Decogarden 3.svg" alt="" aria-hidden="true">
+    <span class="eyebrow">Error 404</span>
+    <h1>Esta rama <em>no existe</em>.</h1>
+    <p>La página que buscas se movió o nunca estuvo aquí. Pero el vivero sigue en pie:
+      mira el catálogo o escríbeme y te ayudo a encontrar lo que necesitas.</p>
+    <div class="acciones">
+      <a class="btn btn-primary" href="index.html#catalogo">Ver el catálogo</a>
+      <a class="btn btn-ghost" href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20llegue%20a%20una%20pagina%20que%20no%20existe%20y%20queria%20consultarles%20algo."
+        target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
+    </div>
+  </main>
+</body>
+
+</html>

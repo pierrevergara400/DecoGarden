@@ -5,23 +5,6 @@
 /* Paleta nueva para esta subpage — sobreescribe las variables de style.css.
    Como producto.css solo se carga en esta página, el resto del sitio
    (index.html) no se ve afectado. Contraste verificado contra WCAG AA. */
-:root {
-  --paper: #F8F4E7;
-  --paper-deep: #F0EAD6;
-  --pine: #19532B;
-  --pine-soft: #24693A;
-  --pine-light: #2D6B3E;
-  --moss: #2F6B3E;
-  --sage: #A9C79A;
-  --copper: #2F6B3E;
-  --copper-ink: #19532B;
-  --copper-deep: #19532B;
-  --copper-line: rgba(25, 83, 43, .3);
-  --ink: #1C2620;
-  --muted: #6B6A5C;
-  --muted-ink: #52513F;
-  --sunshine: #FFCA26;
-}
 
 .marquee-bar {
   background: var(--pine);
@@ -91,7 +74,7 @@
   top: 14px;
   right: 16px;
   font-size: 12px;
-  color: #D7E8C4;
+  color: var(--on-dark-soft);
   letter-spacing: .04em;
   background: rgba(0, 0, 0, .35);
   padding: 3px 9px;
@@ -141,7 +124,7 @@
 }
 
 .product-hero .pic .thumbs button.active {
-  border-color: var(--copper);
+  border-color: var(--accent);
 }
 
 .product-hero .pic .thumbs button img {
@@ -149,6 +132,35 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Video dentro del visor principal */
+.product-hero .pic .main-shot video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #0f1a14;
+}
+
+/* Miniatura de video: overlay con el triángulo de play */
+.product-hero .pic .thumbs .gallery-thumb.is-video {
+  position: relative;
+}
+
+.product-hero .pic .thumbs .gallery-thumb.is-video .play-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 26, 20, .45);
+  color: #FFFFFF;
+}
+
+.product-hero .pic .thumbs .gallery-thumb.is-video .play-badge svg {
+  width: 16px;
+  height: 16px;
 }
 
 .product-hero .pic .thumbs .more-slot {
@@ -163,7 +175,7 @@
   border-radius: 6px;
   border: 1px dashed rgba(169, 199, 154, .55);
   background: rgba(255, 255, 255, .05);
-  color: var(--sage);
+  color: var(--on-dark-soft);
 }
 
 .product-hero .pic .thumbs .more-slot svg {
@@ -337,13 +349,13 @@
 }
 
 .product-hero .rating-row .stars {
-  color: var(--copper);
+  color: var(--accent);
   letter-spacing: 2px;
 }
 
 .product-hero .info .btn-primary,
 .scarcity-cta .btn-primary {
-  background: var(--copper-deep);
+  background: var(--accent-deep);
   color: #FFFFFF;
   box-shadow: none;
 }
@@ -516,7 +528,7 @@
   font-weight: 700;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--copper-ink);
+  color: var(--accent-ink);
 }
 
 .care-row h3 {
@@ -641,7 +653,7 @@
 }
 
 .scarcity-cta h2 {
-  color: #F3F0E6;
+  color: var(--on-dark);
   font-size: clamp(30px, 4.5vw, 44px);
   font-weight: 300;
   margin: 20px auto 12px;
@@ -649,7 +661,7 @@
 }
 
 .scarcity-cta p {
-  color: #B7C2B2;
+  color: var(--on-dark-soft);
   font-size: 17px;
   margin: 0 auto 28px;
   max-width: 48ch;
@@ -840,7 +852,7 @@
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--copper-ink);
+  color: var(--accent-ink);
   margin: 0 0 16px;
 }
 
@@ -942,8 +954,8 @@
 }
 
 .rich-footer {
-  background: #182620;
-  color: #8A9683;
+  background: var(--pine-deep);
+  color: var(--on-dark-muted);
   padding: 64px 40px 32px;
 }
 
@@ -959,11 +971,11 @@
   font-family: var(--display);
   font-weight: 600;
   font-size: 24px;
-  color: #EDE9DC;
+  color: var(--on-dark);
 }
 
 .rich-footer .brand-col strong .leaf {
-  color: var(--copper);
+  color: var(--accent);
 }
 
 .rich-footer .brand-col p {
@@ -975,7 +987,7 @@
 
 .rich-footer h4 {
   font-family: var(--body);
-  color: #EDE9DC;
+  color: var(--on-dark);
   font-size: 14px;
   font-weight: 700;
   margin: 0 0 12px;
@@ -988,13 +1000,13 @@
 }
 
 .rich-footer a {
-  color: #8A9683;
+  color: var(--on-dark-muted);
   text-decoration: none;
   font-size: 14px;
 }
 
 .rich-footer a:hover {
-  color: var(--copper);
+  color: var(--accent);
 }
 
 .rich-footer .newsletter-form {
@@ -1016,11 +1028,11 @@
 }
 
 .rich-footer .newsletter-form input::placeholder {
-  color: #8FA284;
+  color: var(--sage);
 }
 
 .rich-footer .newsletter-form button {
-  background: var(--copper-deep);
+  background: var(--accent-deep);
   color: #FFFFFF;
   border: 0;
   border-radius: 8px;
@@ -1046,7 +1058,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #6C7869;
+  color: var(--on-dark-muted);
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -1068,3 +1080,20 @@
   }
 }
 
+
+/* Plan B cuando el navegador bloquea la ventana de WhatsApp */
+.checkout-fallback p {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0 0 18px;
+}
+
+.checkout-fallback .checkout-step-label {
+  margin-bottom: 12px;
+}
+
+.checkout-fallback .btn-primary {
+  width: 100%;
+  justify-content: center;
+}

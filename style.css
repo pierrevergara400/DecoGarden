@@ -1,20 +1,4 @@
-:root {
-      --paper: #EAE7DB;
-      --paper-deep: #E1DCCC;
-      --pine: #1E2F27;
-      --pine-soft: #2B4237;
-      --moss: #55705C;
-      --sage: #93A08C;
-      --copper: #A96C3B;
-      --copper-ink: #855128;
-      --copper-deep: #935E34;
-      --copper-line: rgba(169, 108, 59, .42);
-      --ink: #243029;
-      --muted: #6C7268;
-      --muted-ink: #54594E;
-      --display: 'Cormorant Garamond', Georgia, serif;
-      --body: 'Karla', -apple-system, system-ui, sans-serif;
-    }
+
 
     /* Scrollbar personalizado */
     ::-webkit-scrollbar {
@@ -30,7 +14,7 @@
       transition: background 0.3s;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--copper);
+      background: var(--accent);
     }
 
     * {
@@ -76,7 +60,7 @@
       font-weight: 600;
       letter-spacing: .24em;
       text-transform: uppercase;
-      color: var(--copper-ink);
+      color: var(--accent-ink);
       display: inline-flex;
       align-items: center;
       gap: 12px;
@@ -86,7 +70,7 @@
       content: "";
       width: 26px;
       height: 1px;
-      background: var(--copper);
+      background: var(--accent);
       opacity: .6
     }
 
@@ -109,24 +93,24 @@
     .btn-primary {
       background: var(--pine);
       color: var(--paper);
-      box-shadow: 0 1px 0 var(--copper)
+      box-shadow: 0 1px 0 var(--accent)
     }
 
     .btn-primary:hover {
       background: var(--pine-soft);
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px -12px rgba(30, 47, 39, .55), 0 1px 0 var(--copper)
+      box-shadow: 0 12px 30px -12px rgba(30, 47, 39, .55), 0 1px 0 var(--accent)
     }
 
     .btn-ghost {
       background: transparent;
       color: var(--pine);
-      border-color: var(--copper-line)
+      border-color: var(--accent-line)
     }
 
     .btn-ghost:hover {
-      border-color: var(--copper);
-      color: var(--copper)
+      border-color: var(--accent);
+      color: var(--accent)
     }
 
     .btn svg {
@@ -219,7 +203,7 @@
     .brand .leaf {
       width: 19px;
       height: 19px;
-      color: var(--copper)
+      color: var(--accent)
     }
 
     .topbar .navlink {
@@ -231,7 +215,7 @@
     }
 
     .topbar .navlink:hover {
-      color: var(--copper)
+      color: var(--accent)
     }
 
     .hero-grid {
@@ -297,7 +281,7 @@
       width: 340px;
       height: 340px;
       border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #F3F0E6 0%, #DAD5C2 62%, #CFC9B4 100%);
+      background: radial-gradient(circle at 40% 35%, var(--on-dark) 0%, #DAD5C2 62%, #CFC9B4 100%);
       box-shadow: inset 0 0 60px rgba(30, 47, 39, .06);
       z-index: 0;
     }
@@ -307,7 +291,7 @@
       width: 392px;
       height: 392px;
       border-radius: 50%;
-      border: 1px solid var(--copper-line);
+      border: 1px solid var(--accent-line);
       z-index: 1
     }
 
@@ -341,13 +325,13 @@
       font-family: var(--body);
       font-weight: 700;
       font-size: 14.5px;
-      color: #F1EEE2;
+      color: var(--on-dark);
       letter-spacing: .01em
     }
 
     .trust .item span {
       font-size: 13px;
-      color: #A9B6A5
+      color: var(--on-dark-muted)
     }
 
     .trust .item {
@@ -362,8 +346,8 @@
       top: 4px;
       width: 8px;
       height: 8px;
-      border-left: 1.5px solid var(--copper);
-      border-bottom: 1.5px solid var(--copper);
+      border-left: 1.5px solid var(--accent);
+      border-bottom: 1.5px solid var(--accent);
       transform: rotate(-45deg)
     }
 
@@ -402,21 +386,21 @@
     }
 
     .fear .eyebrow {
-      color: #D9A574
+      color: var(--sunshine)
     }
 
     .fear .eyebrow::before {
-      background: #D9A574
+      background: var(--sunshine)
     }
 
     .fear h2 {
-      color: #F3F0E6;
+      color: var(--on-dark);
       font-size: clamp(34px, 5vw, 60px);
       font-weight: 300
     }
 
     .fear h2 em {
-      color: #C9AE86;
+      color: var(--sage);
       font-style: italic
     }
 
@@ -428,7 +412,7 @@
     }
 
     .fear p {
-      color: #C4CEBF;
+      color: var(--on-dark-soft);
       font-size: 18px;
       line-height: 1.72;
       margin-top: 22px;
@@ -436,28 +420,28 @@
     }
 
     .fear p strong {
-      color: #F3F0E6;
+      color: var(--on-dark);
       font-weight: 600
     }
 
     .fear .wire {
       position: relative;
       padding: 34px 0 34px 34px;
-      border-left: 1px solid var(--copper-line);
+      border-left: 1px solid var(--accent-line);
     }
 
     .fear .wire .q {
       font-family: var(--display);
       font-style: italic;
       font-size: 27px;
-      color: #EDE9DC;
+      color: var(--on-dark);
       line-height: 1.4;
       font-weight: 400
     }
 
     .fear .wire .q::before {
       content: "“";
-      color: var(--copper);
+      color: var(--accent);
       font-size: 34px;
       margin-right: 2px
     }
@@ -465,7 +449,7 @@
     .fear .wire .a {
       margin-top: 20px;
       font-size: 16.5px;
-      color: #B7C2B2;
+      color: var(--on-dark-soft);
       line-height: 1.7
     }
 
@@ -475,7 +459,7 @@
 
     .stack {
       margin-top: 52px;
-      border-top: 1px solid var(--copper-line)
+      border-top: 1px solid var(--accent-line)
     }
 
     .stack .row {
@@ -490,7 +474,7 @@
     .stack .row .n {
       font-family: var(--display);
       font-size: 19px;
-      color: var(--copper-ink);
+      color: var(--accent-ink);
       font-weight: 500
     }
 
@@ -522,7 +506,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 2px;
       margin-top: 54px;
-      background: var(--copper-line)
+      background: var(--accent-line)
     }
 
     .step {
@@ -534,7 +518,7 @@
       font-family: var(--display);
       font-size: 15px;
       letter-spacing: .2em;
-      color: var(--copper-ink);
+      color: var(--accent-ink);
       font-weight: 600
     }
 
@@ -552,17 +536,17 @@
 
     .step a,
     .faq-list a {
-      color: var(--copper-ink);
+      color: var(--accent-ink);
       font-weight: 600;
       text-decoration: none;
-      border-bottom: 1px solid var(--copper-line);
+      border-bottom: 1px solid var(--accent-line);
       padding-bottom: 1px;
       transition: border-color .3s
     }
 
     .step a:hover,
     .faq-list a:hover {
-      border-color: var(--copper)
+      border-color: var(--accent)
     }
 
     .catalog {
@@ -570,25 +554,30 @@
     }
 
     .catalog .eyebrow {
-      color: #D9A574
+      color: var(--sunshine)
     }
 
     .catalog .eyebrow::before {
-      background: #D9A574
+      background: var(--sunshine)
     }
 
     .catalog .sec-title {
-      color: #F3F0E6
+      color: var(--on-dark)
+    }
+
+    /* Sobre el verde oscuro del catálogo la itálica no puede ser verde */
+    .catalog .sec-title em {
+      color: var(--sage)
     }
 
     .catalog .sec-sub {
-      color: #B7C2B2
+      color: var(--on-dark-soft)
     }
 
     .catalog-stat {
       margin-top: 18px;
       font-size: 14px;
-      color: #B7C2B2;
+      color: var(--on-dark-soft);
       letter-spacing: .01em
     }
 
@@ -604,7 +593,7 @@
       font-size: 13.5px;
       font-weight: 600;
       letter-spacing: .03em;
-      color: #C4CEBF;
+      color: var(--on-dark-soft);
       background: transparent;
       border: 1px solid rgba(147, 160, 140, .34);
       padding: 10px 22px;
@@ -614,14 +603,16 @@
     }
 
     .filter-tab:hover {
-      border-color: var(--copper);
-      color: #EDE9DC
+      border-color: var(--accent);
+      color: var(--on-dark)
     }
 
+    /* La sección del catálogo es verde oscuro, así que el estado activo
+       se marca en claro para que destaque sobre el fondo. */
     .filter-tab.active {
-      background: var(--copper-deep);
-      border-color: var(--copper-deep);
-      color: #FFFFFF
+      background: var(--paper);
+      border-color: var(--paper);
+      color: var(--pine)
     }
 
     .catalog-grid {
@@ -663,6 +654,7 @@
 
     .shot {
       position: relative;
+      display: block;
       aspect-ratio: 1/1;
       overflow: hidden;
       background: linear-gradient(150deg, #DFE1D4, #CFD3C2)
@@ -699,18 +691,19 @@
     }
 
     .badge.ok {
-      background: rgba(85, 112, 92, .94);
-      color: #EDE9DC
+      background: rgba(36, 105, 58, .94);
+      color: var(--on-dark)
     }
 
+    /* "Última pieza" es urgencia: el amarillo es el único cálido de la paleta */
     .badge.last {
-      background: rgba(169, 108, 59, .96);
-      color: #F3F0E6
+      background: rgba(255, 202, 38, .96);
+      color: var(--pine)
     }
 
     .badge.sold {
-      background: rgba(30, 47, 39, .86);
-      color: #B7C2B2
+      background: rgba(18, 59, 33, .88);
+      color: var(--on-dark-soft)
     }
 
     .bonsai-card .info {
@@ -733,7 +726,7 @@
       font-weight: 700;
       letter-spacing: .14em;
       text-transform: uppercase;
-      color: var(--copper-ink)
+      color: var(--accent-ink)
     }
 
     .bonsai-card .offer-tag {
@@ -743,7 +736,7 @@
       font-weight: 800;
       letter-spacing: .02em;
       color: #FFFFFF;
-      background: var(--copper-deep);
+      background: var(--accent-deep);
       padding: 4px 10px;
       border-radius: 100px;
       width: fit-content;
@@ -767,6 +760,15 @@
       font-weight: 500;
       margin: 9px 0 4px;
       color: var(--pine)
+    }
+
+    .bonsai-card h3 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .bonsai-card h3 a:hover {
+      color: var(--accent-ink);
     }
 
     .bonsai-card .meta {
@@ -823,13 +825,13 @@
     }
 
     .bonsai-card .buy .btn-primary {
-      background: var(--copper-deep);
+      background: var(--accent-deep);
       color: #FFFFFF;
       box-shadow: none;
     }
 
     .bonsai-card .buy .btn-primary:hover {
-      background: #7D4C28;
+      background: var(--pine-soft);
     }
 
     .bonsai-card.reserved {
@@ -839,21 +841,21 @@
     .catalog-note {
       margin-top: 38px;
       text-align: center;
-      color: #93A08C;
+      color: var(--on-dark-muted);
       font-size: 15px
     }
 
     .catalog-note a {
-      color: #D9A574;
+      color: var(--sunshine);
       font-weight: 600;
       text-decoration: none;
-      border-bottom: 1px solid var(--copper-line);
+      border-bottom: 1px solid var(--accent-line);
       padding-bottom: 2px;
       transition: color .3s
     }
 
     .catalog-note a:hover {
-      color: #EDE9DC
+      color: var(--on-dark)
     }
 
     .more-wrap {
@@ -867,7 +869,7 @@
       font-weight: 600;
       font-size: 15px;
       letter-spacing: .02em;
-      color: #EDE9DC;
+      color: var(--on-dark);
       background: transparent;
       border: 1px solid rgba(147, 160, 140, .4);
       padding: 15px 34px;
@@ -877,8 +879,8 @@
     }
 
     .btn-more:hover {
-      border-color: var(--copper);
-      color: var(--copper);
+      border-color: var(--accent);
+      color: var(--accent);
       transform: translateY(-2px)
     }
 
@@ -892,11 +894,11 @@
     .card {
       background: var(--paper-deep);
       padding: 30px 28px;
-      border-top: 2px solid var(--copper)
+      border-top: 2px solid var(--accent)
     }
 
     .card .stars {
-      color: var(--copper);
+      color: var(--accent);
       letter-spacing: 3px;
       font-size: 14px
     }
@@ -962,7 +964,7 @@
 
     .faq-list {
       margin-top: 46px;
-      border-top: 1px solid var(--copper-line)
+      border-top: 1px solid var(--accent-line)
     }
 
     details {
@@ -999,7 +1001,7 @@
     summary .plus::after {
       content: "";
       position: absolute;
-      background: var(--copper);
+      background: var(--accent);
       left: 50%;
       top: 50%
     }
@@ -1046,16 +1048,16 @@
     }
 
     .final .eyebrow {
-      color: #D9A574;
+      color: var(--sunshine);
       justify-content: center
     }
 
     .final .eyebrow::before {
-      background: #D9A574
+      background: var(--sunshine)
     }
 
     .final h2 {
-      color: #F3F0E6;
+      color: var(--on-dark);
       font-size: clamp(36px, 5.5vw, 64px);
       font-weight: 300;
       margin: 20px auto 0;
@@ -1064,18 +1066,18 @@
 
     .final h2 em {
       font-style: italic;
-      color: #C9AE86
+      color: var(--sage)
     }
 
     .final p {
-      color: #B7C2B2;
+      color: var(--on-dark-soft);
       font-size: 18px;
       margin: 24px auto 38px;
       max-width: 48ch
     }
 
     .final .btn-primary {
-      background: var(--copper-deep);
+      background: var(--accent-deep);
       color: #FFFFFF;
       box-shadow: none;
       font-size: 16.5px;
@@ -1083,14 +1085,14 @@
     }
 
     .final .btn-primary:hover {
-      background: #BC7C48;
+      background: var(--pine-soft);
       transform: translateY(-2px);
       box-shadow: 0 16px 36px -14px rgba(0, 0, 0, .5)
     }
 
     .final .micro {
       margin-top: 20px;
-      color: #93A08C;
+      color: var(--on-dark-muted);
       font-size: 13.5px;
       letter-spacing: .02em
     }
@@ -1107,8 +1109,8 @@
     }
 
     footer {
-      background: #182620;
-      color: #8A9683;
+      background: var(--pine-deep);
+      color: var(--on-dark-muted);
       padding: 52px 0 40px
     }
 
@@ -1121,23 +1123,23 @@
     }
 
     footer .brand {
-      color: #EDE9DC;
+      color: var(--on-dark);
       font-size: 22px
     }
 
     footer .brand .leaf {
-      color: var(--copper)
+      color: var(--accent)
     }
 
     footer a {
-      color: #8A9683;
+      color: var(--on-dark-muted);
       text-decoration: none;
       font-size: 14px;
       font-weight: 500
     }
 
     footer a:hover {
-      color: var(--copper)
+      color: var(--accent)
     }
 
     footer .fnav {
@@ -1172,7 +1174,7 @@
       font-weight: 600;
       font-size: 14.5px;
       box-shadow: 0 10px 30px -8px rgba(30, 47, 39, .5);
-      border: 1px solid var(--copper-line);
+      border: 1px solid var(--accent-line);
       transition: transform .3s, background .3s;
     }
 
@@ -1367,4 +1369,50 @@
       .float:hover {
         transform: none
       }
+    }
+    /* --- Lightbox (ampliar foto). El markup lo crea app.js --- */
+    .dg-lightbox {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, .75);
+      z-index: 1100;
+      padding: 32px;
+    }
+
+    .dg-lightbox.open {
+      display: flex
+    }
+
+    .dg-lightbox .dg-inner {
+      position: relative;
+      max-width: min(1200px, calc(100vw - 64px));
+      max-height: calc(100vh - 64px);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: auto;
+      height: auto;
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .dg-lightbox img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .45);
+      cursor: zoom-out;
+    }
+
+    /* Solo las fotos que NO son enlace se pueden ampliar */
+    .shot:not(a) img,
+    .proof-photos img {
+      cursor: zoom-in
     }

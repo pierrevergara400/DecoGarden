@@ -1,0 +1,49 @@
+/* ==========================================================================
+   tokens.css — la paleta de DecoGarden, en un solo sitio.
+
+   Cárgalo ANTES de style.css en todas las páginas. Si cambias un color
+   aquí, cambia en todo el sitio: home, catálogo y páginas de producto.
+
+   No definas colores nuevos sueltos en otros archivos: si necesitas uno,
+   agrégalo aquí con un nombre que diga para qué sirve.
+   ========================================================================== */
+
+:root {
+  /* --- Superficies claras --- */
+  --paper: #F8F4E7;
+  --paper-deep: #F0EAD6;
+
+  /* --- Verdes de marca --- */
+  --pine: #19532B;
+  --pine-soft: #24693A;
+  --pine-light: #2D6B3E;
+  --pine-deep: #123B21;
+  --moss: #2F6B3E;
+  --sage: #A9C79A;
+
+  /* --- Acento.
+     Antes se llamaba "copper" (cobre) porque era naranja. Ahora la marca
+     es verde, así que el nombre cambió para no mentir. --- */
+  --accent: #2F6B3E;
+  --accent-ink: #19532B;
+  --accent-deep: #19532B;
+  --accent-line: rgba(25, 83, 43, .3);
+
+  /* Único color cálido que queda: para lo que debe saltar a la vista
+     (envío gratis, ofertas, estrellas). Usar con moderación. */
+  --sunshine: #FFCA26;
+
+  /* --- Texto sobre fondo claro --- */
+  --ink: #1C2620;
+  --muted: #6B6A5C;
+  --muted-ink: #52513F;
+
+  /* --- Texto sobre fondo verde oscuro --- */
+  --on-dark: #F3F0E6;
+  --on-dark-soft: #D7E8C4;
+  --on-dark-muted: #A9C79A;
+
+  /* --- Tipografía --- */
+  --display: 'Cormorant Garamond', Georgia, serif;
+  --body: 'Karla', -apple-system, system-ui, sans-serif;
+}

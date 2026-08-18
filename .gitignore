@@ -1,0 +1,47 @@
+# --- Python (el generador de páginas) ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- Sistema operativo ---
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store
+
+# --- Editores ---
+.vscode/
+.idea/
+*.swp
+*~
+
+# --- Ajustes locales de Claude Code (launch.json SÍ se versiona) ---
+.claude/settings.local.json
+
+# --- Temporales y respaldos ---
+*.bak
+*.tmp
+*.log
+scratchpad*
+
+# --- Originales pesados de fotos/video ---
+# Sube al repo solo las versiones optimizadas (.webp / .mp4 comprimido).
+# Los archivos crudos de la cámara no tienen por qué ir al sitio.
+*.psd
+*.ai
+*.CR2
+*.NEF
+*.dng
+Images/**/originales/
+Images/**/raw/
+
+
+# ==========================================================================
+# OJO: los archivos que genera `python generar-productos.py` SÍ se versionan:
+#
+#   producto-*.html      paginas.json      sitemap.xml
+#
+# Cloudflare Pages publica este repo tal cual, sin ejecutar nada. Si los
+# ignoras, el sitio se despliega sin las páginas de producto.
+# ==========================================================================
