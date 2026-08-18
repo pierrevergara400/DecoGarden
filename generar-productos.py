@@ -47,9 +47,75 @@ def esc(texto):
     return html.escape(str(texto), quote=True)
 
 
+IMAGENES = (".webp", ".jpg", ".jpeg", ".png", ".avif")
+VIDEOS = (".mp4", ".webm", ".mov")
+
+# El nombre del archivo define el texto alternativo, para no tener que
+# escribirlo a mano. Se compara sin el prefijo numérico: "2-tronco.webp" -> "tronco"
+TEXTOS_ALT = {
+    "principal": "{n}",
+    "frontal": "{n}, árbol completo de frente",
+    "tronco": "Detalle del tronco de {n}",
+    "follaje": "Detalle del follaje de {n}",
+    "hoja": "Detalle de la hoja de {n}",
+    "maceta": "Maceta de {n}",
+    "escala": "{n} junto a un objeto que muestra su tamaño real",
+    "tamano": "{n} junto a un objeto que muestra su tamaño real",
+    "entrega": "Cómo llega empacado {n}",
+    "empaque": "Cómo llega empacado {n}",
+    "raiz": "Detalle de la base y las raíces de {n}",
+    "video": "Video de {n}",
+    "giro": "Video de {n} girando",
+}
+
+
+def descubrir_galeria(pid, nombre):
+    """Lee Images/productos/<id>/ y arma la galería sola.
+
+    Así basta con dejar los archivos en la carpeta: no hay que declararlos.
+    El orden lo da el nombre del archivo (por eso conviene 1-, 2-, 3-...).
+    Un video toma como portada el archivo <mismo-nombre>-poster.<ext> si existe.
+    """
+    carpeta = BASE / "Images" / "productos" / pid
+    if not carpeta.is_dir():
+        return []
+
+    archivos = sorted(
+        (f for f in carpeta.iterdir() if f.is_file() and not f.name.startswith(".")),
+        key=lambda f: f.name.lower(),
+    )
+    posters = {f.stem[: -len("-poster")] for f in archivos if f.stem.endswith("-poster")}
+
+    galeria = []
+    for f in archivos:
+        ext = f.suffix.lower()
+        if f.stem.endswith("-poster"):
+            continue  # es la portada de un video, no una foto suelta
+
+        # "2-tronco" -> "tronco"
+        clave = re.sub(r"^\d+[-_]?", "", f.stem).lower()
+        alt = TEXTOS_ALT.get(clave, "{n}").format(n=nombre)
+        ruta = f"Images/productos/{pid}/{f.name}"
+
+        if ext in VIDEOS:
+            item = {"tipo": "video", "src": ruta, "alt": alt}
+            if f.stem in posters:
+                for p in archivos:
+                    if p.stem == f.stem + "-poster":
+                        item["poster"] = f"Images/productos/{pid}/{p.name}"
+                        break
+            galeria.append(item)
+        elif ext in IMAGENES:
+            galeria.append({"src": ruta, "alt": alt})
+        else:
+            print(f"  ! {f.name}: formato no soportado, se omite")
+
+    return galeria
+
+
 def bloque_galeria(producto, galeria):
-    """Construye el visor + miniaturas. Si no hay galería declarada en
-    productos.json, usa la foto única de catalog.json."""
+    """Construye el visor + miniaturas. Si no hay fotos propias,
+    usa la foto única de catalog.json."""
     if not galeria:
         galeria = [{"src": producto["imagen"], "alt": producto["nombre"]}]
 
@@ -265,7 +331,10 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
         "{{NOMBRE}}": esc(nombre),
         "{{NOMBRE_CORTO}}": esc(datos.get("nombreCorto", nombre)),
         "{{IMAGEN}}": esc(producto["imagen"]),
-        "{{GALERIA}}": bloque_galeria(producto, datos.get("galeria")),
+        # Lo declarado a mano manda; si no, se descubre leyendo la carpeta
+        "{{GALERIA}}": bloque_galeria(
+            producto, datos.get("galeria") or descubrir_galeria(pid, nombre)
+        ),
         "{{EYEBROW}}": esc(eyebrow),
         "{{H1}}": h1,
         "{{PRECIO}}": esc(precio),
