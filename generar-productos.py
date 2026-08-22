@@ -24,6 +24,25 @@ PLANTILLA = BASE / "_plantilla-producto.html"
 PRODUCTOS = BASE / "productos.json"
 CATALOGO = BASE / "catalog.json"
 
+# Canal de WhatsApp del pie de página. Mientras esté vacío, la columna no se
+# imprime: mejor un pie de tres columnas que un botón que no lleva a ninguna
+# parte. Pega aquí la URL del canal (https://whatsapp.com/channel/...).
+CANAL_WHATSAPP = ""
+
+PLANTILLA_CANAL = """      <div>
+        <h4>Árboles nuevos cada temporada</h4>
+        <p class="canal-texto">Sigue el canal y te aviso cuando llega un lote nuevo al vivero. No es un grupo: nadie
+          ve tu número y nadie puede escribir ahí más que yo.</p>
+        <a class="canal-btn" href="{url}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23" />
+          </svg>
+          Seguir el canal
+        </a>
+      </div>
+"""
+
 CHECK_SVG = (
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" '
     'aria-hidden="true">\n              <path d="M20 6 9 17l-5-5" />\n            </svg>'
@@ -308,6 +327,13 @@ def bloque_faq(preguntas):
     return "\n".join(partes)
 
 
+def bloque_canal():
+    """La columna del canal de WhatsApp, o nada si todavía no hay canal."""
+    if not CANAL_WHATSAPP:
+        return ""
+    return PLANTILLA_CANAL.format(url=CANAL_WHATSAPP)
+
+
 def generar(pid, datos, catalogo, con_pagina, plantilla):
     producto = catalogo.get(pid)
     if not producto:
@@ -352,6 +378,7 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
             datos.get("relacionados", []), catalogo, con_pagina
         ),
         "{{FAQ}}": bloque_faq(datos["faq"]),
+        "{{CANAL}}": bloque_canal(),
         # Literales JS seguros (json.dumps escapa comillas y acentos correctamente)
         "{{PRODUCTO_JS}}": json.dumps(datos.get("nombreCorto", nombre), ensure_ascii=False),
         "{{PRECIO_JS}}": json.dumps(precio, ensure_ascii=False),
