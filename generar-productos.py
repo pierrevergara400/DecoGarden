@@ -454,6 +454,15 @@ def escribir_sitemap(archivos, cambiados):
         loc = SITIO + a
         urls.append((loc, fecha_de(loc, a in cambiados), "monthly", "0.8"))
 
+    # Páginas legales: se escriben a mano, así que su fecha sale del archivo
+    for legal in ("privacidad.html", "terminos.html"):
+        ruta_legal = BASE / legal
+        if not ruta_legal.exists():
+            continue
+        loc = SITIO + legal
+        fecha = date.fromtimestamp(ruta_legal.stat().st_mtime).isoformat()
+        urls.append((loc, fecha, "yearly", "0.3"))
+
     lineas = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

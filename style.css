@@ -1416,3 +1416,87 @@
     .proof-photos img {
       cursor: zoom-in
     }
+
+    /* --- Aviso de cookies (lo inyecta pixel.js) ---------------------------
+       Va abajo a la izquierda para no tapar el botón flotante de WhatsApp,
+       que vive abajo a la derecha. En móvil se coloca encima de él. */
+    .dg-cookies {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 70;
+      max-width: 420px;
+      background: var(--pine);
+      color: var(--on-dark);
+      border-radius: 14px;
+      padding: 20px 22px;
+      box-shadow: 0 18px 40px rgba(18, 59, 33, .28);
+      animation: dg-cookies-entra .32s ease-out both;
+    }
+
+    @keyframes dg-cookies-entra {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+    }
+
+    .dg-cookies p {
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: var(--on-dark-soft);
+      margin-bottom: 16px;
+    }
+
+    .dg-cookies a {
+      color: var(--on-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .dg-cookies-acciones {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .dg-cookies button {
+      font-family: var(--body);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: opacity .2s, background .2s;
+    }
+
+    .dg-cookies button:hover {
+      opacity: .85
+    }
+
+    .dg-cookies-no {
+      background: transparent;
+      color: var(--on-dark-muted);
+      border-color: rgba(243, 240, 230, .28);
+    }
+
+    .dg-cookies-si {
+      background: var(--sunshine);
+      color: var(--ink);
+    }
+
+    @media (max-width: 620px) {
+      .dg-cookies {
+        left: 16px;
+        right: 16px;
+        bottom: 92px;
+        max-width: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .dg-cookies {
+        animation: none
+      }
+    }

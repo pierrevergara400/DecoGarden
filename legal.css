@@ -1,0 +1,176 @@
+/* ==========================================================================
+   legal.css — páginas de privacidad y términos.
+
+   Documentos largos que se leen, no se escanean: una sola columna angosta,
+   tipografía de lectura y jerarquía clara. Los colores salen de tokens.css.
+   ========================================================================== */
+
+.legal-head {
+  background: var(--pine);
+  color: var(--on-dark);
+  padding: 28px 0 64px;
+}
+
+.legal-head .topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 56px;
+}
+
+.legal-head .topbar a {
+  color: var(--on-dark);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.legal-head h1 {
+  color: var(--on-dark);
+  font-size: clamp(38px, 6vw, 58px);
+  max-width: 16ch;
+}
+
+.legal-head .eyebrow {
+  color: var(--on-dark-muted);
+  display: block;
+  margin-bottom: 14px;
+}
+
+.legal-head .updated {
+  color: var(--on-dark-soft);
+  font-size: 14.5px;
+  margin-top: 18px;
+}
+
+.legal-doc {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 28px 96px;
+}
+
+.legal-doc h2 {
+  font-size: clamp(26px, 3.4vw, 34px);
+  margin: 56px 0 16px;
+}
+
+.legal-doc h2:first-child {
+  margin-top: 0;
+}
+
+.legal-doc h3 {
+  font-family: var(--body);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 28px 0 8px;
+}
+
+.legal-doc p,
+.legal-doc li {
+  color: var(--muted-ink);
+  margin-bottom: 14px;
+}
+
+.legal-doc ul {
+  padding-left: 22px;
+  margin-bottom: 20px;
+}
+
+.legal-doc li::marker {
+  color: var(--accent);
+}
+
+.legal-doc a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-doc strong {
+  color: var(--ink);
+}
+
+/* Índice de secciones al inicio del documento */
+.legal-toc {
+  background: var(--paper-deep);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 22px 26px;
+  margin-bottom: 48px;
+}
+
+.legal-toc ol {
+  padding-left: 20px;
+  margin: 0;
+  columns: 2;
+  column-gap: 32px;
+}
+
+.legal-toc li {
+  margin-bottom: 6px;
+  font-size: 15.5px;
+  break-inside: avoid;
+}
+
+/* Bloque para lo que el visitante debe entender sí o sí */
+.legal-callout {
+  background: var(--paper-deep);
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin: 24px 0;
+}
+
+.legal-callout p:last-child {
+  margin-bottom: 0;
+}
+
+/* Tabla de cookies y de datos */
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0 28px;
+  font-size: 15px;
+}
+
+.legal-table th,
+.legal-table td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--accent-line);
+  vertical-align: top;
+  color: var(--muted-ink);
+}
+
+.legal-table th {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.legal-table-scroll {
+  overflow-x: auto;
+}
+
+/* Lo que el titular del negocio debe completar antes de publicar */
+.legal-pendiente {
+  background: var(--sunshine);
+  color: var(--ink);
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: .92em;
+}
+
+@media (max-width: 620px) {
+  .legal-toc ol {
+    columns: 1;
+  }
+
+  .legal-doc {
+    padding: 44px 22px 72px;
+  }
+}
