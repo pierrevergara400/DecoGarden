@@ -374,5 +374,100 @@
         "nombre": "Árbol de la Vida Mini"
       }
     ]
+  },
+  "bonsai-mini-juniperus-horizontalis": {
+    "slug": "junipero-cascada-mini",
+    "nombreCorto": "Junípero Cascada Mini",
+    "h1": [
+      "Bonsái Junípero",
+      "Cascada Mini"
+    ],
+    "metaDescripcion": "Bonsái Junípero Cascada Mini (Juniperus horizontalis), 20 cm: el árbol ideal para aprender a alambrar y dar forma de cascada. $20 con envío gratis a todo el país, ficha de cuidado y acompañamiento por WhatsApp.",
+    "badgePrecio": "Envío gratis",
+    "beneficios": [
+      "Envío gratis a todo el país",
+      "El árbol ideal para aprender a alambrar",
+      "Guía de cuidado y acompañamiento 30 días"
+    ],
+    "specsExtra": {
+      "Estilo": "Cascada (kengai)",
+      "Maceta": "Terracota, incluida",
+      "Envío": "Gratis a todo el país"
+    },
+    "resumen": "Un Juniperus horizontalis de 20 cm con la rama principal ya cayendo por debajo de la maceta. Flexible, resistente y de precio bajo: el árbol con el que se practica el alambrado sin miedo, y el regalo que alguien que nunca ha tenido un bonsái sí va a saber cuidar.",
+    "porQue": [
+      {
+        "titulo": "Se deja alambrar",
+        "texto": "El horizontalis tiene ramas largas y elásticas: aguantan el alambre, se doblan hacia donde tú quieras y no se parten al primer intento. Por eso es con el que se aprende."
+      },
+      {
+        "titulo": "La cascada ya empezó",
+        "texto": "No arrancas de cero. La rama principal ya cae por debajo del borde de la maceta, así que ves de dónde sale el estilo cascada y decides hasta dónde llevarlo tú."
+      },
+      {
+        "titulo": "Veinte dólares, puesto en tu puerta",
+        "texto": "Envío gratis a todo el país, ficha de cuidado dentro de la caja y me tienes por WhatsApp tus primeros 30 días. Sin costos escondidos al final."
+      }
+    ],
+    "cuidado": [
+      {
+        "etiqueta": "Para quien quiere aprender",
+        "titulo": "Tu primer alambrado, sin arruinar nada",
+        "texto": "Practicas sobre un árbol que perdona: si el giro no queda como querías, sueltas el alambre y lo intentas otra vez. Te digo por WhatsApp cuándo alambrar, cuánto apretar y cuándo quitarlo.",
+        "foto": "foto — alambrando una rama del junípero"
+      },
+      {
+        "etiqueta": "Para quien nunca ha cuidado uno",
+        "titulo": "Sol, agua y poco más",
+        "texto": "El junípero es de exterior y aguanta. Quiere luz directa buena parte del día y agua cuando la superficie se sienta seca. Todo eso viene escrito en la ficha que llega con él.",
+        "foto": "foto — el junípero al sol de la mañana"
+      },
+      {
+        "etiqueta": "Para quien busca un regalo",
+        "titulo": "Un regalo sencillo que sigue vivo en un año",
+        "texto": "Es pequeño, no pide espacio y no intimida a quien nunca ha tenido plantas. Coordinamos la entrega para la fecha que necesites.",
+        "foto": "foto — el junípero listo para regalar"
+      }
+    ],
+    "cierre": {
+      "titulo": "Empieza por este",
+      "texto": "No hace falta gastar mucho para empezar. Este junípero cuesta $20, llega gratis a donde estés y aguanta tus primeras equivocaciones — que son justo las que enseñan."
+    },
+    "faq": [
+      {
+        "p": "¿Sirve de verdad para aprender a alambrar?",
+        "r": "Es de lo mejor que hay para empezar. El Juniperus horizontalis tiene ramas largas y flexibles que aceptan el alambre sin quebrarse, y como crece hacia abajo por naturaleza, la forma de cascada casi se guía sola. Si nunca lo has hecho, escríbeme y te acompaño con fotos paso a paso."
+      },
+      {
+        "p": "¿Qué tamaño tiene y qué incluye?",
+        "r": "20 cm de alto, con 3 años de formación. Llega plantado en su maceta de terracota con la gravilla, más la ficha de cuidado. La base decorativa que se ve en las fotos es del montaje, no va incluida."
+      },
+      {
+        "p": "¿Va dentro o fuera de la casa?",
+        "r": "Fuera. El junípero es de exterior: quiere sol directo y aire. Un balcón, un patio o el alféizar de una ventana muy iluminada le sirven. Encerrado adentro y sin luz suficiente se apaga en pocas semanas."
+      },
+      {
+        "p": "¿El envío es gratis de verdad?",
+        "r": "Gratis a todo el país, sin mínimo de compra. Los envíos salen los miércoles y viernes desde San Antonio de Ibarra y tardan entre 48 y 72 horas según tu ciudad. Pagas con tarjeta (link de pago) o por transferencia bancaria."
+      },
+      {
+        "p": "¿Y si llega mal?",
+        "r": "Te lo repongo. Si el árbol llega dañado o no supera sus primeros días siguiendo la ficha de cuidado, me mandas una foto por WhatsApp y lo resolvemos. Mi negocio depende de que el tuyo viva."
+      }
+    ],
+    "relacionados": [
+      {
+        "id": "juniperus-shakan",
+        "nombre": "Juniperus Shakan"
+      },
+      {
+        "id": "arbol-del-te",
+        "nombre": "Árbol del Té Mānuka"
+      },
+      {
+        "id": "guayacan",
+        "nombre": "Guayacán"
+      }
+    ]
   }
 }

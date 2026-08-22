@@ -45,6 +45,21 @@
     "whatsappMsg": "Hola DecoGarden, quiero saber mas sobre el Arbol del Te Manuka. Esta disponible?"
   },
   {
+    "id": "bonsai-mini-juniperus-horizontalis",
+    "nombre": "Bonsái Junípero Cascada Mini",
+    "especie": "Juniperus horizontalis",
+    "altura": "20 cm",
+    "edad": "3 años",
+    "categoria": "entrada",
+    "descripcion": "El bonsái con el que se aprende. Ramas largas y flexibles que ya caen en cascada, perfectas para practicar el alambrado sin miedo a arruinar nada. Veinte centímetros, resistente y con envío gratis: el primero de muchos, o un regalo que sí se cuida.",
+    "precio": "$20",
+    "detallePrecio": "envío gratis + ficha + soporte",
+    "badgeClass": "ok",
+    "badgeTexto": "Disponible",
+    "imagen": "Images/bonsai-junipero-cascada-mini.webp",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Junipero Cascada Mini de 20 cm. Esta disponible?"
+  },
+  {
     "id": "azalea",
     "nombre": "Bonsái Azalea",
     "especie": "Rhododendron indicum",

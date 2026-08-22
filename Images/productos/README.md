@@ -31,7 +31,8 @@ estos nombres, ese texto se escribe solo:
 | `5-entrega.webp` | Cómo llega empacado. |
 | `6-giro.mp4` | Video corto girando alrededor del árbol. |
 
-Otros nombres que también reconoce: `follaje`, `hoja`, `maceta`, `raiz`, `empaque`, `video`.
+Otros nombres que también reconoce: `follaje`, `hoja`, `maceta`, `raiz`, `empaque`,
+`conjunto` (el árbol junto a otros del vivero), `video`.
 
 Si usas un nombre distinto igual funciona, solo que el texto alternativo queda
 genérico (el nombre del producto). Nada se rompe.

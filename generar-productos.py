@@ -61,6 +61,7 @@ TEXTOS_ALT = {
     "maceta": "Maceta de {n}",
     "escala": "{n} junto a un objeto que muestra su tamaño real",
     "tamano": "{n} junto a un objeto que muestra su tamaño real",
+    "conjunto": "{n} junto a otros bonsáis del vivero",
     "entrega": "Cómo llega empacado {n}",
     "empaque": "Cómo llega empacado {n}",
     "raiz": "Detalle de la base y las raíces de {n}",
