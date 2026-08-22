@@ -69,6 +69,12 @@
     }
   }
   </script>
+
+  <!-- Meta Pixel — el producto se declara antes para que ViewContent lo lleve -->
+  <script>
+    window.DG_PRODUCTO = { id: "bequia-pequena", nombre: "Bequia Mini, el Árbol de la Vida", precio: 30 };
+  </script>
+  <script src="pixel.js"></script>
 </head>
 
 <body>
@@ -610,6 +616,12 @@
       const bankSelect = bankField.querySelector('select');
 
       function openCheckout() {
+        dgTrack('InitiateCheckout', {
+          content_ids: [window.DG_PRODUCTO.id],
+          content_name: PRODUCTO,
+          content_type: 'product',
+          value: window.DG_PRODUCTO.precio
+        });
         overlay.hidden = false;
         document.body.style.overflow = 'hidden';
         form.querySelector('[name="nombre"]').focus();
@@ -637,6 +649,12 @@
         if (!step1.querySelector('input[name="nombre"]').reportValidity()) return;
         if (!step1.querySelector('input[name="telefono"]').reportValidity()) return;
         if (!step1.querySelector('input[name="direccion"]').reportValidity()) return;
+        dgTrack('AddToCart', {
+          content_ids: [window.DG_PRODUCTO.id],
+          content_name: PRODUCTO,
+          content_type: 'product',
+          value: window.DG_PRODUCTO.precio
+        });
         step1.hidden = true;
         step2.hidden = false;
       });
@@ -648,6 +666,10 @@
 
       form.querySelectorAll('input[name="pago"]').forEach(radio => {
         radio.addEventListener('change', () => {
+          dgTrack('AddPaymentInfo', {
+            content_ids: [window.DG_PRODUCTO.id],
+            value: window.DG_PRODUCTO.precio
+          });
           bankField.hidden = radio.value !== 'Transferencia bancaria';
           bankSelect.required = !bankField.hidden;
         });
@@ -668,6 +690,14 @@
         msg += `Dirección: ${direccion}\n`;
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;
+
+        // La venta se cierra en WhatsApp: aquí termina lo que el píxel puede ver
+        dgTrack('Lead', {
+          content_ids: [window.DG_PRODUCTO.id],
+          content_name: PRODUCTO,
+          content_type: 'product',
+          value: window.DG_PRODUCTO.precio
+        });
 
         const url = `https://wa.me/593963136655?text=${encodeURIComponent(msg)}`;
         const ventana = window.open(url, '_blank', 'noopener');

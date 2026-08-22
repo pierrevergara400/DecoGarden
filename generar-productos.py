@@ -355,6 +355,8 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
         # Literales JS seguros (json.dumps escapa comillas y acentos correctamente)
         "{{PRODUCTO_JS}}": json.dumps(datos.get("nombreCorto", nombre), ensure_ascii=False),
         "{{PRECIO_JS}}": json.dumps(precio, ensure_ascii=False),
+        # Para el píxel de Meta: id del catálogo y precio numérico
+        "{{ID_JS}}": json.dumps(pid, ensure_ascii=False),
     }
 
     salida = plantilla
