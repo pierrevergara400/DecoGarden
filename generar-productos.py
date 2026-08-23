@@ -27,7 +27,7 @@ CATALOGO = BASE / "catalog.json"
 # Canal de WhatsApp del pie de página. Mientras esté vacío, la columna no se
 # imprime: mejor un pie de tres columnas que un botón que no lleva a ninguna
 # parte. Pega aquí la URL del canal (https://whatsapp.com/channel/...).
-CANAL_WHATSAPP = ""
+CANAL_WHATSAPP = "https://whatsapp.com/channel/0029Vb8QEhIAYlUGzhu3G60J"
 
 PLANTILLA_CANAL = """      <div>
         <h4>Árboles nuevos cada temporada</h4>
