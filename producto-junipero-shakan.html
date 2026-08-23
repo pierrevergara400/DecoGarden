@@ -75,6 +75,7 @@
     window.DG_PRODUCTO = { id: "juniperus-shakan", nombre: "Juniperus Estilo Shakan", precio: 55 };
   </script>
   <script src="pixel.js"></script>
+  <script src="origen.js"></script>
 </head>
 
 <body>
@@ -698,6 +699,7 @@
         msg += `Dirección: ${direccion}\n`;
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;
+        msg += dgOrigen();
 
         // La venta se cierra en WhatsApp: aquí termina lo que el píxel puede ver
         dgTrack('Lead', {

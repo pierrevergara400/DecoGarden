@@ -75,6 +75,7 @@
     window.DG_PRODUCTO = { id: "bonsai-mini-juniperus-horizontalis", nombre: "Junípero Cascada Mini", precio: 20 };
   </script>
   <script src="pixel.js"></script>
+  <script src="origen.js"></script>
 </head>
 
 <body>
@@ -700,6 +701,7 @@
         msg += `Dirección: ${direccion}\n`;
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;
+        msg += dgOrigen();
 
         // La venta se cierra en WhatsApp: aquí termina lo que el píxel puede ver
         dgTrack('Lead', {
