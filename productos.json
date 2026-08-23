@@ -178,8 +178,8 @@
         "nombre": "Bequia Imperial"
       },
       {
-        "id": "junipero-dorado",
-        "nombre": "Pino Cola de Pavo"
+        "id": "bonsai-mini-juniperus-horizontalis",
+        "nombre": "Júnipero Cascada Mini"
       },
       {
         "id": "juniperus-shakan",
@@ -463,6 +463,98 @@
       {
         "id": "arbol-del-te",
         "nombre": "Árbol del Té Mānuka"
+      },
+      {
+        "id": "guayacan",
+        "nombre": "Guayacán"
+      }
+    ]
+  },
+  "bequia-imperial": {
+    "nombreCorto": "Bequia Imperial, el Árbol de la Vida",
+    "h1": [
+      "Bonsái Bequia Imperial",
+      "el Árbol de la Vida"
+    ],
+    "metaDescripcion": "Bonsái Bequia Imperial o Árbol de la Vida, 60 cm y 24 años de formación. Última pieza del vivero, con ficha de cuidado, garantía de llegada sana y acompañamiento por WhatsApp durante 30 días.",
+    "badgePrecio": "Envío gratis",
+    "beneficios": [
+      "Última pieza · 24 años de formación",
+      "Guía de cuidado incluida",
+      "Acompañamiento 30 días por WhatsApp"
+    ],
+    "specsExtra": {
+      "Disponibilidad": "Última pieza"
+    },
+    "resumen": "Veinticuatro años de formación en un solo árbol. La Bequia Imperial es la pieza más grande del vivero: 60 cm que no pasan desapercibidos en una sala. Es la que eliges cuando buscas algo que se herede, no algo que se decore.",
+    "porQue": [
+      {
+        "titulo": "Veinticuatro años no se aceleran",
+        "texto": "Este árbol tiene casi la edad de una persona adulta. Cada curva del tronco es una decisión que alguien tomó hace años y esperó a que el árbol respondiera. Eso no se compra con prisa ni se fabrica en una temporada."
+      },
+      {
+        "titulo": "Ocupa el centro, no una esquina",
+        "texto": "Con 60 cm deja de ser un detalle sobre un mueble y pasa a ser lo primero que alguien mira al entrar. Pide su sitio, y lo justifica."
+      },
+      {
+        "titulo": "Llega listo y acompañado",
+        "texto": "Con su ficha de cuidado, garantía de llegada sana y treinta días de acompañamiento por WhatsApp. Un árbol de este porte no se entrega y ya está: se entrega y te enseño a mantenerlo."
+      }
+    ],
+    "cuidado": [
+      {
+        "etiqueta": "Para quien ya ha tenido bonsáis",
+        "titulo": "Un árbol que responde a lo que sabes",
+        "texto": "Veinticuatro años de estructura dan mucho con qué trabajar. Si ya has cuidado alguno, aquí vas a ver el resultado de lo que hagas: cómo abre, cómo compacta, cómo agradece una buena temporada.",
+        "foto": "foto — bequia imperial completo en la sala"
+      },
+      {
+        "etiqueta": "Para quien empieza por lo alto",
+        "titulo": "No necesitas experiencia, necesitas guía",
+        "texto": "Que sea la pieza grande no la vuelve delicada. Llega con su ficha específica y me tienes por WhatsApp durante tus primeros 30 días: respondo el mismo día, con foto si hace falta.",
+        "foto": "foto — ficha de cuidado impresa"
+      },
+      {
+        "etiqueta": "Para quien busca un regalo que se recuerde",
+        "titulo": "Un árbol más viejo que la ocasión",
+        "texto": "El Árbol de la Vida se regala en aniversarios, jubilaciones y estrenos de casa porque su simbología se entiende sola. Con 24 años encima, el regalo ya tenía historia antes de llegar.",
+        "foto": "foto — bequia imperial envuelto para regalo"
+      }
+    ],
+    "cierre": {
+      "titulo": "Queda una",
+      "texto": "No es una forma de decir. La Bequia Imperial es la última de su tamaño en el vivero, y un árbol de 24 años no se repone: habría que empezar a formarlo hoy y esperar hasta 2050."
+    },
+    "faq": [
+      {
+        "p": "¿Qué tamaño tiene exactamente?",
+        "r": "60 cm de alto contando la maceta, con 24 años de formación. Es la pieza más grande del catálogo. Las fotos son de referencia de la especie, así que en una pieza de este valor te recomiendo pedirme fotos y video del ejemplar real antes de decidir: te los mando por WhatsApp el mismo día."
+      },
+      {
+        "p": "¿Por qué cuesta $150?",
+        "r": "Porque son 24 años de trabajo, no 24 meses. El precio de un bonsái es sobre todo el tiempo que alguien invirtió en formarlo, y este es el árbol con más horas encima de todo el vivero. Si buscas el mismo simbolismo en un formato más accesible, el Árbol de la Vida Mini está en $30."
+      },
+      {
+        "p": "¿Es difícil de cuidar?",
+        "r": "No más que uno pequeño, y en algo es más noble: un árbol con esta masa perdona mejor un descuido puntual que un mini. Llega con la ficha de cuidado de su especie y me escribes por WhatsApp cualquier duda durante tus primeros 30 días."
+      },
+      {
+        "p": "¿Por qué se llama Árbol de la Vida?",
+        "r": "Es el nombre con el que se conoce a esta especie por su porte y su longevidad: un árbol que sigue creciendo décadas después de plantado. Por eso se regala en momentos que uno quiere que duren."
+      },
+      {
+        "p": "¿Cuándo llega y cómo pago?",
+        "r": "Los envíos salen miércoles y viernes y tardan de 48 a 72h según tu distancia, con el envío incluido en el precio. Pagas por transferencia o con tarjeta mediante un link de pago seguro. Por el tamaño, esta pieza se empaca aparte y con refuerzo: te mando foto del empaque antes de que salga."
+      }
+    ],
+    "relacionados": [
+      {
+        "id": "bequia-pequena",
+        "nombre": "Árbol de la Vida Mini"
+      },
+      {
+        "id": "juniperus-shakan",
+        "nombre": "Juniperus Shakan"
       },
       {
         "id": "guayacan",

@@ -322,6 +322,10 @@ def bloque_relacionados(relacionados, catalogo, con_pagina):
             continue
         nombre = entrada.get("nombre", prod["nombre"])
         pagina = con_pagina.get(pid)
+        if not pagina:
+            # Cae al catálogo genérico: se pierde justo la intención de quien
+            # hizo clic en ese árbol concreto. Vale la pena saberlo.
+            print(f"  ! Relacionado '{pid}' no tiene página — su tarjeta caerá en el catálogo")
         destino = f"/{ruta_publica(pagina)}" if pagina else "/#catalogo"
         partes.append(
             f'        <a class="related-card" href="{esc(destino)}" style="text-decoration:none">\n'
