@@ -20,7 +20,7 @@
     Contact           — clic en cualquier enlace suelto de WhatsApp
 */
 (function () {
-  const PIXEL_ID = 'TU_PIXEL_ID';
+  const PIXEL_ID = '3992195687741135';
   const MONEDA = 'USD';
   const COOKIE = 'dg_consent';
   const DURACION = 60 * 60 * 24 * 180; // 6 meses, igual que dice la política
