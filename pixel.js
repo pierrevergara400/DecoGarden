@@ -99,7 +99,7 @@
     aviso.innerHTML =
       '<p>Uso cookies de medición para saber qué contenido te sirve y llegar a más gente ' +
       'como tú. Solo se activan si las aceptas. Puedes leer el detalle en la ' +
-      '<a href="privacidad.html">política de privacidad</a>.</p>' +
+      '<a href="/privacidad">política de privacidad</a>.</p>' +
       '<div class="dg-cookies-acciones">' +
       '<button type="button" class="dg-cookies-no">Rechazar</button>' +
       '<button type="button" class="dg-cookies-si">Aceptar</button>' +

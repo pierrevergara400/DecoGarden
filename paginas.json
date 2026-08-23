@@ -1,7 +1,7 @@
 {
-  "juniperus-shakan": "producto-junipero-shakan.html",
-  "bequia-pequena": "producto-bequia-pequena.html",
-  "guayacan": "producto-guayacan.html",
-  "arbol-del-te": "producto-arbol-del-te.html",
-  "bonsai-mini-juniperus-horizontalis": "producto-junipero-cascada-mini.html"
+  "juniperus-shakan": "/producto-junipero-shakan",
+  "bequia-pequena": "/producto-bequia-pequena",
+  "guayacan": "/producto-guayacan",
+  "arbol-del-te": "/producto-arbol-del-te",
+  "bonsai-mini-juniperus-horizontalis": "/producto-junipero-cascada-mini"
 }

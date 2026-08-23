@@ -66,6 +66,25 @@ def esc(texto):
     return html.escape(str(texto), quote=True)
 
 
+def ruta_publica(archivo):
+    """La URL con la que se anuncia un archivo, que no es su nombre en disco.
+
+    Cloudflare Pages sirve producto-x.html en /producto-x y redirige la versión
+    con extensión con un 308. Si declaramos las URLs con .html —en el canonical,
+    el sitemap o los enlaces internos— estamos anunciando rutas que redirigen.
+    Esta es la única función que traduce archivo -> URL: en disco los archivos
+    siguen llamándose igual.
+
+        producto-guayacan.html -> producto-guayacan
+        index.html             -> ''   (para que SITIO + ruta dé la home)
+    """
+    if archivo == "index.html":
+        return ""
+    if archivo.endswith(".html"):
+        return archivo[: -len(".html")]
+    return archivo
+
+
 IMAGENES = (".webp", ".jpg", ".jpeg", ".png", ".avif")
 VIDEOS = (".mp4", ".webm", ".mov")
 
@@ -302,7 +321,8 @@ def bloque_relacionados(relacionados, catalogo, con_pagina):
             print(f"  ! Relacionado '{pid}' no existe en catalog.json — se omite")
             continue
         nombre = entrada.get("nombre", prod["nombre"])
-        destino = con_pagina.get(pid, "index.html#catalogo")
+        pagina = con_pagina.get(pid)
+        destino = f"/{ruta_publica(pagina)}" if pagina else "/#catalogo"
         partes.append(
             f'        <a class="related-card" href="{esc(destino)}" style="text-decoration:none">\n'
             f'          <div class="pic"><img src="{esc(prod["imagen"])}" '
@@ -354,7 +374,7 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
     reemplazos = {
         "{{TITULO}}": esc(datos.get("titulo", nombre)),
         "{{META_DESC}}": esc(datos["metaDescripcion"]),
-        "{{ARCHIVO}}": archivo,
+        "{{RUTA}}": ruta_publica(archivo),
         "{{NOMBRE}}": esc(nombre),
         "{{NOMBRE_CORTO}}": esc(datos.get("nombreCorto", nombre)),
         "{{IMAGEN}}": esc(producto["imagen"]),
@@ -431,7 +451,11 @@ def main():
             print(f"  {'ACT' if cambio else ' = '} {archivo}")
 
     # Mapa que lee app.js para enlazar las tarjetas del catálogo a su página.
-    solo_creados = {pid: arch for pid, arch in con_pagina.items() if arch in creados}
+    solo_creados = {
+        pid: f"/{ruta_publica(arch)}"
+        for pid, arch in con_pagina.items()
+        if arch in creados
+    }
     (BASE / "paginas.json").write_text(
         json.dumps(solo_creados, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
@@ -456,14 +480,16 @@ def escribir_sitemap(archivos, cambiados):
     hoy = date.today().isoformat()
     ruta = BASE / "sitemap.xml"
 
-    # Fechas que ya estaban publicadas, para conservarlas
+    # Fechas que ya estaban publicadas, para conservarlas.
+    # Los sitemaps antiguos declaraban las URLs con .html; se les quita al leer
+    # para que el cambio de forma no reinicie todas las fechas de golpe.
     previas = {}
     if ruta.exists():
         xml = ruta.read_text(encoding="utf-8")
         for loc, fecha in re.findall(
             r"<loc>\s*(.*?)\s*</loc>\s*<lastmod>\s*(.*?)\s*</lastmod>", xml, re.S
         ):
-            previas[loc] = fecha
+            previas[loc.removesuffix(".html")] = fecha
 
     def fecha_de(loc, cambio):
         if cambio or loc not in previas:
@@ -478,7 +504,7 @@ def escribir_sitemap(archivos, cambiados):
 
     urls = [(SITIO, fecha_home, "weekly", "1.0")]
     for a in sorted(archivos):
-        loc = SITIO + a
+        loc = SITIO + ruta_publica(a)
         urls.append((loc, fecha_de(loc, a in cambiados), "monthly", "0.8"))
 
     # Páginas legales: se escriben a mano, así que su fecha sale del archivo
@@ -486,7 +512,7 @@ def escribir_sitemap(archivos, cambiados):
         ruta_legal = BASE / legal
         if not ruta_legal.exists():
             continue
-        loc = SITIO + legal
+        loc = SITIO + ruta_publica(legal)
         fecha = date.fromtimestamp(ruta_legal.stat().st_mtime).isoformat()
         urls.append((loc, fecha, "yearly", "0.3"))
 
