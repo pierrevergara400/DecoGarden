@@ -35,6 +35,17 @@ class ManejadorPages(SimpleHTTPRequestHandler):
         if not self._redirigido():
             super().do_HEAD()
 
+    def end_headers(self):
+        """Nada de caché mientras desarrollas.
+
+        SimpleHTTPRequestHandler no manda Cache-Control, así que el navegador
+        aplica caché heurística sobre Last-Modified y se queda con el CSS o el JS
+        viejo: editas un archivo, recargas, y no ves el cambio. Esto solo afecta
+        al servidor local; en Cloudflare manda _headers.
+        """
+        self.send_header("Cache-Control", "no-store, must-revalidate")
+        super().end_headers()
+
     def _limpiar(self, camino):
         """La forma canónica de una ruta: sin .html y sin barra final."""
         if camino.endswith("/index.html"):

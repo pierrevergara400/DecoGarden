@@ -48,9 +48,9 @@
       rel="stylesheet">
   </noscript>
 
-  <link rel="stylesheet" href="tokens.css">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="producto.css">
+  <link rel="stylesheet" href="tokens.css?v=8408f242">
+  <link rel="stylesheet" href="style.css?v=fedb85bd">
+  <link rel="stylesheet" href="producto.css?v=0dd47446">
 
   <script type="application/ld+json">
   {
@@ -74,8 +74,8 @@
   <script>
     window.DG_PRODUCTO = { id: "guayacan", nombre: "Guayacán", precio: 25 };
   </script>
-  <script src="pixel.js"></script>
-  <script src="origen.js"></script>
+  <script src="pixel.js?v=fa34867d"></script>
+  <script src="origen.js?v=dc7e211b"></script>
 </head>
 
 <body>
@@ -586,7 +586,7 @@
     </div>
   </div>
 
-  <script src="app.js" defer></script>
+  <script src="app.js?v=2dc8e380" defer></script>
   <script>
     (function () {
       const PRODUCTO = "Guayacán";
@@ -600,21 +600,62 @@
         const contador = galeria.querySelector('.counter-actual');
         const zoom = galeria.querySelector('.gallery-zoom');
 
+        const visor = galeria.querySelector('.main-shot');
+        let actual = 0;
+
         const mostrar = (i) => {
+          // Da la vuelta en los extremos: así ninguna flecha queda muerta
+          actual = (i + medios.length) % medios.length;
           medios.forEach((medio, idx) => {
-            const activo = idx === i;
+            const activo = idx === actual;
             medio.hidden = !activo;
             medio.classList.toggle('is-active', activo);
             // Pausar cualquier video que se deje de ver
             if (!activo && medio.tagName === 'VIDEO') medio.pause();
           });
-          miniaturas.forEach((mini, idx) => mini.classList.toggle('active', idx === i));
-          if (contador) contador.textContent = i + 1;
+          miniaturas.forEach((mini, idx) => mini.classList.toggle('active', idx === actual));
+          if (contador) contador.textContent = actual + 1;
           // El zoom solo aplica a fotos, no a videos
-          if (zoom) zoom.hidden = medios[i].tagName === 'VIDEO';
+          if (zoom) zoom.hidden = medios[actual].tagName === 'VIDEO';
         };
 
         miniaturas.forEach((mini, i) => mini.addEventListener('click', () => mostrar(i)));
+
+        const anterior = galeria.querySelector('.gallery-nav.prev');
+        const siguiente = galeria.querySelector('.gallery-nav.next');
+        if (anterior) anterior.addEventListener('click', () => mostrar(actual - 1));
+        if (siguiente) siguiente.addEventListener('click', () => mostrar(actual + 1));
+
+        if (medios.length > 1) {
+          // Deslizar con el dedo. Los listeners son pasivos y no llamamos a
+          // preventDefault: el scroll vertical de la página tiene que seguir intacto.
+          let x0 = null, y0 = null;
+          visor.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            x0 = e.touches[0].clientX;
+            y0 = e.touches[0].clientY;
+          }, { passive: true });
+
+          visor.addEventListener('touchend', (e) => {
+            if (x0 === null) return;
+            const dx = e.changedTouches[0].clientX - x0;
+            const dy = e.changedTouches[0].clientY - y0;
+            x0 = null;
+            // Solo cuenta si el gesto es claramente horizontal, para no confundir
+            // un scroll en diagonal con un cambio de foto
+            if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+              mostrar(actual + (dx < 0 ? 1 : -1));
+            }
+          }, { passive: true });
+
+          // Flechas del teclado cuando el foco está dentro de la galería. Si el foco
+          // está en el video, las dejamos pasar: ahí sirven para adelantar el video.
+          galeria.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'VIDEO') return;
+            if (e.key === 'ArrowLeft') { e.preventDefault(); mostrar(actual - 1); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); mostrar(actual + 1); }
+          });
+        }
       }
 
       const overlay = document.getElementById('checkoutOverlay');

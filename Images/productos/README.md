@@ -32,6 +32,7 @@ estos nombres, ese texto se escribe solo:
 | `6-giro.mp4` | Video corto girando alrededor del árbol. |
 
 Otros nombres que también reconoce: `follaje`, `hoja`, `maceta`, `raiz`, `empaque`,
+`perspectiva` (el árbol de tres cuartos), `trasera` (visto desde atrás),
 `conjunto` (el árbol junto a otros del vivero), `video`.
 
 Si usas un nombre distinto igual funciona, solo que el texto alternativo queda

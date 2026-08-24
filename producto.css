@@ -106,8 +106,45 @@
   height: 17px;
 }
 
+/* Flechas anterior/siguiente sobre el visor. Van centradas a los lados para no
+   chocar con el contador (arriba) ni con el zoom y los controles del video (abajo). */
+.product-hero .pic .gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 26, 20, .55);
+  color: var(--paper);
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.product-hero .pic .gallery-nav:hover,
+.product-hero .pic .gallery-nav:focus-visible {
+  background: var(--pine);
+}
+
+.product-hero .pic .gallery-nav.prev { left: 14px; }
+.product-hero .pic .gallery-nav.next { right: 14px; }
+
+.product-hero .pic .gallery-nav svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Las miniaturas miden 56px fijos y no encogen: a partir de seis fotos la fila
+   pasaba del ancho del móvil y estiraba toda la página (aparecía scroll lateral y
+   el texto se cortaba). Con wrap la fila salta de línea y la galería admite las
+   fotos que haga falta. */
 .product-hero .pic .thumbs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -744,6 +781,12 @@
 @media (max-width: 560px) {
   .marquee-bar {
     margin-top: 84px;
+  }
+
+  /* En táctil el objetivo debe ser cómodo de acertar con el pulgar. */
+  .product-hero .pic .gallery-nav {
+    width: 44px;
+    height: 44px;
   }
 
   .product-hero .info {

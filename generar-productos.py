@@ -12,6 +12,7 @@ Crea/actualiza un archivo producto-<slug>.html por cada producto de productos.js
 No edites esos archivos a mano: se sobrescriben en cada ejecución.
 """
 
+import hashlib
 import html
 import json
 import re
@@ -93,6 +94,8 @@ VIDEOS = (".mp4", ".webm", ".mov")
 TEXTOS_ALT = {
     "principal": "{n}",
     "frontal": "{n}, árbol completo de frente",
+    "perspectiva": "{n} visto en perspectiva",
+    "trasera": "{n} visto desde atrás",
     "tronco": "Detalle del tronco de {n}",
     "follaje": "Detalle del follaje de {n}",
     "hoja": "Detalle de la hoja de {n}",
@@ -233,10 +236,28 @@ def bloque_galeria(producto, galeria):
         "          </button>"
     )
 
+    # Flechas para pasar de un medio a otro. Con uno solo no hay a dónde ir, así que
+    # no se imprimen: un control que no lleva a ninguna parte estorba más de lo que ayuda.
+    flechas = (
+        """          <button type="button" class="gallery-nav prev" aria-label="Foto anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button type="button" class="gallery-nav next" aria-label="Foto siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>"""
+        if len(galeria) > 1
+        else ""
+    )
+
     partes = [
         '        <div class="main-shot">',
         contador.rstrip("\n") if contador else None,
         "\n".join(medios),
+        flechas if flechas else None,
         zoom,
         "        </div>",
         '        <div class="thumbs">',
@@ -351,6 +372,26 @@ def bloque_faq(preguntas):
     return "\n".join(partes)
 
 
+def sellar_assets(html):
+    """Le pega a cada .css y .js su huella de contenido: producto.css?v=a1b2c3d4.
+
+    Sin esto, el navegador se queda con la copia vieja: cambias el CSS, recargas y
+    no ves nada. Pasa en local y también tras un despliegue, con quien ya había
+    visitado la página. Como la huella sale del contenido, la URL solo cambia
+    cuando el archivo cambia de verdad, así que la caché sigue sirviendo de algo.
+    """
+
+    def reemplazo(m):
+        atributo, archivo = m.group(1), m.group(2)
+        ruta = BASE / archivo
+        if not ruta.is_file():
+            return m.group(0)
+        huella = hashlib.sha1(ruta.read_bytes()).hexdigest()[:8]
+        return f'{atributo}="{archivo}?v={huella}"'
+
+    return re.sub(r'(href|src)="([^"?:]+\.(?:css|js))"', reemplazo, html)
+
+
 def bloque_canal():
     """La columna del canal de WhatsApp, o nada si todavía no hay canal."""
     if not CANAL_WHATSAPP:
@@ -413,6 +454,8 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
     salida = plantilla
     for marca, valor in reemplazos.items():
         salida = salida.replace(marca, valor)
+
+    salida = sellar_assets(salida)
 
     pendientes = re.findall(r"\{\{[A-Z_]+\}\}", salida)
     if pendientes:
