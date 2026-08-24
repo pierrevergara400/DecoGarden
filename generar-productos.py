@@ -386,10 +386,17 @@ def sellar_assets(html):
         ruta = BASE / archivo
         if not ruta.is_file():
             return m.group(0)
-        huella = hashlib.sha1(ruta.read_bytes()).hexdigest()[:8]
+        # Normalizamos los saltos de línea antes de la huella. Con
+        # core.autocrlf git escribe CRLF en Windows y LF en el clon que
+        # compila Cloudflare: sin esto el mismo archivo daría dos sellos
+        # distintos y cada checkout ensuciaría el diff de todas las páginas.
+        contenido = ruta.read_bytes().replace(b'\r\n', b'\n')
+        huella = hashlib.sha1(contenido).hexdigest()[:8]
         return f'{atributo}="{archivo}?v={huella}"'
 
-    return re.sub(r'(href|src)="([^"?:]+\.(?:css|js))"', reemplazo, html)
+    return re.sub(
+        r'(href|src)="([^"?:]+\.(?:css|js))(?:\?v=[0-9a-f]+)?"', reemplazo, html
+    )
 
 
 def bloque_canal():
@@ -470,6 +477,29 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
     return archivo, cambio
 
 
+def sellar_paginas_a_mano():
+    """Sella los assets de las páginas que no genera este script.
+
+    index.html y las legales se escriben a mano pero enlazan los mismos .css y
+    .js, así que sufren el mismo problema de caché vieja — y la home es
+    justamente la que más gente revisita.
+
+    Solo escribe si el sello cambió: la fecha de modificación de estos archivos
+    alimenta el lastmod del sitemap y no queremos falsearla en cada ejecución.
+    """
+    tocadas = []
+    for ruta in sorted(BASE.glob("*.html")):
+        # La plantilla no se publica, y las generadas ya pasaron por sellar_assets
+        if ruta.name.startswith("_") or ruta.name.startswith("producto-"):
+            continue
+        antes = ruta.read_text(encoding="utf-8")
+        despues = sellar_assets(antes)
+        if despues != antes:
+            ruta.write_text(despues, encoding="utf-8")
+            tocadas.append(ruta.name)
+    return tocadas
+
+
 def main():
     for ruta in (PLANTILLA, PRODUCTOS, CATALOGO):
         if not ruta.exists():
@@ -507,6 +537,10 @@ def main():
         json.dumps(solo_creados, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(f"  OK  paginas.json ({len(solo_creados)} enlace(s))")
+
+    selladas = sellar_paginas_a_mano()
+    for nombre in selladas:
+        print(f"  ACT {nombre} (assets sellados)")
 
     escribir_sitemap(creados, cambiados)
     print("  OK  sitemap.xml")
