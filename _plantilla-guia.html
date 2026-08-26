@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#19532B">
+
+  <!-- Página privada. Ni buscadores, ni archivos, ni previsualizaciones.
+       No hay canonical, ni Open Graph, ni descripción: nada que indexar y
+       nada que filtrar por el camino. -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta name="referrer" content="no-referrer">
+  <title>DecoGarden</title>
+
+  <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="Icons/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="guia.css">
+</head>
+
+<body class="cerrada">
+
+  <!-- ==================================================================
+       LA PUERTA
+       Lo único que ve quien no tiene el código. El contenido real vive
+       cifrado en el <script id="carga"> del final: aquí no hay nada que
+       leer, ni siquiera los títulos de las secciones.
+       ================================================================== -->
+  <div class="puerta" id="puerta">
+    <div class="puerta-caja">
+      <p class="puerta-marca">DecoGarden</p>
+      <h1 class="puerta-titulo">Guía de cuidado</h1>
+      <p class="puerta-texto">
+        Esta guía es solo para quienes se llevaron un árbol del vivero.
+        Escanea el código QR de la etiqueta de tu bonsái y se abre sola.
+      </p>
+
+      <form class="puerta-form" id="formCodigo" autocomplete="off">
+        <label class="puerta-label" for="campoCodigo">¿Ya tienes el código? Escríbelo aquí</label>
+        <div class="puerta-fila">
+          <input class="puerta-campo" id="campoCodigo" name="codigo" type="text"
+            inputmode="latin" autocapitalize="characters" spellcheck="false"
+            placeholder="XXXX-XXXX-XXXX-XXXX" aria-describedby="puertaError">
+          <button class="puerta-btn" type="submit" id="btnAbrir">Abrir</button>
+        </div>
+        <p class="puerta-error" id="puertaError" role="alert" hidden></p>
+      </form>
+
+      <p class="puerta-pie">
+        ¿Perdiste la etiqueta o no te funciona el código?
+        <a href="https://wa.me/593963136655?text=Hola%2C%20compr%C3%A9%20un%20bons%C3%A1i%20y%20quiero%20acceder%20a%20la%20gu%C3%ADa%20de%20cuidado"
+          target="_blank" rel="noopener noreferrer">Escríbeme por WhatsApp</a>
+        y te lo mando.
+      </p>
+
+      <!-- Quien llega aquí sin código no debería quedarse en un callejón sin
+           salida: la guía es solo para clientes, pero la tienda es de todos. -->
+      <a class="puerta-tienda" href="/">Ver los bonsáis de DecoGarden &rarr;</a>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       LA GUÍA
+       Vacía hasta que guia.js descifra el contenido y lo inyecta.
+       ================================================================== -->
+  <div class="app" id="app" hidden>
+
+    <div class="progreso" id="progreso" role="presentation"><i></i></div>
+
+    <header class="barra" id="barra">
+      <button class="barra-btn barra-btn--indice" id="btnIndice" type="button"
+        aria-expanded="false" aria-controls="indice" aria-label="Abrir el índice">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>
+        <span>Índice</span>
+      </button>
+
+      <p class="barra-titulo" id="barraTitulo">Guía de cuidado</p>
+
+      <div class="buscador" role="search">
+        <svg class="buscador-lupa" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+        </svg>
+        <input class="buscador-campo" id="campoBuscar" type="search"
+          placeholder="Buscar en la guía…" aria-label="Buscar en la guía" spellcheck="false">
+        <button class="buscador-limpiar" id="btnLimpiar" type="button" hidden
+          aria-label="Limpiar la búsqueda">&times;</button>
+      </div>
+
+      <button class="barra-btn barra-btn--tema" id="btnTema" type="button"
+        aria-label="Cambiar entre modo claro y oscuro">
+        <svg class="ico-sol" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5" />
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4" />
+        </svg>
+        <svg class="ico-luna" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="lienzo">
+      <!-- Índice lateral en escritorio, cajón deslizante en móvil -->
+      <div class="velo" id="velo" hidden></div>
+      <aside class="indice" id="indice" aria-label="Índice de la guía">
+        <div class="indice-cabecera">
+          <p>Contenido</p>
+          <button class="indice-cerrar" id="btnCerrarIndice" type="button"
+            aria-label="Cerrar el índice">&times;</button>
+        </div>
+        <nav class="indice-nav" id="indiceNav"></nav>
+
+        <!-- Siempre a la vista, sin tener que bajar hasta el final de las
+             diecinueve secciones para volver a la tienda. -->
+        <a class="indice-tienda" href="/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+            <path d="M9 21v-7h6v7" />
+          </svg>
+          Ver el catálogo
+        </a>
+      </aside>
+
+      <main class="contenido" id="contenido">
+        <p class="buscador-resultado" id="resultadoBusqueda" hidden aria-live="polite"></p>
+        <div id="cuerpo"></div>
+      </main>
+    </div>
+
+    <!-- El cierre y el pie van FUERA del lienzo, a sangre de lado a lado,
+         como la sección .final y el <footer> de la home. Dentro de la
+         columna de texto quedaban como una tarjeta verde flotando. -->
+    <section class="cierre">
+      <div class="wrap-guia">
+        <p class="cierre-ojo">Estoy al otro lado del teléfono</p>
+        <h2>¿Te quedó una duda?</h2>
+        <p>
+          Ninguna guía cubre tu árbol concreto en tu casa concreta. Mándame una foto del
+          árbol entero, otra de cerca de lo que te preocupa, y cuéntame cómo lo riegas y
+          dónde lo tienes. Con eso casi siempre sé qué está pasando.
+        </p>
+        <div class="cierre-botones">
+          <a class="cierre-btn"
+            href="https://wa.me/593963136655?text=Hola%20Pierre%2C%20tengo%20una%20duda%20sobre%20el%20cuidado%20de%20mi%20bons%C3%A1i"
+            target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23" />
+            </svg>
+            Escribirle a Pierre
+          </a>
+
+          <a class="cierre-btn cierre-btn--fantasma" href="/" target="_blank" rel="noopener">
+            Ver más bonsáis
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="pie">
+      <div class="wrap-guia">
+        <div class="pie-fila">
+          <a class="pie-marca" href="/" aria-label="Ir a DecoGarden">
+            <img src="Media/Decogarden 2.svg" alt="DecoGarden" width="144" height="38">
+          </a>
+          <nav class="pie-nav">
+            <a href="/">Catálogo</a>
+            <a href="https://www.instagram.com/decogarden_ibarra" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.facebook.com/decogarden.ec" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.tiktok.com/@decogarden_ibarra" target="_blank" rel="noopener">TikTok</a>
+            <a href="https://wa.me/593963136655" target="_blank" rel="noopener">WhatsApp</a>
+            <a href="https://whatsapp.com/channel/0029Vb8QEhIAYlUGzhu3G60J" target="_blank" rel="noopener">Canal</a>
+            <a href="/privacidad">Privacidad</a>
+            <a href="/terminos">Términos</a>
+          </nav>
+        </div>
+        <p class="pie-loc">
+          Guía de cuidado para clientes de DecoGarden · Actualizada el {{ACTUALIZADO_LARGO}}
+          · Vivero de bonsáis en San Antonio de Ibarra, Imbabura — Ecuador
+        </p>
+      </div>
+    </footer>
+
+    <button class="arriba" id="btnArriba" type="button" hidden aria-label="Volver arriba">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6" /></svg>
+    </button>
+  </div>
+
+  <!-- El contenido de la guía: AES-256-GCM sobre gzip. Sin el código de la
+       etiqueta esto es ruido, aquí y en el repositorio de GitHub. -->
+  <script type="application/json" id="carga">{{PAYLOAD}}</script>
+  <script src="guia.js"></script>
+</body>
+
+</html>

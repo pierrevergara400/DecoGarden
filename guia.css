@@ -1,0 +1,1551 @@
+/* ==========================================================================
+   guia.css — la guía de cuidado privada.
+
+   Se carga después de tokens.css y solo la usa guia-*.html. Los colores de
+   marca salen de tokens.css; aquí se derivan los tonos que necesita un
+   documento largo (fondos de panel, líneas, estados) y se define el modo
+   oscuro, que el resto del sitio no tiene.
+
+   Este documento se lee de pie, con el teléfono en una mano y la regadera
+   en la otra. Todo está pensado para eso: móvil primero, texto grande,
+   tablas que no obligan a hacer scroll horizontal, y el índice a un toque.
+   ========================================================================== */
+
+/* --- Tokens propios de la guía -------------------------------------------
+   Se declaran en :root en su versión clara. El modo oscuro los redefine
+   entero, así que ningún color tiene su única definición dentro de un
+   bloque de media query. */
+:root {
+  --g-fondo: #F4F0E2;
+  --g-panel: #FFFDF6;
+  --g-panel-2: #F8F4E7;
+  --g-texto: #1C2620;
+  --g-suave: #5C6B60;
+  /* Los rótulos pequeños (tiempo de lectura, cabeceras de las tarjetas de
+     tabla, numeración del índice) usan este tono. Tiene que llegar a 4.5:1
+     sobre el papel aunque parezca "tenue": un gris más claro se leía a 2.8
+     y esas etiquetas son texto pequeño en versales, lo peor de leer. La
+     jerarquía frente a --g-suave la da el tamaño y las versales, no el color. */
+  --g-tenue: #637166;
+  /* El borde de .bonsai-card en style.css, que es el patron de tarjeta
+     del sitio: salvia muy diluido, no verde pino. */
+  --g-linea: rgba(147, 160, 140, .34);
+  --g-linea-fuerte: rgba(147, 160, 140, .62);
+  --g-acento: #19532B;
+  --g-acento-claro: #2F6B3E;
+  --g-acento-fondo: rgba(47, 107, 62, .09);
+  --g-si: #1F7A3D;
+  --g-si-fondo: rgba(31, 122, 61, .09);
+  --g-no: #A93226;
+  --g-no-fondo: rgba(169, 50, 38, .08);
+  --g-aviso-fondo: rgba(255, 202, 38, .13);
+  --g-aviso-borde: #C79A12;
+  --g-marca: rgba(255, 202, 38, .45);
+  /* Las tarjetas del sitio no flotan: se apoyan en el papel con un borde
+     fino y sin sombra. La sombra solo aparece al pasar por encima. */
+  --g-sombra: none;
+  --g-sombra-alta: 0 12px 30px -12px rgba(30, 47, 39, .55);
+  /* Contenido a escuadra, como .bonsai-card y .btn. Los 12px se reservan
+     para lo que flota por encima de la pagina (cajon, overlays), igual que
+     en style.css los usan el menu movil, el lightbox y el aviso de cookies. */
+  --g-radio: 0;
+  --g-flotante: 12px;
+  --g-easing: cubic-bezier(.2, .8, .2, 1);
+  --g-barra-alto: 60px;
+  --g-medida: 68ch;
+}
+
+html[data-tema="oscuro"] {
+  --g-fondo: #101713;
+  --g-panel: #172019;
+  --g-panel-2: #1C271F;
+  --g-texto: #E8EDE6;
+  --g-suave: #A6B3A6;
+  --g-tenue: #7C8A7D;
+  --g-linea: rgba(169, 199, 154, .20);
+  --g-linea-fuerte: rgba(169, 199, 154, .44);
+  --g-acento: #A9C79A;
+  --g-acento-claro: #C2DBB2;
+  --g-acento-fondo: rgba(169, 199, 154, .12);
+  --g-si: #6FC98A;
+  --g-si-fondo: rgba(111, 201, 138, .12);
+  --g-no: #F08A7C;
+  --g-no-fondo: rgba(240, 138, 124, .12);
+  --g-aviso-fondo: rgba(255, 202, 38, .12);
+  --g-aviso-borde: #D8B23A;
+  --g-marca: rgba(255, 202, 38, .32);
+  --g-sombra: none;
+  --g-sombra-alta: 0 12px 30px -12px rgba(0, 0, 0, .7);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-tema="claro"]) {
+    --g-fondo: #101713;
+    --g-panel: #172019;
+    --g-panel-2: #1C271F;
+    --g-texto: #E8EDE6;
+    --g-suave: #A6B3A6;
+    --g-tenue: #7C8A7D;
+    --g-linea: rgba(169, 199, 154, .20);
+    --g-linea-fuerte: rgba(169, 199, 154, .44);
+    --g-acento: #A9C79A;
+    --g-acento-claro: #C2DBB2;
+    --g-acento-fondo: rgba(169, 199, 154, .12);
+    --g-si: #6FC98A;
+    --g-si-fondo: rgba(111, 201, 138, .12);
+    --g-no: #F08A7C;
+    --g-no-fondo: rgba(240, 138, 124, .12);
+    --g-aviso-fondo: rgba(255, 202, 38, .12);
+    --g-aviso-borde: #D8B23A;
+    --g-marca: rgba(255, 202, 38, .32);
+    --g-sombra: none;
+    --g-sombra-alta: 0 12px 30px -12px rgba(0, 0, 0, .7);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--g-fondo);
+  color: var(--g-texto);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Mientras la guía está cerrada, nada de scroll de fondo detrás de la puerta. */
+body.cerrada { overflow: hidden; }
+
+a { color: var(--g-acento); }
+
+::selection { background: var(--g-marca); color: var(--g-texto); }
+
+:focus-visible {
+  outline: 2px solid var(--g-acento-claro);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+
+/* ==========================================================================
+   LA PUERTA
+   ========================================================================== */
+
+.puerta {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, #24693A 0%, #19532B 45%, #123B21 100%);
+  color: var(--on-dark);
+  overflow-y: auto;
+}
+
+.puerta.se-va {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .45s ease;
+}
+
+.puerta-caja {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  padding: 8px 0 24px;
+}
+
+/* El "eyebrow" de style.css: versalita muy espaciada precedida de una regla
+   de 26px. Es la firma tipografica de la marca, asi que se reutiliza tal cual
+   en lugar de inventar aqui otro rotulo distinto. */
+.puerta-marca,
+.portada-ojo,
+.indice-cabecera p {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
+.puerta-marca::before,
+.portada-ojo::before,
+.indice-cabecera p::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+  opacity: .6;
+}
+
+/* Sobre fondo verde el eyebrow va en amarillo, como en las secciones
+   oscuras de la home (.fear y .final). */
+.puerta-marca {
+  margin: 0 0 28px;
+  color: var(--sunshine);
+}
+
+.puerta-titulo {
+  margin: 0 0 14px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(40px, 9vw, 56px);
+  line-height: 1.08;
+  letter-spacing: -.01em;
+}
+
+.puerta-texto {
+  margin: 0 auto 34px;
+  max-width: 36ch;
+  color: var(--on-dark-soft);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.puerta-form { margin: 0 0 26px; }
+
+.puerta-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: .8rem;
+  letter-spacing: .04em;
+  color: var(--on-dark-muted);
+}
+
+.puerta-fila {
+  display: flex;
+  gap: 8px;
+}
+
+.puerta-campo {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(243, 240, 230, .28);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, .22);
+  color: var(--on-dark);
+  font-family: var(--body);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.puerta-campo::placeholder {
+  color: rgba(243, 240, 230, .34);
+  letter-spacing: .12em;
+  font-weight: 400;
+}
+
+.puerta-campo:focus {
+  outline: none;
+  border-color: var(--sage);
+  background: rgba(0, 0, 0, .34);
+}
+
+.puerta-btn {
+  flex: 0 0 auto;
+  padding: 16px 26px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--sunshine);
+  color: #2A2200;
+  font-family: var(--body);
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  cursor: pointer;
+  transition: transform .35s var(--g-easing), filter .3s, box-shadow .3s;
+}
+
+.puerta-btn:hover { filter: brightness(1.06); }
+.puerta-btn:active { transform: scale(.97); }
+.puerta-btn[disabled] { opacity: .55; cursor: progress; }
+
+.puerta-error {
+  margin: 14px 0 0;
+  font-size: .9rem;
+  color: #FFC9C2;
+}
+
+.puerta-caja.tiembla { animation: tiembla .4s; }
+
+@keyframes tiembla {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-9px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+.puerta-pie {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.6;
+  color: var(--on-dark-muted);
+}
+
+.puerta-pie a { color: var(--sage); }
+
+/* Salida a la tienda para quien llega sin codigo. Fantasma sobre verde:
+   presente, pero sin competir con el boton de abrir. */
+.puerta-tienda {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 13px 26px;
+  border: 1px solid rgba(169, 199, 154, .45);
+  border-radius: 2px;
+  color: var(--on-dark);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  text-decoration: none;
+  transition: border-color .3s, background .3s;
+}
+
+.puerta-tienda:hover {
+  border-color: var(--sage);
+  background: rgba(169, 199, 154, .12);
+}
+
+
+/* ==========================================================================
+   BARRA SUPERIOR Y PROGRESO
+   ========================================================================== */
+
+.progreso {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 60;
+  background: transparent;
+  pointer-events: none;
+}
+
+.progreso i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--g-acento-claro), var(--sunshine));
+  transition: width .1s linear;
+}
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--g-barra-alto);
+  padding: 0 14px;
+  background: color-mix(in srgb, var(--g-fondo) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--g-linea);
+}
+
+.barra-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--g-linea);
+  border-radius: 2px;
+  background: var(--g-panel);
+  color: var(--g-texto);
+  font-family: var(--body);
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.barra-btn:hover { border-color: var(--g-linea-fuerte); }
+
+.barra-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.barra-btn--tema { padding: 0 10px; }
+.barra-btn--tema .ico-luna { display: none; }
+
+html[data-tema="oscuro"] .barra-btn--tema .ico-sol { display: none; }
+html[data-tema="oscuro"] .barra-btn--tema .ico-luna { display: block; }
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-tema="claro"]) .barra-btn--tema .ico-sol { display: none; }
+  html:not([data-tema="claro"]) .barra-btn--tema .ico-luna { display: block; }
+}
+
+.barra-titulo {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.16rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--g-texto);
+}
+
+/* --- Buscador --- */
+.buscador {
+  position: relative;
+  flex: 0 1 300px;
+  display: flex;
+  align-items: center;
+}
+
+.buscador-lupa {
+  position: absolute;
+  left: 11px;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--g-tenue);
+  stroke-width: 2;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.buscador-campo {
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 34px;
+  border: 1px solid var(--g-linea);
+  border-radius: 2px;
+  background: var(--g-panel);
+  color: var(--g-texto);
+  font-family: var(--body);
+  font-size: .92rem;
+}
+
+.buscador-campo::-webkit-search-cancel-button { display: none; }
+
+.buscador-campo:focus {
+  outline: none;
+  border-color: var(--g-acento-claro);
+  box-shadow: 0 0 0 3px var(--g-acento-fondo);
+}
+
+.buscador-limpiar {
+  position: absolute;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--g-suave);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.buscador-resultado {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border-left: 2px solid var(--g-acento);
+  background: var(--g-acento-fondo);
+  color: var(--g-acento);
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+
+/* ==========================================================================
+   ESTRUCTURA
+   ========================================================================== */
+
+.lienzo {
+  display: grid;
+  grid-template-columns: 292px minmax(0, var(--g-medida));
+  justify-content: center;
+  gap: 48px;
+  max-width: 1160px;   /* el mismo .wrap que usa toda la home */
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.contenido {
+  min-width: 0;
+  padding: 44px 0 96px;
+}
+
+.contenido > * { max-width: var(--g-medida); }
+
+
+/* --- Índice ------------------------------------------------------------- */
+
+.indice {
+  position: sticky;
+  top: var(--g-barra-alto);
+  align-self: start;
+  max-height: calc(100vh - var(--g-barra-alto));
+  padding: 34px 0 40px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.indice-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.indice-cabecera p {
+  margin: 0;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--g-tenue);
+}
+
+.indice-cerrar {
+  display: none;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--g-linea);
+  border-radius: 2px;
+  background: var(--g-panel);
+  color: var(--g-texto);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.idx-lista,
+.idx-sub {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.idx-enlace {
+  display: flex;
+  gap: 9px;
+  padding: 7px 12px 7px 10px;
+  border-left: 2px solid transparent;
+  color: var(--g-suave);
+  font-size: .9rem;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background .15s ease, color .15s ease;
+}
+
+.idx-enlace:hover {
+  background: var(--g-acento-fondo);
+  color: var(--g-texto);
+}
+
+.idx-num {
+  flex: 0 0 auto;
+  min-width: 1.3em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--g-tenue);
+}
+
+.idx-item.activo > .idx-enlace {
+  border-left-color: var(--g-acento);
+  background: var(--g-acento-fondo);
+  color: var(--g-acento);
+  font-weight: 700;
+}
+
+.idx-item.activo > .idx-enlace .idx-num { color: var(--g-acento); }
+
+/* Los subapartados solo se despliegan en la sección donde estás: si no,
+   diecinueve secciones con sus apartados dan una lista de sesenta enlaces
+   que no se puede recorrer con el pulgar. */
+.idx-sub {
+  display: none;
+  margin: 2px 0 8px 22px;
+  padding-left: 12px;
+  border-left: 1px solid var(--g-linea);
+}
+
+.idx-item.activo > .idx-sub { display: block; }
+
+.idx-sub a {
+  display: block;
+  padding: 5px 8px;
+  color: var(--g-suave);
+  font-size: .84rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.idx-sub a:hover { background: var(--g-acento-fondo); color: var(--g-texto); }
+.idx-sub a.activo { color: var(--g-acento); font-weight: 600; }
+
+.indice-tienda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 13px 12px 0;
+  border-top: 1px solid var(--g-linea);
+  color: var(--g-suave);
+  font-size: .88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.indice-tienda:hover { color: var(--g-acento); }
+
+.indice-tienda svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* ==========================================================================
+   PORTADA
+   ========================================================================== */
+
+.portada { margin-bottom: 56px; }
+
+.portada-ojo {
+  margin: 0 0 18px;
+  color: var(--g-acento);
+}
+
+.portada-titulo {
+  margin: 0 0 20px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(40px, 6.4vw, 64px);
+  line-height: 1.06;
+  letter-spacing: -.015em;
+}
+
+.portada-lead p {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--g-suave);
+}
+
+.portada-lead strong { color: var(--g-texto); font-weight: 600; }
+
+.portada-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 26px 0 34px;
+  padding: 0;
+  list-style: none;
+  font-size: .84rem;
+  color: var(--g-tenue);
+}
+
+.portada-meta li { display: flex; align-items: center; gap: 8px; }
+
+.portada-meta li + li::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--g-tenue);
+  opacity: .6;
+}
+
+/* --- Las tres rutas de entrada --- */
+.rutas {
+  display: grid;
+  gap: 12px;
+}
+
+.ruta {
+  position: relative;
+  display: block;
+  padding: 20px 52px 20px 22px;
+  border: 1px solid var(--g-linea);
+  border-radius: var(--g-radio);
+  background: var(--g-panel);
+  box-shadow: var(--g-sombra);
+  text-decoration: none;
+  color: inherit;
+  transition: transform .4s var(--g-easing), border-color .3s, box-shadow .4s;
+}
+
+.ruta:hover {
+  transform: translateY(-2px);
+  border-color: var(--g-linea-fuerte);
+  box-shadow: var(--g-sombra-alta);
+}
+
+.ruta-ojo {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--g-acento);
+}
+
+.ruta-nombre {
+  display: block;
+  margin-bottom: 5px;
+  font-family: var(--display);
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.ruta-detalle {
+  display: block;
+  font-size: .93rem;
+  line-height: 1.5;
+  color: var(--g-suave);
+}
+
+.ruta-flecha {
+  position: absolute;
+  top: 50%;
+  right: 22px;
+  transform: translateY(-50%);
+  font-size: 1.3rem;
+  color: var(--g-acento);
+  transition: transform .4s var(--g-easing);
+}
+
+.ruta:hover .ruta-flecha { transform: translate(4px, -50%); }
+
+
+/* ==========================================================================
+   SECCIONES
+   ========================================================================== */
+
+.seccion {
+  scroll-margin-top: calc(var(--g-barra-alto) + 18px);
+  padding-top: 44px;
+  margin-bottom: 8px;
+  border-top: 1px solid var(--g-linea);
+}
+
+.seccion:first-of-type { border-top: 0; }
+
+.sec-cabecera {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 14px;
+  margin-bottom: 22px;
+}
+
+.sec-num {
+  font-family: var(--display);
+  font-size: 2.6rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--g-acento);
+  opacity: .38;
+  font-variant-numeric: tabular-nums;
+}
+
+.sec-cabecera h2 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(31px, 4.4vw, 48px);
+  line-height: 1.14;
+  letter-spacing: -.01em;
+}
+
+.sec-tiempo {
+  flex: 0 0 100%;
+  margin-top: 6px;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--g-tenue);
+}
+
+.ancla {
+  opacity: 0;
+  margin-left: 6px;
+  color: var(--g-tenue);
+  font-weight: 400;
+  text-decoration: none;
+  transition: opacity .15s ease;
+}
+
+.sec-cabecera:hover .ancla,
+h3:hover .ancla,
+.ancla:focus-visible { opacity: 1; }
+
+.sec-cuerpo > *:first-child { margin-top: 0; }
+
+.sec-cuerpo h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  scroll-margin-top: calc(var(--g-barra-alto) + 18px);
+  margin: 42px 0 14px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.h3-num {
+  flex: 0 0 auto;
+  font-family: var(--body);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--g-acento);
+  opacity: .7;
+  font-variant-numeric: tabular-nums;
+}
+
+.sec-cuerpo p { margin: 0 0 16px; }
+
+.sec-cuerpo strong { font-weight: 700; color: var(--g-texto); }
+
+.sec-cuerpo ul,
+.sec-cuerpo ol {
+  margin: 0 0 20px;
+  padding-left: 1.3em;
+}
+
+.sec-cuerpo li { margin-bottom: 9px; }
+
+.sec-cuerpo li::marker { color: var(--g-acento); font-weight: 700; }
+
+.sec-cuerpo code {
+  padding: .12em .4em;
+  border-radius: 2px;
+  background: var(--g-acento-fondo);
+  font-size: .9em;
+}
+
+
+/* --- Rótulos que abren una lista, y su lista --- */
+.rotulo {
+  margin: 26px 0 12px !important;
+  font-size: 1.02rem;
+}
+
+.rotulo strong { font-weight: 700; }
+
+.rotulo--si strong,
+.rotulo--no strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rotulo--si strong::before,
+.rotulo--no strong::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
+}
+
+.rotulo--si strong::before {
+  background-color: var(--g-si-fondo);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231F7A3D' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.rotulo--no strong::before {
+  background-color: var(--g-no-fondo);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A93226' stroke-width='3.4' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
+}
+
+.lista--si,
+.lista--no {
+  list-style: none;
+  padding-left: 0 !important;
+  border-left: 3px solid;
+  padding-left: 18px !important;
+}
+
+.lista--si { border-color: var(--g-si); }
+.lista--no { border-color: var(--g-no); }
+
+.lista--si li,
+.lista--no li { position: relative; padding-left: 4px; }
+
+
+/* --- Avisos --- */
+.aviso {
+  margin: 24px 0;
+  padding: 16px 18px 16px 20px;
+  border-left: 4px solid var(--g-aviso-borde);
+  border-radius: 0 var(--g-radio) var(--g-radio) 0;
+  background: var(--g-aviso-fondo);
+  font-size: .99rem;
+  line-height: 1.62;
+}
+
+.aviso strong { color: var(--g-texto); }
+
+
+/* ==========================================================================
+   TABLAS
+   Son el corazón de este documento: hay más de setenta. En escritorio son
+   tablas normales; por debajo de 760px cada fila se convierte en una
+   tarjeta con la cabecera de cada columna delante del dato, porque una
+   tabla de siete columnas es ilegible en un teléfono.
+   ========================================================================== */
+
+.tabla-envoltura {
+  margin: 24px 0 28px;
+  border: 1px solid var(--g-linea);
+  border-radius: var(--g-radio);
+  background: var(--g-panel);
+  box-shadow: var(--g-sombra);
+  overflow: hidden;
+}
+
+.tabla-envoltura table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .93rem;
+}
+
+.tabla-envoltura thead {
+  background: var(--g-acento-fondo);
+}
+
+.tabla-envoltura th {
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--g-acento);
+  border-bottom: 1px solid var(--g-linea);
+  vertical-align: bottom;
+}
+
+.tabla-envoltura td {
+  padding: 13px 15px;
+  vertical-align: top;
+  line-height: 1.55;
+  border-bottom: 1px solid var(--g-linea);
+}
+
+.tabla-envoltura tbody tr:last-child td { border-bottom: 0; }
+
+.tabla-envoltura tbody tr:hover { background: var(--g-panel-2); }
+
+.tabla-envoltura td strong { color: var(--g-texto); }
+
+
+/* ==========================================================================
+   VARIANTES DE SECCIÓN
+   ========================================================================== */
+
+/* --- 1. Las 8 reglas: la primera columna es solo un número --- */
+[data-variante="reglas"] .tabla-envoltura th:first-child,
+[data-variante="reglas"] .tabla-envoltura td:first-child {
+  width: 46px;
+  text-align: center;
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--g-acento);
+}
+
+[data-variante="reglas"] .tabla-envoltura th:first-child {
+  font-size: .78rem;
+  font-family: var(--body);
+}
+
+/* --- 14. Los 12 errores: lista numerada como tarjetas --- */
+[data-variante="errores"] .sec-cuerpo ol {
+  counter-reset: err;
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  gap: 10px;
+}
+
+[data-variante="errores"] .sec-cuerpo ol li {
+  counter-increment: err;
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 15px 18px;
+  border: 1px solid var(--g-linea);
+  border-left: 3px solid var(--g-no);
+  background: var(--g-panel);
+}
+
+[data-variante="errores"] .sec-cuerpo ol li::before {
+  content: counter(err);
+  flex: 0 0 auto;
+  font-family: var(--display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--g-no);
+  opacity: .55;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 16. Tu rutina en una hoja: cada frecuencia, una tarjeta --- */
+[data-variante="rutina"] .sec-cuerpo p {
+  margin: 0 0 10px;
+  padding: 16px 20px;
+  border: 1px solid var(--g-linea);
+  border-radius: var(--g-radio);
+  background: var(--g-panel);
+  box-shadow: var(--g-sombra);
+}
+
+[data-variante="rutina"] .sec-cuerpo p strong {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--body);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--g-acento);
+}
+
+/* --- 18. Preguntas frecuentes: acordeón --- */
+.faq-item {
+  margin-bottom: 8px;
+  border: 1px solid var(--g-linea);
+  border-radius: var(--g-radio);
+  background: var(--g-panel);
+  overflow: hidden;
+}
+
+.faq-item[open] { border-color: var(--g-linea-fuerte); }
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.45;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+  content: "";
+  flex: 0 0 auto;
+  margin-left: auto;
+  width: 11px;
+  height: 11px;
+  border-right: 2px solid var(--g-acento);
+  border-bottom: 2px solid var(--g-acento);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .2s ease;
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.faq-item summary:hover { background: var(--g-acento-fondo); }
+
+.faq-cuerpo {
+  padding: 0 18px 4px;
+  border-top: 1px solid var(--g-linea);
+}
+
+.faq-cuerpo p { margin: 14px 0; color: var(--g-suave); }
+
+/* --- 19. Fuentes: enlaces como filas --- */
+[data-variante="fuentes"] .sec-cuerpo ul {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  gap: 4px;
+}
+
+[data-variante="fuentes"] .sec-cuerpo li { margin: 0; }
+
+[data-variante="fuentes"] .sec-cuerpo li a {
+  display: block;
+  padding: 11px 15px;
+  border: 1px solid var(--g-linea);
+  background: var(--g-panel);
+  font-size: .92rem;
+  text-decoration: none;
+}
+
+[data-variante="fuentes"] .sec-cuerpo li a:hover {
+  border-color: var(--g-linea-fuerte);
+  background: var(--g-acento-fondo);
+}
+
+/* --- 12. Diagnóstico: es la tabla que más se consulta con prisa --- */
+[data-variante="diagnostico"] .tabla-envoltura td:first-child {
+  font-weight: 600;
+  color: var(--g-texto);
+}
+
+
+/* ==========================================================================
+   BÚSQUEDA, CIERRE Y UTILIDADES
+   ========================================================================== */
+
+mark {
+  padding: .06em .18em;
+  border-radius: 2px;
+  background: var(--g-marca);
+  color: inherit;
+}
+
+.oculto-busqueda { display: none !important; }
+
+/* El contenedor centrado de la home, para que el cierre y el pie tengan el
+   mismo eje que el resto del sitio. */
+.wrap-guia {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.cierre {
+  margin-top: 90px;
+  padding: 76px 0 80px;
+  background: var(--pine);
+  color: var(--on-dark);
+  text-align: center;
+}
+
+.cierre-ojo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--sunshine);
+}
+
+.cierre-ojo::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 26px;
+  height: 1px;
+  background: var(--sunshine);
+  opacity: .6;
+}
+
+.cierre h2 {
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(30px, 5vw, 46px);
+}
+
+.cierre p {
+  margin: 20px auto 30px;
+  max-width: 52ch;
+  color: var(--on-dark-soft);
+  font-size: 18px;
+  line-height: 1.72;
+}
+
+.cierre-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cierre-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  /* Borde transparente como en .btn de style.css: sin el, el boton solido y
+     el fantasma miden distinto alto y se ven descuadrados uno al lado del otro. */
+  border: 1px solid transparent;
+  border-radius: 100px;
+  background: var(--sunshine);
+  color: #2A2200;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .35s var(--g-easing), filter .3s;
+}
+
+.cierre-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.cierre-btn svg { width: 20px; height: 20px; }
+
+/* El secundario, en fantasma: la accion principal sigue siendo escribirte. */
+.cierre-btn--fantasma {
+  background: transparent;
+  border: 1px solid rgba(169, 199, 154, .5);
+  color: var(--on-dark);
+  font-weight: 600;
+}
+
+.cierre-btn--fantasma:hover {
+  filter: none;
+  border-color: var(--sage);
+  background: rgba(169, 199, 154, .12);
+}
+
+/* El pie de la home, calcado: fondo pine-deep, logo a la izquierda, fila de
+   enlaces a la derecha y una línea de localización separada por un filete. */
+.pie {
+  background: var(--pine-deep);
+  color: var(--on-dark-muted);
+  padding: 52px 0 40px;
+}
+
+.pie-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.pie-marca img {
+  display: block;
+  width: 144px;
+  height: auto;
+}
+
+.pie-nav {
+  display: flex;
+  gap: 26px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pie a {
+  color: var(--on-dark-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pie a:hover { color: var(--sage); }
+
+.pie-loc {
+  width: 100%;
+  margin: 12px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(147, 160, 140, .14);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--sage);
+}
+
+.arriba {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--g-linea);
+  border-radius: 50%;
+  background: var(--g-panel);
+  color: var(--g-texto);
+  box-shadow: var(--g-sombra);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.arriba svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.velo {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  background: rgba(10, 20, 14, .5);
+  backdrop-filter: blur(2px);
+}
+
+
+/* ==========================================================================
+   MÓVIL Y TABLET
+   ========================================================================== */
+
+@media (max-width: 1080px) {
+  .lienzo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0 20px;
+  }
+
+  /* Sin barra lateral que equilibre, una columna pegada a la izquierda deja
+     un vacío enorme a la derecha. Se centra. */
+  .contenido {
+    max-width: var(--g-medida);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* El índice pasa a ser un cajón que entra por la izquierda. */
+  .indice {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 45;
+    width: min(320px, 86vw);
+    max-height: none;
+    padding: 18px 14px 40px;
+    background: var(--g-panel);
+    border-right: 1px solid var(--g-linea);
+    box-shadow: 0 0 40px rgba(0, 0, 0, .18);
+    transform: translateX(-102%);
+    transition: transform .26s cubic-bezier(.4, 0, .2, 1);
+    visibility: hidden;
+  }
+
+  .indice.abierto { transform: translateX(0); visibility: visible; }
+
+  .indice-cerrar { display: block; }
+
+  /* Con el cajón cerrado no hay contexto de dónde estás, así que aquí sí
+     se despliegan todos los subapartados: se navega buscando, no leyendo. */
+  .idx-sub { display: block; }
+}
+
+@media (min-width: 1081px) {
+  .barra-btn--indice { display: none; }
+  .velo { display: none !important; }
+}
+
+@media (max-width: 760px) {
+  body { font-size: 16.5px; }
+
+  .barra { gap: 8px; padding: 0 12px; }
+  .barra-titulo { display: none; }
+  .barra-btn--indice span { display: none; }
+  .barra-btn--indice { padding: 0 12px; }
+  .buscador { flex: 1 1 auto; }
+
+  /* Controles de 44px: esta guía se consulta de pie, junto a la maceta y a
+     menudo con las manos mojadas. Los 38px del escritorio se quedan cortos. */
+  .barra-btn,
+  .buscador-campo { height: 44px; }
+
+  .buscador-limpiar { width: 32px; height: 32px; }
+
+  .contenido { padding: 30px 0 80px; }
+  .portada { margin-bottom: 42px; }
+  .seccion { padding-top: 36px; }
+
+  .sec-num { font-size: 2rem; }
+  .sec-cabecera { gap: 0 10px; }
+
+  /* --- Tablas apiladas: cada fila, una tarjeta --- */
+  .tabla-envoltura {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .tabla-envoltura table,
+  .tabla-envoltura tbody,
+  .tabla-envoltura tr,
+  .tabla-envoltura td { display: block; width: 100%; }
+
+  .tabla-envoltura thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .tabla-envoltura tr {
+    margin-bottom: 10px;
+    border: 1px solid var(--g-linea);
+    border-radius: var(--g-radio);
+    background: var(--g-panel);
+    box-shadow: var(--g-sombra);
+    overflow: hidden;
+  }
+
+  .tabla-envoltura tbody tr:hover { background: var(--g-panel); }
+
+  .tabla-envoltura td {
+    padding: 11px 15px;
+    border-bottom: 1px solid var(--g-linea);
+  }
+
+  .tabla-envoltura td:last-child { border-bottom: 0; }
+
+  .tabla-envoltura td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 3px;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--g-tenue);
+  }
+
+  /* Una celda sin etiqueta no debe dejar el hueco del rótulo. */
+  .tabla-envoltura td[data-label=""]::before { display: none; }
+
+  /* En la tabla de las 8 reglas, el número encabeza la tarjeta. */
+  [data-variante="reglas"] .tabla-envoltura td:first-child {
+    width: 100%;
+    text-align: left;
+    padding-bottom: 4px;
+    border-bottom: 0;
+  }
+
+  [data-variante="reglas"] .tabla-envoltura td:first-child::before { display: none; }
+
+  .wrap-guia { padding: 0 20px; }
+  .cierre { margin-top: 64px; padding: 54px 0 58px; }
+  .cierre p { font-size: 16.5px; }
+
+  .pie { padding: 40px 0 32px; }
+
+  .pie-fila {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .pie-nav {
+    gap: 14px 22px;
+  }
+
+  .pie-marca img { width: 128px; }
+
+  .arriba { right: 14px; bottom: 14px; }
+}
+
+
+/* ==========================================================================
+   IMPRESIÓN
+   Mucha gente va a querer el papel en la mesa del patio. Se imprime la
+   guía entera, abierta, sin barra ni índice ni botones.
+   ========================================================================== */
+
+@media print {
+  .puerta,
+  .barra,
+  .progreso,
+  .indice,
+  .velo,
+  .arriba,
+  .buscador-resultado,
+  .rutas,
+  .ancla { display: none !important; }
+
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .lienzo { display: block; padding: 0; max-width: none; }
+  .contenido { padding: 0; max-width: none; }
+  .contenido > * { max-width: none; }
+
+  .seccion { break-inside: auto; page-break-inside: auto; }
+  .sec-cabecera { break-after: avoid; page-break-after: avoid; }
+  .sec-cuerpo h3 { break-after: avoid; page-break-after: avoid; }
+  .tabla-envoltura,
+  .aviso,
+  .faq-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+
+  .faq-item[open] > .faq-cuerpo,
+  .faq-cuerpo { display: block !important; }
+
+  .cierre,
+  .pie {
+    background: none;
+    color: #000;
+    padding: 18px 0 0;
+    border-top: 1px solid #999;
+  }
+
+  .cierre-ojo, .cierre-botones, .pie-nav { display: none !important; }
+  .cierre p, .pie-loc { color: #333; }
+  .wrap-guia { padding: 0; max-width: none; }
+
+  a { color: #000; text-decoration: underline; }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: .8em;
+    color: #555;
+  }
+}
+
+
+/* --- Respeto por quien pidió menos movimiento --------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

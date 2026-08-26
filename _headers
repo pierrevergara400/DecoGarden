@@ -3,3 +3,10 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=()
+
+# La guía de cuidado es privada: fuera de buscadores, de archivos y de
+# previsualizaciones. El meta robots de la página dice lo mismo, pero la
+# cabecera la respetan también los rastreadores que no ejecutan JavaScript.
+/guia-*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+  Referrer-Policy: no-referrer

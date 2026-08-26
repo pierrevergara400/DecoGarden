@@ -45,3 +45,22 @@ Images/**/raw/
 # Cloudflare Pages publica este repo tal cual, sin ejecutar nada. Si los
 # ignoras, el sitio se despliega sin las páginas de producto.
 # ==========================================================================
+
+# ==========================================================================
+# GUÍA DE CUIDADO PRIVADA
+#
+# Este repositorio es PÚBLICO. Nada de lo de abajo puede subirse nunca:
+#
+#   guia-fuente.md      el texto de la guía en claro
+#   guia-secreto.json   el código de acceso y la sal del cifrado
+#   qr/                 los QR, que llevan el código dentro de la imagen
+#
+# Lo único que se versiona es guia-<slug>.html, donde el contenido va
+# cifrado con AES-256-GCM: en GitHub se ve un bloque ilegible.
+#
+# Y recuerda que git guarda historial: si uno de estos archivos se commitea
+# aunque sea una vez, queda ahí para siempre aunque después lo borres.
+# ==========================================================================
+guia-fuente.md
+guia-secreto.json
+qr/
