@@ -65,7 +65,19 @@
       "priceCurrency": "USD",
       "price": "{{PRECIO_NUM}}",
       "availability": "https://schema.org/InStock",
-      "url": "https://decogarden.pages.dev/{{RUTA}}"
+      "url": "https://decogarden.pages.dev/{{RUTA}}",
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "{{ENVIO_VALOR}}",
+          "currency": "USD"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "EC"
+        }
+      }
     }
   }
   </script>
@@ -102,8 +114,8 @@
 
   <div class="marquee-bar" aria-hidden="true">
     <div class="track">
-      <span>Envío gratis</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
-      <span>Envío gratis</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>{{ENVIO_TAG}}</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>{{ENVIO_TAG}}</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
     </div>
   </div>
 
@@ -122,6 +134,7 @@
           <span class="price-now">{{PRECIO}}</span>
 {{BADGE_PRECIO}}
         </div>
+        <p class="envio-nota">{{ENVIO_NOTA}}</p>
         <button type="button" class="btn btn-primary checkout-cta" id="comprar" data-open-checkout>
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
@@ -298,7 +311,7 @@
       </svg>
       Comprar ahora — {{PRECIO}}
     </button>
-    <div class="micro">Envíos miércoles y viernes · 48 a 72h según distancia</div>
+    <div class="micro">{{ENVIO_TAG}} · Envíos miércoles y viernes · 48 a 72h según distancia</div>
   </section>
 
   <section class="blk">
@@ -400,6 +413,13 @@
       </button>
       <h3 id="checkoutTitle">{{NOMBRE}} — {{PRECIO}}</h3>
 
+      <ul class="checkout-desglose">
+        <li><span>Bonsái</span><b>{{PRECIO}}</b></li>
+        <li><span>Envío a todo el Ecuador</span><b>{{ENVIO_LINEA}}</b></li>
+        <li class="total"><span>Total</span><b>{{ENVIO_TOTAL}}</b></li>
+      </ul>
+      <p class="checkout-note">{{ENVIO_NOTA}}</p>
+
       <form id="checkoutForm">
         <div class="checkout-step" data-step="1">
           <p class="checkout-step-label">Paso 1 de 2 · Tus datos</p>
@@ -465,6 +485,7 @@
     (function () {
       const PRODUCTO = {{PRODUCTO_JS}};
       const PRECIO = {{PRECIO_JS}};
+      const ENVIO = {{ENVIO_JS}};
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -609,6 +630,9 @@
         const banco = data.get('banco');
 
         let msg = `Hola DecoGarden, quiero comprar el ${PRODUCTO} (${PRECIO}).\n`;
+        msg += ENVIO.gratis
+          ? `Envío: gratis (el pedido pasa de $${ENVIO.gratisDesde}). Total: ${ENVIO.total}\n`
+          : `Envío: $${ENVIO.costo}. Total: ${ENVIO.total}\n`;
         msg += `Nombre: ${nombre}\n`;
         msg += `Teléfono: ${telefono}\n`;
         msg += `Dirección: ${direccion}\n`;

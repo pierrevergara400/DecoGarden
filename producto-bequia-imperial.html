@@ -49,8 +49,8 @@
   </noscript>
 
   <link rel="stylesheet" href="tokens.css?v=024e730f">
-  <link rel="stylesheet" href="style.css?v=e49bd92d">
-  <link rel="stylesheet" href="producto.css?v=58f80843">
+  <link rel="stylesheet" href="style.css?v=dd7316f8">
+  <link rel="stylesheet" href="producto.css?v=9fc6d459">
 
   <script type="application/ld+json">
   {
@@ -65,7 +65,19 @@
       "priceCurrency": "USD",
       "price": "150",
       "availability": "https://schema.org/InStock",
-      "url": "https://decogarden.pages.dev/producto-bequia-imperial"
+      "url": "https://decogarden.pages.dev/producto-bequia-imperial",
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "USD"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "EC"
+        }
+      }
     }
   }
   </script>
@@ -159,6 +171,7 @@
           <span class="price-now">$150</span>
           <span class="save-tag">Envío gratis</span>
         </div>
+        <p class="envio-nota">Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral de $60.</p>
         <button type="button" class="btn btn-primary checkout-cta" id="comprar" data-open-checkout>
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
@@ -377,7 +390,7 @@
       </svg>
       Comprar ahora — $150
     </button>
-    <div class="micro">Envíos miércoles y viernes · 48 a 72h según distancia</div>
+    <div class="micro">Envío gratis · Envíos miércoles y viernes · 48 a 72h según distancia</div>
   </section>
 
   <section class="blk">
@@ -412,7 +425,7 @@
         <a class="related-card" href="/producto-bequia-pequena" style="text-decoration:none">
           <div class="pic"><img src="Images/bonsai-bequia-pequena.webp" alt="Bonsái Bequia o Árbol de la Vida Mini" loading="lazy"></div>
           <strong>Árbol de la Vida Mini</strong>
-          <span>$30</span>
+          <span>$35</span>
         </a>
         <a class="related-card" href="/producto-junipero-shakan" style="text-decoration:none">
           <div class="pic"><img src="Images/bonsai-junipero-shakan.webp" alt="Bonsái Juniperus Estilo Shakan" loading="lazy"></div>
@@ -441,7 +454,7 @@
         </details>
         <details>
           <summary>¿Por qué cuesta $150?<span class="plus"></span></summary>
-          <p>Porque son 24 años de trabajo, no 24 meses. El precio de un bonsái es sobre todo el tiempo que alguien invirtió en formarlo, y este es el árbol con más horas encima de todo el vivero. Si buscas el mismo simbolismo en un formato más accesible, el Árbol de la Vida Mini está en $30.</p>
+          <p>Porque son 24 años de trabajo, no 24 meses. El precio de un bonsái es sobre todo el tiempo que alguien invirtió en formarlo, y este es el árbol con más horas encima de todo el vivero. Si buscas el mismo simbolismo en un formato más accesible, el Árbol de la Vida Mini está en $35.</p>
         </details>
         <details>
           <summary>¿Es difícil de cuidar?<span class="plus"></span></summary>
@@ -524,6 +537,13 @@
       </button>
       <h3 id="checkoutTitle">Bonsái Bequia Imperial o Árbol de la Vida — $150</h3>
 
+      <ul class="checkout-desglose">
+        <li><span>Bonsái</span><b>$150</b></li>
+        <li><span>Envío a todo el Ecuador</span><b>Gratis</b></li>
+        <li class="total"><span>Total</span><b>$150</b></li>
+      </ul>
+      <p class="checkout-note">Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral de $60.</p>
+
       <form id="checkoutForm">
         <div class="checkout-step" data-step="1">
           <p class="checkout-step-label">Paso 1 de 2 · Tus datos</p>
@@ -584,11 +604,12 @@
     </div>
   </div>
 
-  <script src="app.js?v=d7ba12f3" defer></script>
+  <script src="app.js?v=91a0715c" defer></script>
   <script>
     (function () {
       const PRODUCTO = "Bequia Imperial, el Árbol de la Vida";
       const PRECIO = "$150";
+      const ENVIO = {"gratis": true, "costo": 6, "gratisDesde": 60, "total": "$150"};
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -733,6 +754,9 @@
         const banco = data.get('banco');
 
         let msg = `Hola DecoGarden, quiero comprar el ${PRODUCTO} (${PRECIO}).\n`;
+        msg += ENVIO.gratis
+          ? `Envío: gratis (el pedido pasa de $${ENVIO.gratisDesde}). Total: ${ENVIO.total}\n`
+          : `Envío: $${ENVIO.costo}. Total: ${ENVIO.total}\n`;
         msg += `Nombre: ${nombre}\n`;
         msg += `Teléfono: ${telefono}\n`;
         msg += `Dirección: ${direccion}\n`;

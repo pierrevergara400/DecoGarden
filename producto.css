@@ -377,6 +377,22 @@
   border-radius: 100px;
 }
 
+/* Cuando el envío se cobra no es una promoción: se dice, no se celebra */
+.product-hero .save-tag.ship-paid {
+  background: transparent;
+  color: var(--muted-ink);
+  border: 1px solid var(--accent-line);
+  font-weight: 700;
+}
+
+.product-hero .envio-nota {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted-ink);
+  max-width: 42ch;
+}
+
 .product-hero .rating-row {
   display: flex;
   align-items: center;
@@ -888,6 +904,46 @@
   color: var(--pine);
   margin: 0 0 20px;
   padding-right: 30px;
+}
+
+/* El total se ve antes de pedir datos: nadie descubre el envío al final */
+.checkout-desglose {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 14px 16px;
+  background: var(--paper-deep);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkout-desglose li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--muted-ink);
+}
+
+.checkout-desglose li b {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.checkout-desglose li.total {
+  border-top: 1px solid var(--accent-line);
+  padding-top: 8px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.checkout-desglose li.total b {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--pine);
 }
 
 .checkout-step-label {

@@ -79,6 +79,24 @@ const tabs = document.querySelectorAll('.filter-tab');
 const moreWrap = document.querySelector('.more-wrap');
 const moreBtn = document.getElementById('verMas');
 
+// Reglas de envío vigentes. Un solo lugar: la tarjeta, el schema y los textos
+// del sitio salen todos de aquí para que no se contradigan entre sí.
+const ENVIO = { costo: 6, gratisDesde: 60 };
+
+function precioNumerico(precio) {
+  const n = parseFloat(String(precio || '').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Un pedido de una sola pieza paga envío hasta llegar al umbral
+function envioGratis(precio) {
+  return precioNumerico(precio) >= ENVIO.gratisDesde;
+}
+
+function etiquetaEnvio(precio) {
+  return envioGratis(precio) ? 'Envío gratis' : `+ $${ENVIO.costo} de envío`;
+}
+
 // Campos sin los que una tarjeta no se puede mostrar de forma confiable
 const REQUIRED_FIELDS = ['nombre', 'imagen', 'categoria', 'precio', 'whatsappMsg'];
 
@@ -153,7 +171,7 @@ function renderCatalog() {
       <div class="info">
         <div class="card-tags">
           <span class="chip">${item.categoria === 'entrada' ? 'Para empezar' : 'De colección'}</span>
-          <span class="ship-tag">Envío gratis</span>
+          <span class="ship-tag ${envioGratis(item.precio) ? 'free' : 'paid'}">${etiquetaEnvio(item.precio)}</span>
         </div>
         ${titulo}
         <div class="meta">${item.especie} · ${item.altura} · ${item.edad}</div>
@@ -212,7 +230,19 @@ function injectCatalogSchema(items) {
             availability: sold.test(item.badgeTexto || '')
               ? 'https://schema.org/OutOfStock'
               : 'https://schema.org/InStock',
-            url: 'https://decogarden.pages.dev/#catalogo'
+            url: 'https://decogarden.pages.dev/#catalogo',
+            shippingDetails: {
+              '@type': 'OfferShippingDetails',
+              shippingRate: {
+                '@type': 'MonetaryAmount',
+                value: envioGratis(item.precio) ? '0' : String(ENVIO.costo),
+                currency: 'USD'
+              },
+              shippingDestination: {
+                '@type': 'DefinedRegion',
+                addressCountry: 'EC'
+              }
+            }
           }
         }
       };

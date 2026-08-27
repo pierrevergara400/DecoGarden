@@ -291,10 +291,51 @@ def bloque_specs(producto, specs_extra):
     )
 
 
-def bloque_badge(badge):
+# --- Reglas de envío -------------------------------------------------------
+# Mismos números que ENVIO en app.js. Si cambian, cámbialos en los dos sitios.
+ENVIO_COSTO = 6
+ENVIO_GRATIS_DESDE = 60
+
+
+def precio_num(precio):
+    try:
+        return float(re.sub(r"[^0-9.]", "", precio or ""))
+    except ValueError:
+        return 0.0
+
+
+def envio_gratis(precio):
+    """Una sola pieza solo viaja gratis si por sí sola pasa el umbral."""
+    return precio_num(precio) >= ENVIO_GRATIS_DESDE
+
+
+def etiqueta_envio(precio):
+    return "Envío gratis" if envio_gratis(precio) else f"+ ${ENVIO_COSTO} de envío"
+
+
+def nota_envio(precio):
+    if envio_gratis(precio):
+        return (
+            f"Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral "
+            f"de ${ENVIO_GRATIS_DESDE}."
+        )
+    return (
+        f"Envío ${ENVIO_COSTO} a cualquier ciudad del Ecuador, y es por pedido: "
+        f"desde ${ENVIO_GRATIS_DESDE} va gratis."
+    )
+
+
+def total_envio(precio):
+    total = precio_num(precio) if envio_gratis(precio) else precio_num(precio) + ENVIO_COSTO
+    return f"${total:g}"
+
+
+def bloque_badge(badge, precio):
+    """El badge manual manda; si no hay, se muestra la regla de envío."""
     if not badge:
-        return ""
-    return f'          <span class="save-tag">{esc(badge)}</span>'
+        badge = etiqueta_envio(precio)
+    clase = "save-tag" if envio_gratis(precio) else "save-tag ship-paid"
+    return f'          <span class="{clase}">{esc(badge)}</span>'
 
 
 def bloque_porque(tarjetas):
@@ -439,7 +480,12 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
         "{{PRECIO}}": esc(precio),
         "{{PRECIO_NUM}}": re.sub(r"[^0-9.]", "", precio),
         "{{BENEFICIOS}}": bloque_beneficios(datos["beneficios"]),
-        "{{BADGE_PRECIO}}": bloque_badge(datos.get("badgePrecio")),
+        "{{BADGE_PRECIO}}": bloque_badge(datos.get("badgePrecio"), precio),
+        "{{ENVIO_TAG}}": esc(etiqueta_envio(precio)),
+        "{{ENVIO_NOTA}}": esc(nota_envio(precio)),
+        "{{ENVIO_LINEA}}": "Gratis" if envio_gratis(precio) else f"${ENVIO_COSTO}",
+        "{{ENVIO_TOTAL}}": total_envio(precio),
+        "{{ENVIO_VALOR}}": "0" if envio_gratis(precio) else str(ENVIO_COSTO),
         "{{SPECS}}": bloque_specs(producto, datos.get("specsExtra", {})),
         "{{RESUMEN}}": esc(datos["resumen"]),
         "{{POR_QUE}}": bloque_porque(datos["porQue"]),
@@ -454,6 +500,15 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
         # Literales JS seguros (json.dumps escapa comillas y acentos correctamente)
         "{{PRODUCTO_JS}}": json.dumps(datos.get("nombreCorto", nombre), ensure_ascii=False),
         "{{PRECIO_JS}}": json.dumps(precio, ensure_ascii=False),
+        "{{ENVIO_JS}}": json.dumps(
+            {
+                "gratis": envio_gratis(precio),
+                "costo": ENVIO_COSTO,
+                "gratisDesde": ENVIO_GRATIS_DESDE,
+                "total": total_envio(precio),
+            },
+            ensure_ascii=False,
+        ),
         # Para el píxel de Meta: id del catálogo y precio numérico
         "{{ID_JS}}": json.dumps(pid, ensure_ascii=False),
     }

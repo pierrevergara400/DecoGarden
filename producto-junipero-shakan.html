@@ -49,8 +49,8 @@
   </noscript>
 
   <link rel="stylesheet" href="tokens.css?v=024e730f">
-  <link rel="stylesheet" href="style.css?v=e49bd92d">
-  <link rel="stylesheet" href="producto.css?v=58f80843">
+  <link rel="stylesheet" href="style.css?v=dd7316f8">
+  <link rel="stylesheet" href="producto.css?v=9fc6d459">
 
   <script type="application/ld+json">
   {
@@ -65,7 +65,19 @@
       "priceCurrency": "USD",
       "price": "55",
       "availability": "https://schema.org/InStock",
-      "url": "https://decogarden.pages.dev/producto-junipero-shakan"
+      "url": "https://decogarden.pages.dev/producto-junipero-shakan",
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "6",
+          "currency": "USD"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "EC"
+        }
+      }
     }
   }
   </script>
@@ -102,8 +114,8 @@
 
   <div class="marquee-bar" aria-hidden="true">
     <div class="track">
-      <span>Envío gratis</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
-      <span>Envío gratis</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>+ $6 de envío</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>+ $6 de envío</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
     </div>
   </div>
 
@@ -157,8 +169,9 @@
         </ul>
         <div class="price-row">
           <span class="price-now">$55</span>
-          <span class="save-tag">Envío gratis</span>
+          <span class="save-tag ship-paid">+ $6 de envío</span>
         </div>
+        <p class="envio-nota">Envío $6 a cualquier ciudad del Ecuador, y es por pedido: desde $60 va gratis.</p>
         <button type="button" class="btn btn-primary checkout-cta" id="comprar" data-open-checkout>
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path
@@ -379,7 +392,7 @@
       </svg>
       Comprar ahora — $55
     </button>
-    <div class="micro">Envíos miércoles y viernes · 48 a 72h según distancia</div>
+    <div class="micro">+ $6 de envío · Envíos miércoles y viernes · 48 a 72h según distancia</div>
   </section>
 
   <section class="blk">
@@ -526,6 +539,13 @@
       </button>
       <h3 id="checkoutTitle">Bonsái Juniperus Estilo Shakan — $55</h3>
 
+      <ul class="checkout-desglose">
+        <li><span>Bonsái</span><b>$55</b></li>
+        <li><span>Envío a todo el Ecuador</span><b>$6</b></li>
+        <li class="total"><span>Total</span><b>$61</b></li>
+      </ul>
+      <p class="checkout-note">Envío $6 a cualquier ciudad del Ecuador, y es por pedido: desde $60 va gratis.</p>
+
       <form id="checkoutForm">
         <div class="checkout-step" data-step="1">
           <p class="checkout-step-label">Paso 1 de 2 · Tus datos</p>
@@ -586,11 +606,12 @@
     </div>
   </div>
 
-  <script src="app.js?v=d7ba12f3" defer></script>
+  <script src="app.js?v=91a0715c" defer></script>
   <script>
     (function () {
       const PRODUCTO = "Juniperus Estilo Shakan";
       const PRECIO = "$55";
+      const ENVIO = {"gratis": false, "costo": 6, "gratisDesde": 60, "total": "$61"};
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -735,6 +756,9 @@
         const banco = data.get('banco');
 
         let msg = `Hola DecoGarden, quiero comprar el ${PRODUCTO} (${PRECIO}).\n`;
+        msg += ENVIO.gratis
+          ? `Envío: gratis (el pedido pasa de $${ENVIO.gratisDesde}). Total: ${ENVIO.total}\n`
+          : `Envío: $${ENVIO.costo}. Total: ${ENVIO.total}\n`;
         msg += `Nombre: ${nombre}\n`;
         msg += `Teléfono: ${telefono}\n`;
         msg += `Dirección: ${direccion}\n`;
