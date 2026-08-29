@@ -14,11 +14,17 @@ No edites esos archivos a mano: se sobrescriben en cada ejecución.
 
 import hashlib
 import html
+import io
 import json
 import re
 import sys
 from datetime import date
 from pathlib import Path
+
+try:
+    from PIL import Image
+except ImportError:  # sin Pillow se sigue publicando, con la imagen genérica
+    Image = None
 
 BASE = Path(__file__).resolve().parent
 PLANTILLA = BASE / "_plantilla-producto.html"
@@ -153,6 +159,69 @@ def descubrir_galeria(pid, nombre):
             print(f"  ! {f.name}: formato no soportado, se omite")
 
     return galeria
+
+
+# --- Previsualización al compartir el enlace -------------------------------
+# Cuadrada porque las fotos de producto lo son: un 1200x630 le cortaría la copa
+# y la maceta al árbol, que es justo lo que se quiere enseñar.
+OG_DIR = BASE / "Images" / "og"
+OG_LADO = 1200
+OG_GENERICA = "Images/og-preview.jpg"
+OG_GENERICA_LADO = 1254
+# Pasado ese peso WhatsApp empieza a no renderizar la tarjeta
+OG_MAX_BYTES = 300 * 1024
+
+
+def foto_principal(producto, galeria):
+    """La foto que abre la ficha: es la que se espera ver al compartirla."""
+    for item in galeria:
+        if item.get("tipo") != "video":
+            return item["src"]
+    return producto["imagen"]
+
+
+def generar_og(pid, origen):
+    """Escribe Images/og/<id>.jpg, cuadrada de 1200, para la previsualización.
+
+    Casi todo se comparte por WhatsApp y su rastreador trata mal el WebP: si el
+    og:image apuntara al archivo del catálogo, buena parte de las tarjetas
+    saldrían en blanco. Por eso se genera un JPEG aparte en vez de reutilizar
+    la foto que ya existe.
+    """
+    if Image is None:
+        return None
+
+    ruta = BASE / origen
+    if not ruta.is_file():
+        print(f"  ! {origen} no existe — la previsualización cae en la genérica")
+        return None
+
+    with Image.open(ruta) as original:
+        im = original.convert("RGB")
+
+    # Recorte centrado y luego escalado. Las fotos ya son casi cuadradas, así
+    # que esto solo lima el borde largo.
+    lado = min(im.size)
+    izq = (im.width - lado) // 2
+    arriba = (im.height - lado) // 2
+    im = im.crop((izq, arriba, izq + lado, arriba + lado))
+    im = im.resize((OG_LADO, OG_LADO), Image.LANCZOS)
+
+    # Se baja la calidad solo si hace falta, para no degradar sin motivo
+    for calidad in (88, 82, 76, 70):
+        buffer = io.BytesIO()
+        im.save(buffer, "JPEG", quality=calidad, optimize=True, progressive=True)
+        datos = buffer.getvalue()
+        if len(datos) <= OG_MAX_BYTES:
+            break
+
+    OG_DIR.mkdir(parents=True, exist_ok=True)
+    destino = OG_DIR / f"{pid}.jpg"
+    # Solo se escribe si cambió: si no, cada ejecución ensuciaría el diff
+    if not destino.exists() or destino.read_bytes() != datos:
+        destino.write_bytes(datos)
+        print(f"  IMG Images/og/{pid}.jpg ({len(datos) // 1024} KB, calidad {calidad})")
+    return f"Images/og/{pid}.jpg"
 
 
 def bloque_galeria(producto, galeria):
@@ -511,17 +580,20 @@ def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
         v for v in (producto.get("especie"), producto.get("altura"), producto.get("edad")) if v
     )
 
+    # Lo declarado a mano manda; si no, se descubre leyendo la carpeta
+    galeria = datos.get("galeria") or descubrir_galeria(pid, nombre)
+    og_imagen = generar_og(pid, foto_principal(producto, galeria))
+
     reemplazos = {
         "{{TITULO}}": esc(datos.get("titulo", nombre)),
+        "{{OG_IMAGEN}}": og_imagen or OG_GENERICA,
+        "{{OG_LADO}}": str(OG_LADO if og_imagen else OG_GENERICA_LADO),
         "{{META_DESC}}": esc(datos["metaDescripcion"]),
         "{{RUTA}}": ruta_publica(archivo),
         "{{NOMBRE}}": esc(nombre),
         "{{NOMBRE_CORTO}}": esc(datos.get("nombreCorto", nombre)),
         "{{IMAGEN}}": esc(producto["imagen"]),
-        # Lo declarado a mano manda; si no, se descubre leyendo la carpeta
-        "{{GALERIA}}": bloque_galeria(
-            producto, datos.get("galeria") or descubrir_galeria(pid, nombre)
-        ),
+        "{{GALERIA}}": bloque_galeria(producto, galeria),
         "{{EYEBROW}}": esc(eyebrow),
         "{{H1}}": h1,
         "{{PRECIO}}": esc(precio),
