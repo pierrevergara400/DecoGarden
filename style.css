@@ -1416,6 +1416,13 @@
         transition: none
       }
 
+      .dg-lightbox.open,
+      .dg-lightbox.closing,
+      .dg-lightbox.open img,
+      .dg-lightbox.closing img {
+        animation-duration: .01ms
+      }
+
       .btn:hover,
       .bonsai-card:hover,
       .float:hover {
@@ -1429,20 +1436,45 @@
       display: none;
       justify-content: center;
       align-items: center;
-      background: rgba(0, 0, 0, .75);
+      background: rgba(10, 18, 13, .82);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
       z-index: 1100;
       padding: 32px;
     }
 
     .dg-lightbox.open {
-      display: flex
+      display: flex;
+      animation: dg-lb-fondo-entra .22s ease-out both
+    }
+
+    /* Cerrar no es solo quitar .open: así la foto se esfumaba de golpe. app.js
+       pone .closing, deja correr esta animación y recién entonces la oculta.
+
+       Ojo con el nombre: tiene que ser DISTINTO al de la entrada. Reutilizarlo
+       cambiando solo la dirección no crea una animación nueva —el navegador
+       actualiza la vieja, que ya había terminado— y entonces animationend no
+       vuelve a dispararse nunca. */
+    .dg-lightbox.closing {
+      animation: dg-lb-fondo-sale .18s ease-in both
+    }
+
+    @keyframes dg-lb-fondo-entra {
+      from {
+        opacity: 0
+      }
+    }
+
+    @keyframes dg-lb-fondo-sale {
+      to {
+        opacity: 0
+      }
     }
 
     .dg-lightbox .dg-inner {
       position: relative;
       max-width: min(1200px, calc(100vw - 64px));
       max-height: calc(100vh - 64px);
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1459,8 +1491,53 @@
       max-height: 100%;
       display: block;
       border-radius: 12px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, .45);
+      /* Una sola sombra enorme cortaba seco contra el fondo oscuro. Tres capas
+         de desenfoque creciente caen como cae la luz de verdad, y el filo claro
+         de 1px despega la foto del fondo sin necesidad de una sombra dura.
+         (El recorte venía de .dg-inner: tenía overflow:hidden con 12px de
+         padding, o sea que serruchaba una sombra de 80px a los 12.) */
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, .08),
+        0 6px 16px rgba(0, 0, 0, .3),
+        0 20px 44px rgba(0, 0, 0, .34),
+        0 44px 96px rgba(0, 0, 0, .3);
       cursor: zoom-out;
+    }
+
+    .dg-lightbox.open img {
+      animation: dg-lb-foto-entra .34s cubic-bezier(.2, .8, .3, 1) both
+    }
+
+    .dg-lightbox.closing img {
+      animation: dg-lb-foto-sale .18s ease-in both
+    }
+
+    @keyframes dg-lb-foto-entra {
+      from {
+        opacity: 0;
+        transform: scale(.94) translateY(8px)
+      }
+    }
+
+    @keyframes dg-lb-foto-sale {
+      to {
+        opacity: 0;
+        transform: scale(.97)
+      }
+    }
+
+    /* En el móvil el margen de 32px se comía un tercio del ancho: se amplía una
+       foto justamente para verla grande. */
+    @media (max-width: 560px) {
+      .dg-lightbox {
+        padding: 14px;
+      }
+
+      .dg-lightbox .dg-inner {
+        max-width: calc(100vw - 28px);
+        max-height: calc(100vh - 28px);
+        padding: 8px;
+      }
     }
 
     /* Solo las fotos que NO son enlace se pueden ampliar */

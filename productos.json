@@ -401,7 +401,7 @@
       },
       {
         "titulo": "Veinte dólares, puesto en tu puerta",
-        "texto": "Envío de $6 a cualquier ciudad del país —gratis si tu pedido pasa de $60—, ficha de cuidado dentro de la caja y me tienes por WhatsApp tus primeros 30 días. El precio que ves es el que pagas."
+        "texto": "Envío de $6 —gratis si tu pedido pasa de $60—, a domicilio en Quito o al terminal terrestre de tu ciudad, ficha de cuidado dentro de la caja y me tienes por WhatsApp tus primeros 30 días. El precio que ves es el que pagas."
       }
     ],
     "cuidado": [
@@ -443,7 +443,7 @@
       },
       {
         "p": "¿Cuánto cuesta el envío?",
-        "r": "$6 a cualquier ciudad del Ecuador continental, y es por pedido: si llevas dos árboles pagas $6 una sola vez. Desde $60 el envío va gratis. Los envíos salen los miércoles y viernes desde San Antonio de Ibarra y tardan entre 48 y 72 horas según tu ciudad. Pagas con tarjeta (link de pago) o por transferencia bancaria."
+        "r": "$6 a cualquier ciudad del Ecuador continental, y es por pedido: si llevas dos árboles pagas $6 una sola vez. Desde $60 el envío va gratis. A domicilio solo llegamos a Quito; al resto del país el árbol viaja por encomienda de bus y lo retiras en el terminal terrestre de tu ciudad. Los envíos salen los miércoles y viernes desde San Antonio de Ibarra y tardan entre 48 y 72 horas según tu ciudad. Pagas con tarjeta (link de pago) o por transferencia bancaria."
       },
       {
         "p": "¿Y si llega mal?",
@@ -538,7 +538,7 @@
       },
       {
         "p": "¿Cuándo llega y cómo pago?",
-        "r": "Los envíos salen miércoles y viernes y tardan de 48 a 72h según tu distancia, con el envío incluido en el precio. Pagas por transferencia o con tarjeta mediante un link de pago seguro. Por el tamaño, esta pieza se empaca aparte y con refuerzo: te mando foto del empaque antes de que salga."
+        "r": "Los envíos salen miércoles y viernes y tardan de 48 a 72h según tu distancia, con el envío incluido en el precio. Si vives en Quito te lo llevamos a domicilio; si no, viaja por encomienda y lo retiras en el terminal terrestre de tu ciudad. Pagas por transferencia o con tarjeta mediante un link de pago seguro. Por el tamaño, esta pieza se empaca aparte y con refuerzo: te mando foto del empaque antes de que salga."
       }
     ],
     "relacionados": [

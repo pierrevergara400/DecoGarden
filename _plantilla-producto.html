@@ -114,8 +114,8 @@
 
   <div class="marquee-bar" aria-hidden="true">
     <div class="track">
-      <span>{{ENVIO_TAG}}</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
-      <span>{{ENVIO_TAG}}</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>{{ENVIO_TAG}}</span><span>·</span><span>A domicilio en Quito o al terminal de tu ciudad</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>{{ENVIO_TAG}}</span><span>·</span><span>A domicilio en Quito o al terminal de tu ciudad</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
     </div>
   </div>
 
@@ -232,8 +232,9 @@
         <div class="process-step">
           <div class="process-n">04</div>
           <div>
-            <h3>Lo recibes en casa</h3>
-            <p>Envíos miércoles y viernes, 48 a 72h según tu distancia.</p>
+            <h3>Lo recibes</h3>
+            <p>A domicilio si vives en Quito. En el resto del país lo retiras en el terminal terrestre de tu
+              ciudad. Salidas miércoles y viernes, 48 a 72h.</p>
           </div>
         </div>
         <div class="process-step">
@@ -311,7 +312,7 @@
       </svg>
       Comprar ahora — {{PRECIO}}
     </button>
-    <div class="micro">{{ENVIO_TAG}} · Envíos miércoles y viernes · 48 a 72h según distancia</div>
+    <div class="micro">{{ENVIO_TAG}} · Domicilio en Quito o terminal en tu ciudad · Envíos miércoles y viernes</div>
   </section>
 
   <section class="blk">
@@ -404,66 +405,131 @@
     <span>Escríbeme</span>
   </a>
 
+  <!-- Pasarela de pedido. Tres pasos, y el medidor de envío gratis visible en
+       los tres: el pedido llega a $60 sumando piezas, no adivinando. -->
   <div class="checkout-overlay" id="checkoutOverlay" hidden>
-    <div class="checkout-panel" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="checkout-panel" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" tabindex="-1">
       <button type="button" class="checkout-close" id="checkoutClose" aria-label="Cerrar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <line x1="5" y1="5" x2="19" y2="19" /><line x1="19" y1="5" x2="5" y2="19" />
         </svg>
       </button>
-      <h3 id="checkoutTitle">{{NOMBRE}} — {{PRECIO}}</h3>
 
-      <ul class="checkout-desglose">
-        <li><span>Bonsái</span><b>{{PRECIO}}</b></li>
-        <li><span>Envío a todo el Ecuador</span><b>{{ENVIO_LINEA}}</b></li>
-        <li class="total"><span>Total</span><b>{{ENVIO_TOTAL}}</b></li>
-      </ul>
-      <p class="checkout-note">{{ENVIO_NOTA}}</p>
+      <div class="checkout-head">
+        <p class="checkout-eyebrow">Pedido a DecoGarden</p>
+        <h3 id="checkoutTitle">Tu pedido</h3>
+        <ol class="checkout-stepper" id="checkoutStepper">
+          <li class="is-active"><span>1</span>Pedido</li>
+          <li><span>2</span>Envío</li>
+          <li><span>3</span>Pago</li>
+        </ol>
+      </div>
 
-      <form id="checkoutForm">
-        <div class="checkout-step" data-step="1">
-          <p class="checkout-step-label">Paso 1 de 2 · Tus datos</p>
-          <label>Nombre completo
-            <input type="text" name="nombre" required autocomplete="name">
-          </label>
-          <label>Teléfono / WhatsApp
-            <input type="tel" name="telefono" required autocomplete="tel">
-          </label>
-          <label>Ciudad y dirección de entrega
-            <input type="text" name="direccion" required autocomplete="street-address">
-          </label>
-          <p class="checkout-note">Los envíos salen miércoles y viernes, y tardan de 48 a 72h según tu distancia
-            a San Antonio de Ibarra.</p>
-          <button type="button" class="btn btn-primary" id="checkoutNext">Continuar</button>
+      <!-- novalidate a propósito: los pasos ocultos llevan campos required y el
+           navegador no puede enfocarlos para avisar. La validación la hacemos
+           paso a paso con reportValidity(). -->
+      <form id="checkoutForm" class="checkout-form" novalidate>
+        <div class="checkout-body" id="checkoutBody">
+          <div class="ship-meter" id="shipMeter">
+            <p class="ship-meter-msg" id="shipMeterMsg"></p>
+            <div class="ship-meter-track" id="shipMeterTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+              aria-label="Progreso hacia el envío gratis">
+              <span class="ship-meter-fill" id="shipMeterFill"></span>
+            </div>
+            <p class="ship-meter-foot" id="shipMeterFoot"></p>
+          </div>
+
+          <section class="checkout-step" data-step="1">
+            <ul class="order-list" id="orderList" aria-label="Bonsáis de tu pedido"></ul>
+            <p class="addons-title">Suma otro bonsái</p>
+            <p class="addons-sub" id="addonsSub"></p>
+            <ul class="addon-list" id="addonList"></ul>
+            <p class="addons-empty" id="addonsEmpty" hidden>Ya tienes en el pedido todo lo que hay disponible ahora
+              mismo.</p>
+            <button type="button" class="addons-more" id="addonsMore" hidden></button>
+          </section>
+
+          <section class="checkout-step" data-step="2" hidden>
+            <p class="checkout-step-label">Cómo lo recibes</p>
+            <!-- Ninguna viene marcada a propósito: la mayoría del país no está
+                 en Quito, y dar el domicilio por hecho pediría una dirección
+                 que no vamos a poder usar. -->
+            <label class="payment-option">
+              <input type="radio" name="entrega" value="domicilio" required>
+              <span>A domicilio en Quito
+                <em>Te lo llevamos hasta la puerta.</em>
+              </span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="entrega" value="terminal" required>
+              <span>Retiro en el terminal de mi ciudad
+                <em>Va por encomienda de bus desde Ibarra. Misma tarifa.</em>
+              </span>
+            </label>
+
+            <div class="checkout-row">
+              <label>Nombre completo
+                <input type="text" name="nombre" required autocomplete="name">
+              </label>
+              <label>WhatsApp
+                <input type="tel" name="telefono" required autocomplete="tel" inputmode="tel" placeholder="09...">
+              </label>
+            </div>
+            <label id="campoDireccion" hidden>Dirección y referencia en Quito
+              <input type="text" name="direccion" autocomplete="street-address">
+            </label>
+            <label id="campoCiudad" hidden>Ciudad donde lo retiras
+              <input type="text" name="ciudad" autocomplete="address-level2"
+                placeholder="Ambato, Cuenca, Loja...">
+            </label>
+            <p class="checkout-note" id="notaEntrega">Los envíos salen miércoles y viernes, y tardan de 48 a 72h
+              desde San Antonio de Ibarra. Te confirmamos la fecha exacta por WhatsApp.</p>
+          </section>
+
+          <section class="checkout-step" data-step="3" hidden>
+            <p class="checkout-step-label">Cómo prefieres pagar</p>
+            <ul class="checkout-recap" id="checkoutRecap" aria-label="Resumen del pedido"></ul>
+            <label class="payment-option">
+              <input type="radio" name="pago" value="Tarjeta (link de pago)" required>
+              <span>Tarjeta — link de pago
+                <em>Te llega un enlace seguro por WhatsApp. Débito o crédito.</em>
+              </span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="pago" value="Transferencia bancaria" required>
+              <span>Transferencia bancaria
+                <em>Cuentas en Pichincha, Guayaquil e Internacional.</em>
+              </span>
+            </label>
+            <label class="checkout-bank" id="checkoutBankField" hidden>Banco al que vas a transferir
+              <select name="banco">
+                <option value="">Selecciona...</option>
+                <option>Banco Pichincha</option>
+                <option>Banco Guayaquil</option>
+                <option>Banco Internacional</option>
+              </select>
+            </label>
+            <p class="checkout-note">Nada se cobra en esta página: al confirmar se abre WhatsApp con tu pedido escrito
+              y ahí cerramos el pago.</p>
+          </section>
         </div>
 
-        <div class="checkout-step" data-step="2" hidden>
-          <p class="checkout-step-label">Paso 2 de 2 · Método de pago</p>
-          <label class="payment-option">
-            <input type="radio" name="pago" value="Tarjeta (link de pago)" required>
-            <span>Tarjeta — link de pago</span>
-          </label>
-          <label class="payment-option">
-            <input type="radio" name="pago" value="Transferencia bancaria" required>
-            <span>Transferencia bancaria</span>
-          </label>
-          <label class="checkout-bank" id="checkoutBankField" hidden>Banco de tu preferencia
-            <select name="banco">
-              <option value="">Selecciona...</option>
-              <option>Banco Pichincha</option>
-              <option>Banco Guayaquil</option>
-              <option>Produbanco</option>
-              <option>Banco del Pacífico</option>
-              <option>Banco Internacional</option>
-              <option>Otro</option>
-            </select>
-          </label>
-          <p class="checkout-note">Con tarjeta te llega un link de pago seguro. Con transferencia, te paso los
-            datos de la cuenta por WhatsApp según el banco que elijas.</p>
+        <div class="checkout-foot">
+          <ul class="checkout-desglose">
+            <li><span id="dgSubtotalLabel">Subtotal</span><b id="dgSubtotal">{{PRECIO}}</b></li>
+            <li><span id="dgEnvioLabel">Envío a todo el Ecuador</span><b id="dgEnvio">{{ENVIO_LINEA}}</b></li>
+            <li class="total"><span>Total</span><b id="dgTotal">{{ENVIO_TOTAL}}</b></li>
+          </ul>
           <div class="checkout-actions">
-            <button type="button" class="checkout-back" id="checkoutBack">← Volver</button>
-            <button type="submit" class="btn btn-primary">Confirmar pedido por WhatsApp</button>
+            <button type="button" class="checkout-back" id="checkoutBack" hidden>← Volver</button>
+            <button type="submit" class="btn btn-primary" id="checkoutPrimary">Continuar</button>
           </div>
+          <p class="checkout-foot-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z" />
+            </svg>
+            Cierras por WhatsApp con una persona real · Garantía de llegada sana
+          </p>
         </div>
       </form>
 
@@ -484,8 +550,9 @@
   <script>
     (function () {
       const PRODUCTO = {{PRODUCTO_JS}};
-      const PRECIO = {{PRECIO_JS}};
       const ENVIO = {{ENVIO_JS}};
+      const PIEZA = {{PIEZA_JS}};        // el bonsái de esta página
+      const SUMABLES = {{SUMABLES_JS}};  // el resto del catálogo disponible
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -553,122 +620,410 @@
         }
       }
 
+      // --- Pasarela de pedido -------------------------------------------
+      // El pedido vive aquí, en memoria de la página. La pieza de esta página
+      // siempre va primero y no se puede quitar; lo demás se suma o se saca.
+      const WHATSAPP = 'https://wa.me/593963136655';
+      const VISIBLES = 3; // sumables a la vista antes de desplegar el resto
+
       const overlay = document.getElementById('checkoutOverlay');
+      const panel = overlay.querySelector('.checkout-panel');
       const form = document.getElementById('checkoutForm');
-      const step1 = form.querySelector('[data-step="1"]');
-      const step2 = form.querySelector('[data-step="2"]');
+      const cuerpo = document.getElementById('checkoutBody');
+      const secciones = [...form.querySelectorAll('.checkout-step')];
+      const marcas = [...document.querySelectorAll('#checkoutStepper li')];
+      const listaPedido = document.getElementById('orderList');
+      const listaSumables = document.getElementById('addonList');
+      const sumablesSub = document.getElementById('addonsSub');
+      const sumablesVacio = document.getElementById('addonsEmpty');
+      const sumablesMas = document.getElementById('addonsMore');
+      const recap = document.getElementById('checkoutRecap');
+      const medidor = document.getElementById('shipMeter');
+      const medidorMsg = document.getElementById('shipMeterMsg');
+      const medidorPista = document.getElementById('shipMeterTrack');
+      const medidorRelleno = document.getElementById('shipMeterFill');
+      const medidorPie = document.getElementById('shipMeterFoot');
+      const campoDireccion = document.getElementById('campoDireccion');
+      const campoCiudad = document.getElementById('campoCiudad');
+      const notaEntrega = document.getElementById('notaEntrega');
       const bankField = document.getElementById('checkoutBankField');
       const bankSelect = bankField.querySelector('select');
+      const btnPrincipal = document.getElementById('checkoutPrimary');
+      const btnVolver = document.getElementById('checkoutBack');
+      const fallback = document.getElementById('checkoutFallback');
 
-      function openCheckout() {
+      const ICONO_CAJA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h13v9H3zM16 11h3.5l1.5 3v3h-5"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>';
+      const ICONO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>';
+      const ICONO_MAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>';
+      const ICONO_QUITAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      let paso = 1;
+      let verTodos = false;
+      let envioEraGratis = false; // para pulsar el medidor solo al cruzar el umbral
+      let recienSumado = null;    // id de la pieza que acaba de entrar al pedido
+      const pedido = [PIEZA];
+
+      const dinero = (n) => '$' + (Math.round(n * 100) / 100);
+      const subtotal = () => pedido.reduce((t, p) => t + p.precio, 0);
+      const envioGratis = () => subtotal() >= ENVIO.gratisDesde;
+      const costoEnvio = () => (envioGratis() ? 0 : ENVIO.costo);
+      const total = () => subtotal() + costoEnvio();
+      const falta = () => Math.max(0, ENVIO.gratisDesde - subtotal());
+      const enPedido = (id) => pedido.some(p => p.id === id);
+
+      // Lo que todavía se puede sumar. Arriba va un solo recomendado —el más
+      // barato que ya cierra la brecha— y detrás el resto de menor a mayor
+      // precio. Poner arriba a todos los que la cierran arruinaba las páginas
+      // baratas: quien mira un bonsái de $20 se topaba con tres de $45 o más.
+      function sumablesOrdenados() {
+        const disponibles = SUMABLES
+          .filter(p => !enPedido(p.id))
+          .slice()
+          .sort((a, b) => a.precio - b.precio);
+        const brecha = falta();
+        const recomendado = brecha > 0
+          ? disponibles.find(p => p.precio >= brecha)
+          : null;
+        if (!recomendado) return disponibles;
+        return [recomendado, ...disponibles.filter(p => p !== recomendado)];
+      }
+
+      function pintarMedidor() {
+        const libre = envioGratis();
+        const pct = Math.min(100, Math.round((subtotal() / ENVIO.gratisDesde) * 100));
+        medidor.classList.toggle('is-free', libre);
+        // Solo en el salto de "no llega" a "llega". Si se pulsara en cada
+        // repintado, el medidor temblaría con cada tecla del formulario.
+        if (libre && !envioEraGratis) {
+          medidor.classList.remove('celebra');
+          void medidor.offsetWidth; // reinicia la animación si se repite
+          medidor.classList.add('celebra');
+        }
+        envioEraGratis = libre;
+        medidorRelleno.style.width = pct + '%';
+        medidorPista.setAttribute('aria-valuenow', String(pct));
+        if (libre) {
+          medidorMsg.innerHTML = ICONO_OK + `<span>Envío gratis desbloqueado — te ahorras $${ENVIO.costo}</span>`;
+          medidorPie.textContent = `Tu pedido pasa de $${ENVIO.gratisDesde}, así que la entrega corre por nuestra cuenta.`;
+        } else {
+          medidorMsg.innerHTML = ICONO_CAJA + `<span>Te faltan <b>${dinero(falta())}</b> para el envío gratis</span>`;
+          medidorPie.textContent = `Hoy el envío suma $${ENVIO.costo}. Desde $${ENVIO.gratisDesde} en un mismo pedido, va gratis.`;
+        }
+      }
+
+      function pintarPedido() {
+        listaPedido.innerHTML = pedido.map((p, i) => `
+          <li class="order-line${p.id === recienSumado ? ' es-nueva' : ''}">
+            <img src="${p.imagen}" alt="" loading="lazy" decoding="async" onerror="this.remove()">
+            <div class="order-line-text">
+              <strong>${p.nombre}</strong>
+              <span>${p.nota}</span>
+            </div>
+            <span class="order-line-price">${dinero(p.precio)}</span>
+            ${i === 0 ? '' : `<button type="button" class="order-line-drop" data-quitar="${p.id}" aria-label="Quitar ${p.nombre} del pedido">${ICONO_QUITAR}</button>`}
+          </li>`).join('');
+      }
+
+      function pintarSumables() {
+        const lista = sumablesOrdenados();
+        const brecha = falta();
+
+        sumablesVacio.hidden = lista.length > 0;
+        sumablesSub.textContent = envioGratis()
+          ? 'Ya tienes el envío gratis: cualquier bonsái que sumes viaja en la misma caja sin costo extra.'
+          : 'Van todos en el mismo envío. Con uno más el pedido suele pasar los $' + ENVIO.gratisDesde + '.';
+
+        // Marcamos uno solo: el que sumablesOrdenados() dejó de primero. Si se
+        // marcan todos los que cierran la brecha, el distintivo no señala nada.
+        const recomendado = brecha > 0 && lista.length && lista[0].precio >= brecha
+          ? lista[0].id
+          : null;
+
+        const visibles = verTodos ? lista : lista.slice(0, VISIBLES);
+        listaSumables.innerHTML = visibles.map(p => {
+          const libera = p.id === recomendado;
+          return `
+          <li class="addon-row${libera ? ' is-key' : ''}">
+            <img src="${p.imagen}" alt="" loading="lazy" decoding="async" onerror="this.remove()">
+            <div class="addon-text">
+              <strong>${p.nombre}</strong>
+              <span>${p.nota}</span>
+              ${libera ? '<span class="addon-flag">Con este, envío gratis</span>' : ''}
+            </div>
+            <button type="button" class="addon-add" data-sumar="${p.id}" aria-label="Añadir ${p.nombre} por ${dinero(p.precio)}">
+              ${ICONO_MAS}${dinero(p.precio)}
+            </button>
+          </li>`;
+        }).join('');
+
+        const restantes = lista.length - VISIBLES;
+        sumablesMas.hidden = restantes <= 0;
+        if (!sumablesMas.hidden) {
+          sumablesMas.textContent = verTodos
+            ? 'Ver menos'
+            : `Ver los ${restantes} bonsáis restantes`;
+        }
+      }
+
+      // Qué modalidad de entrega está elegida, o null si todavía ninguna.
+      function modoEntrega() {
+        const elegido = form.querySelector('input[name="entrega"]:checked');
+        return elegido ? elegido.value : null;
+      }
+
+      // A domicilio solo llegamos a Quito; el resto del país retira en el
+      // terminal de su ciudad. Cada caso pide un dato distinto, así que
+      // mostramos uno u otro en vez de pedir los dos siempre.
+      function aplicarEntrega() {
+        const modo = modoEntrega();
+        campoDireccion.hidden = modo !== 'domicilio';
+        campoCiudad.hidden = modo !== 'terminal';
+        campoDireccion.querySelector('input').required = modo === 'domicilio';
+        campoCiudad.querySelector('input').required = modo === 'terminal';
+        if (modo === 'domicilio') {
+          notaEntrega.textContent = 'Solo entregamos a domicilio dentro de Quito. Salimos miércoles y viernes desde '
+            + 'San Antonio de Ibarra, y te confirmamos el día por WhatsApp.';
+        } else if (modo === 'terminal') {
+          notaEntrega.textContent = 'Lo despachamos por encomienda de bus al terminal terrestre de tu ciudad y te '
+            + 'pasamos la guía por WhatsApp para que lo retires. Salidas miércoles y viernes, 48 a 72h.';
+        } else {
+          notaEntrega.textContent = 'Los envíos salen miércoles y viernes, y tardan de 48 a 72h desde San Antonio '
+            + 'de Ibarra. Te confirmamos la fecha exacta por WhatsApp.';
+        }
+        pintarTotales();
+      }
+
+      function pintarTotales() {
+        document.getElementById('dgSubtotalLabel').textContent =
+          pedido.length === 1 ? 'Subtotal (1 bonsái)' : `Subtotal (${pedido.length} bonsáis)`;
+        document.getElementById('dgSubtotal').textContent = dinero(subtotal());
+        const modo = modoEntrega();
+        document.getElementById('dgEnvioLabel').textContent =
+          modo === 'domicilio' ? 'Envío a domicilio en Quito'
+            : modo === 'terminal' ? 'Envío al terminal de tu ciudad'
+              : 'Envío a todo el Ecuador';
+        document.getElementById('dgEnvio').innerHTML = envioGratis()
+          ? `<span class="was">$${ENVIO.costo}</span><span class="free">Gratis</span>`
+          : dinero(ENVIO.costo);
+        document.getElementById('dgTotal').textContent = dinero(total());
+      }
+
+      function pintarRecap() {
+        recap.innerHTML = pedido
+          .map(p => `<li><span>${p.nombre}</span><b>${dinero(p.precio)}</b></li>`)
+          .join('') +
+          `<li><span>Envío</span><b>${envioGratis() ? 'Gratis' : dinero(ENVIO.costo)}</b></li>`;
+      }
+
+      function refrescar() {
+        pintarMedidor();
+        pintarPedido();
+        pintarSumables();
+        pintarTotales();
+        if (paso === 3) pintarRecap();
+        recienSumado = null; // la fila ya se pintó: el próximo repintado no la resalta
+      }
+
+      function irA(n) {
+        paso = n;
+        secciones.forEach(s => { s.hidden = Number(s.dataset.step) !== paso; });
+        marcas.forEach((li, i) => {
+          li.classList.toggle('is-active', i + 1 === paso);
+          li.classList.toggle('is-done', i + 1 < paso);
+        });
+        btnVolver.hidden = paso === 1;
+        btnPrincipal.textContent = paso === 3 ? 'Confirmar por WhatsApp' : 'Continuar';
+        if (paso === 3) pintarRecap();
+        cuerpo.scrollTop = 0;
+      }
+
+      let finCierre;
+
+      function abrirCheckout() {
+        clearTimeout(finCierre);
+        overlay.classList.remove('closing');
         dgTrack('InitiateCheckout', {
-          content_ids: [window.DG_PRODUCTO.id],
+          content_ids: pedido.map(p => p.id),
           content_name: PRODUCTO,
           content_type: 'product',
-          value: window.DG_PRODUCTO.precio
+          num_items: pedido.length,
+          value: total(),
+          currency: 'USD'
         });
         overlay.hidden = false;
         document.body.style.overflow = 'hidden';
-        form.querySelector('[name="nombre"]').focus();
+        form.hidden = false;
+        fallback.hidden = true;
+        irA(1);
+        aplicarEntrega();
+        refrescar();
+        panel.focus();
       }
 
-      function closeCheckout() {
-        overlay.hidden = true;
+      // Cierra en dos tiempos: primero la animación de salida y, cuando
+      // termina, se oculta de verdad y se deja el modal listo para la próxima.
+      function cerrarCheckout() {
+        if (overlay.hidden || overlay.classList.contains('closing')) return;
+        overlay.classList.add('closing');
         document.body.style.overflow = '';
-        // Si quedó mostrando el plan B, volvemos al formulario para la próxima vez
-        form.hidden = false;
-        document.getElementById('checkoutFallback').hidden = true;
+
+        const terminar = () => {
+          clearTimeout(finCierre);
+          overlay.removeEventListener('animationend', alTerminarAnimacion);
+          overlay.classList.remove('closing');
+          overlay.hidden = true;
+          // Si quedó mostrando el plan B, volvemos al formulario
+          form.hidden = false;
+          fallback.hidden = true;
+        };
+        // Solo la salida del propio modal cuenta. Las animaciones de los pasos
+        // también burbujean hasta aquí, y una que terminara a destiempo
+        // recortaría el cierre a la mitad.
+        const alTerminarAnimacion = (e) => {
+          if (e.target === overlay || e.target === panel) terminar();
+        };
+        // Respaldo por si la animación no llega a correr: el modal no se queda
+        // atascado en pantalla.
+        finCierre = setTimeout(terminar, 260);
+        overlay.addEventListener('animationend', alTerminarAnimacion);
       }
 
       document.querySelectorAll('[data-open-checkout]').forEach(btn => {
-        btn.addEventListener('click', openCheckout);
+        btn.addEventListener('click', abrirCheckout);
       });
-
-      document.getElementById('checkoutClose').addEventListener('click', closeCheckout);
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCheckout(); });
+      document.getElementById('checkoutClose').addEventListener('click', cerrarCheckout);
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !overlay.hidden) closeCheckout();
+        if (e.key === 'Escape' && !overlay.hidden) cerrarCheckout();
       });
 
-      document.getElementById('checkoutNext').addEventListener('click', () => {
-        if (!step1.querySelector('input[name="nombre"]').reportValidity()) return;
-        if (!step1.querySelector('input[name="telefono"]').reportValidity()) return;
-        if (!step1.querySelector('input[name="direccion"]').reportValidity()) return;
+      listaSumables.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-sumar]');
+        if (!btn) return;
+        const pieza = SUMABLES.find(p => p.id === btn.dataset.sumar);
+        if (!pieza || enPedido(pieza.id)) return;
+        pedido.push(pieza);
+        recienSumado = pieza.id;
         dgTrack('AddToCart', {
-          content_ids: [window.DG_PRODUCTO.id],
-          content_name: PRODUCTO,
+          content_ids: [pieza.id],
+          content_name: pieza.nombre,
           content_type: 'product',
-          value: window.DG_PRODUCTO.precio
+          value: pieza.precio,
+          currency: 'USD'
         });
-        step1.hidden = true;
-        step2.hidden = false;
+        refrescar();
       });
 
-      document.getElementById('checkoutBack').addEventListener('click', () => {
-        step2.hidden = true;
-        step1.hidden = false;
+      listaPedido.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-quitar]');
+        if (!btn) return;
+        const i = pedido.findIndex(p => p.id === btn.dataset.quitar);
+        if (i > 0) pedido.splice(i, 1); // el 0 es la pieza de esta página
+        refrescar();
+      });
+
+      sumablesMas.addEventListener('click', () => {
+        verTodos = !verTodos;
+        pintarSumables();
+      });
+
+      btnVolver.addEventListener('click', () => irA(paso - 1));
+
+      form.querySelectorAll('input[name="entrega"]').forEach(radio => {
+        radio.addEventListener('change', aplicarEntrega);
       });
 
       form.querySelectorAll('input[name="pago"]').forEach(radio => {
         radio.addEventListener('change', () => {
           dgTrack('AddPaymentInfo', {
-            content_ids: [window.DG_PRODUCTO.id],
-            value: window.DG_PRODUCTO.precio
+            content_ids: pedido.map(p => p.id),
+            value: total(),
+            currency: 'USD'
           });
           bankField.hidden = radio.value !== 'Transferencia bancaria';
-          bankSelect.required = !bankField.hidden;
         });
       });
 
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const data = new FormData(form);
-        const nombre = data.get('nombre');
-        const telefono = data.get('telefono');
-        const direccion = data.get('direccion');
-        const pago = data.get('pago');
-        const banco = data.get('banco');
+      function validarDatos() {
+        if (!modoEntrega()) {
+          return form.querySelector('input[name="entrega"]').reportValidity();
+        }
+        // Los campos del modo que no se eligió están ocultos: pedirlos sería
+        // exigir un dato que ni siquiera se ve en pantalla.
+        const campos = [...secciones[1].querySelectorAll('input:not([type="radio"])')]
+          .filter(campo => !campo.closest('label').hidden);
+        return campos.every(campo => campo.reportValidity());
+      }
 
-        let msg = `Hola DecoGarden, quiero comprar el ${PRODUCTO} (${PRECIO}).\n`;
-        msg += ENVIO.gratis
-          ? `Envío: gratis (el pedido pasa de $${ENVIO.gratisDesde}). Total: ${ENVIO.total}\n`
-          : `Envío: $${ENVIO.costo}. Total: ${ENVIO.total}\n`;
-        msg += `Nombre: ${nombre}\n`;
-        msg += `Teléfono: ${telefono}\n`;
-        msg += `Dirección: ${direccion}\n`;
+      function enviarPedido() {
+        const datos = new FormData(form);
+        const pago = datos.get('pago');
+        const banco = datos.get('banco');
+
+        let msg = 'Hola DecoGarden, quiero hacer este pedido:\n';
+        msg += pedido.map(p => `• ${p.nombre} — ${dinero(p.precio)}`).join('\n') + '\n';
+        msg += `Subtotal: ${dinero(subtotal())}\n`;
+        msg += envioGratis()
+          ? `Envío: gratis (el pedido pasa de $${ENVIO.gratisDesde})\n`
+          : `Envío: $${ENVIO.costo}\n`;
+        msg += `Total: ${dinero(total())}\n`;
+        msg += `Nombre: ${datos.get('nombre')}\n`;
+        msg += `WhatsApp: ${datos.get('telefono')}\n`;
+        msg += modoEntrega() === 'domicilio'
+          ? `Entrega: a domicilio en Quito\nDirección: ${datos.get('direccion')}\n`
+          : `Entrega: retiro en el terminal terrestre de ${datos.get('ciudad')}\n`;
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;
         msg += dgOrigen();
 
         // La venta se cierra en WhatsApp: aquí termina lo que el píxel puede ver
         dgTrack('Lead', {
-          content_ids: [window.DG_PRODUCTO.id],
+          content_ids: pedido.map(p => p.id),
           content_name: PRODUCTO,
           content_type: 'product',
-          value: window.DG_PRODUCTO.precio
+          num_items: pedido.length,
+          value: total(),
+          currency: 'USD'
         });
 
-        const url = `https://wa.me/593963136655?text=${encodeURIComponent(msg)}`;
+        const url = `${WHATSAPP}?text=${encodeURIComponent(msg)}`;
         const ventana = window.open(url, '_blank', 'noopener');
 
         if (!ventana) {
           // Bloqueada por el navegador: en vez de no hacer nada visible,
           // dejamos el enlace a un toque de distancia.
-          const fallback = document.getElementById('checkoutFallback');
           document.getElementById('checkoutFallbackLink').href = url;
           form.hidden = true;
           fallback.hidden = false;
           return;
         }
 
-        closeCheckout();
-        form.reset();
-        form.hidden = false;
-        document.getElementById('checkoutFallback').hidden = true;
-        step2.hidden = true;
-        step1.hidden = false;
-        bankField.hidden = true;
+        cerrarCheckout();
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (paso === 1) { irA(2); return; }
+        if (paso === 2) {
+          if (validarDatos()) irA(3);
+          return;
+        }
+        const elegido = form.querySelector('input[name="pago"]:checked');
+        if (!elegido) {
+          form.querySelector('input[name="pago"]').reportValidity();
+          return;
+        }
+        if (!bankField.hidden && !bankSelect.value) {
+          bankSelect.setCustomValidity('Elige tu banco para pasarte los datos correctos.');
+          bankSelect.reportValidity();
+          bankSelect.addEventListener('change', () => bankSelect.setCustomValidity(''), { once: true });
+          return;
+        }
+        enviarPedido();
       });
+
+      // Primer pintado: los totales del pie ya vienen del servidor, pero el
+      // medidor y las listas necesitan existir antes de que alguien abra el modal.
+      refrescar();
     })();
   </script>
 </body>

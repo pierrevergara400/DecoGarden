@@ -37,6 +37,14 @@
   .marquee-bar .track {
     animation: none;
   }
+
+  .product-hero .pic .gallery-media.is-active {
+    animation: none;
+  }
+
+  .product-hero .pic .gallery-zoom:hover {
+    transform: none;
+  }
 }
 
 .product-hero .grid {
@@ -85,6 +93,20 @@
   cursor: zoom-in;
 }
 
+/* Cambiar de foto era un salto instantáneo. Va como animación y no como
+   transición porque el medio entra desde display:none y no hay estado
+   anterior que interpolar. */
+.product-hero .pic .gallery-media.is-active {
+  animation: gallery-entra .32s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+@keyframes gallery-entra {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
 .product-hero .pic .gallery-zoom {
   position: absolute;
   bottom: 14px;
@@ -99,6 +121,13 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+
+.product-hero .pic .gallery-zoom:hover,
+.product-hero .pic .gallery-zoom:focus-visible {
+  background: var(--pine-soft);
+  transform: scale(1.08);
 }
 
 .product-hero .pic .gallery-zoom svg {
@@ -158,10 +187,18 @@
   background: rgba(255, 255, 255, .06);
   border: 2px solid transparent;
   flex-shrink: 0;
+  opacity: .72;
+  transition: border-color .2s ease, opacity .2s ease;
+}
+
+.product-hero .pic .thumbs button:hover,
+.product-hero .pic .thumbs button:focus-visible {
+  opacity: 1;
 }
 
 .product-hero .pic .thumbs button.active {
-  border-color: var(--accent);
+  border-color: var(--sage);
+  opacity: 1;
 }
 
 .product-hero .pic .thumbs button img {
@@ -849,39 +886,140 @@
   }
 }
 
-.checkout-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background: rgba(15, 26, 20, .55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
+/* ==========================================================================
+   Pasarela de pedido — tres pasos con el medidor de envío siempre a la vista.
+
+   La regla del negocio es que desde $60 el envío deja de costar $6. Antes eso
+   solo se anunciaba; aquí se puede accionar: el cliente ve cuánto le falta y
+   tiene a un toque los bonsáis que cierran esa brecha.
+   ========================================================================== */
 
 [hidden] {
   display: none !important;
 }
 
+.checkout-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 26, 20, .62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: checkout-fondo-entra .22s ease-out both;
+}
+
+/* Cerrar es tan visible como abrir. Sin .closing el modal desaparecía de un
+   fotograma al siguiente; app.js la pone, deja correr la salida y recién
+   entonces oculta el overlay. */
+/* Nombres distintos a los de la entrada, a propósito: con el mismo nombre el
+   navegador no arranca una animación nueva y animationend no vuelve a sonar,
+   así que el cierre dependía siempre del temporizador de respaldo. */
+.checkout-overlay.closing {
+  animation: checkout-fondo-sale .2s ease-in both;
+}
+
+.checkout-overlay.closing .checkout-panel {
+  animation: checkout-sale .2s ease-in both;
+}
+
+@keyframes checkout-fondo-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes checkout-fondo-sale {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes checkout-sale {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(.99);
+  }
+}
+
 .checkout-panel {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--paper);
-  border-radius: 16px;
-  padding: 32px 28px;
+  border-radius: 18px;
   width: 100%;
-  max-width: 440px;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .4);
+  max-width: 470px;
+  max-height: min(780px, calc(100vh - 48px));
+  overflow: hidden;
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .45);
+  animation: checkout-in .28s cubic-bezier(.2, .8, .3, 1);
+}
+
+@keyframes checkout-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .checkout-step:not([hidden]),
+  .ship-meter.celebra,
+  .order-line.es-nueva {
+    animation: none;
+  }
+
+  /* Duración mínima en vez de none: el cierre espera a animationend, y sin
+     animación que termine se quedaría colgado del temporizador de respaldo. */
+  .checkout-overlay,
+  .checkout-panel,
+  .checkout-overlay.closing,
+  .checkout-overlay.closing .checkout-panel {
+    animation-duration: .01ms;
+  }
+}
+
+/* --- Cabecera fija: título, cerrar y los tres pasos --- */
+.checkout-head {
+  flex: none;
+  padding: 17px 22px 0;
+  background: var(--paper);
+}
+
+.checkout-eyebrow {
+  padding-right: 44px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  opacity: .75;
+  margin: 0 0 3px;
+}
+
+.checkout-panel h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.15;
+  color: var(--pine);
+  margin: 0;
+  padding-right: 34px;
 }
 
 .checkout-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
+  top: 15px;
+  right: 15px;
+  /* Sin este z-index la X queda medio muerta: .checkout-eyebrow lleva opacity,
+     eso le crea contexto de apilamiento y, como va después en el DOM, se pinta
+     encima del botón y se queda con los clics de su mitad superior. */
+  z-index: 2;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 0;
   background: var(--paper-deep);
@@ -890,6 +1028,11 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: background .18s ease;
+}
+
+.checkout-close:hover {
+  background: var(--sage);
 }
 
 .checkout-close svg {
@@ -897,62 +1040,402 @@
   height: 15px;
 }
 
-.checkout-panel h3 {
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: 22px;
-  color: var(--pine);
-  margin: 0 0 20px;
-  padding-right: 30px;
+.checkout-stepper {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 13px 0 0;
+  padding: 0 0 11px;
+  border-bottom: 1px solid var(--accent-line);
 }
 
-/* El total se ve antes de pedir datos: nadie descubre el envío al final */
-.checkout-desglose {
-  list-style: none;
-  margin: 0 0 14px;
-  padding: 14px 16px;
+.checkout-stepper li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.checkout-stepper li+li::before {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: var(--accent-line);
+  margin-right: 1px;
+}
+
+.checkout-stepper li span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
   background: var(--paper-deep);
-  border-radius: 10px;
+  color: var(--muted);
+  font-size: 11.5px;
+  transition: background .2s ease, color .2s ease;
+}
+
+.checkout-stepper li.is-active {
+  color: var(--pine);
+}
+
+.checkout-stepper li.is-active span {
+  background: var(--pine);
+  color: #FFFFFF;
+}
+
+.checkout-stepper li.is-done {
+  color: var(--accent-ink);
+}
+
+.checkout-stepper li.is-done span {
+  background: var(--sage);
+  color: var(--pine-deep);
+}
+
+/* --- Cuerpo con scroll --- */
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.checkout-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 22px 4px;
+}
+
+/* Los pasos entran desde display:none, así que va como animación. El
+   desplazamiento es neutro a propósito: sirve igual al avanzar que al volver. */
+.checkout-step:not([hidden]) {
+  animation: checkout-paso .3s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+@keyframes checkout-paso {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* --- Medidor de envío gratis: el corazón de la pasarela --- */
+.ship-meter {
+  border-radius: 12px;
+  padding: 13px 15px;
+  margin-bottom: 16px;
+  background: #FFF8E1;
+  border: 1px solid rgba(255, 202, 38, .55);
+}
+
+.ship-meter.is-free {
+  background: rgba(169, 199, 154, .28);
+  border-color: rgba(47, 107, 62, .38);
+}
+
+/* Un pulso corto justo cuando el pedido cruza el umbral: es lo que queremos
+   que la gente note, y sin él el cambio de color pasa desapercibido. */
+.ship-meter.celebra {
+  animation: ship-celebra .55s cubic-bezier(.2, .8, .3, 1);
+}
+
+@keyframes ship-celebra {
+  35% {
+    transform: scale(1.028);
+  }
+}
+
+.ship-meter-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 9px;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.ship-meter-msg svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  color: var(--accent-ink);
+}
+
+.ship-meter-msg b {
+  color: var(--pine);
+}
+
+.ship-meter-track {
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(25, 83, 43, .13);
+  overflow: hidden;
+}
+
+.ship-meter-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--sunshine), #F0A81E);
+  transition: width .45s cubic-bezier(.2, .8, .3, 1), background .3s ease;
+}
+
+.ship-meter.is-free .ship-meter-fill {
+  background: linear-gradient(90deg, var(--moss), var(--pine));
+}
+
+.ship-meter-foot {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ship-meter-fill {
+    transition: none;
+  }
+}
+
+/* --- Paso 1: las piezas del pedido --- */
+.order-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.checkout-desglose li {
+.order-line {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px 9px 9px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid rgba(25, 83, 43, .16);
+}
+
+.order-line.es-nueva {
+  animation: order-entra .42s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+@keyframes order-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+    border-color: var(--sunshine);
+  }
+}
+
+.order-line img {
+  flex: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: var(--paper-deep);
+}
+
+.order-line-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-line-text strong {
+  display: block;
   font-size: 14px;
-  color: var(--muted-ink);
-}
-
-.checkout-desglose li b {
   font-weight: 700;
   color: var(--ink);
+  line-height: 1.3;
 }
 
-.checkout-desglose li.total {
-  border-top: 1px solid var(--accent-line);
-  padding-top: 8px;
+.order-line-text span {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.order-line-price {
+  flex: none;
   font-weight: 700;
-  color: var(--ink);
-}
-
-.checkout-desglose li.total b {
-  font-family: var(--display);
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 14.5px;
   color: var(--pine);
 }
 
+.order-line-drop {
+  flex: none;
+  border: 0;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--muted);
+  line-height: 0;
+  border-radius: 6px;
+}
+
+.order-line-drop:hover {
+  color: #9B3B2F;
+  background: rgba(155, 59, 47, .08);
+}
+
+.order-line-drop svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* --- Paso 1: los bonsáis que puedes sumar --- */
+.addons-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  margin: 0 0 4px;
+}
+
+.addons-sub {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted-ink);
+  margin: 0 0 12px;
+}
+
+.addon-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.addon-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 10px 8px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(25, 83, 43, .16);
+  background: var(--paper-deep);
+  transition: border-color .18s ease, background .18s ease;
+}
+
+.addon-row.is-key {
+  border-color: rgba(255, 202, 38, .85);
+  background: #FFFCF0;
+}
+
+.addon-row img {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #FFFFFF;
+}
+
+.addon-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.addon-text strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.addon-text span {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.addon-flag {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--sunshine);
+  color: #4A3500;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.addon-add {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--pine);
+  background: transparent;
+  color: var(--pine);
+  border-radius: 99px;
+  padding: 7px 13px;
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+
+.addon-add svg {
+  width: 13px;
+  height: 13px;
+}
+
+.addon-add:hover {
+  background: var(--pine);
+  color: #FFFFFF;
+}
+
+.addons-more {
+  width: 100%;
+  margin-top: 10px;
+  border: 0;
+  background: none;
+  color: var(--accent-ink);
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.addons-empty {
+  font-size: 12.5px;
+  color: var(--muted-ink);
+  margin: 0;
+}
+
+/* --- Pasos 2 y 3: formulario --- */
 .checkout-step-label {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--accent-ink);
-  margin: 0 0 16px;
+  margin: 0 0 14px;
 }
 
 .checkout-step label {
@@ -963,6 +1446,12 @@
   margin-bottom: 14px;
 }
 
+.checkout-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .checkout-step input[type="text"],
 .checkout-step input[type="tel"],
 .checkout-step select {
@@ -970,11 +1459,11 @@
   width: 100%;
   margin-top: 6px;
   padding: 12px 14px;
-  border-radius: 8px;
+  border-radius: 9px;
   border: 1px solid rgba(25, 83, 43, .25);
   background: #FFFFFF;
   font-family: var(--body);
-  font-size: 14.5px;
+  font-size: 16px;
   color: var(--ink);
   box-sizing: border-box;
 }
@@ -987,19 +1476,36 @@
 
 .payment-option {
   display: flex !important;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 11px;
   border: 1px solid rgba(25, 83, 43, .25);
-  border-radius: 10px;
+  border-radius: 11px;
   padding: 13px 14px;
   cursor: pointer;
   margin-bottom: 10px !important;
   font-weight: 600 !important;
+  background: #FFFFFF;
+  transition: border-color .18s ease, background .18s ease;
+}
+
+.payment-option:has(input:checked) {
+  border-color: var(--pine);
+  background: rgba(169, 199, 154, .18);
 }
 
 .payment-option input {
-  margin: 0;
+  margin: 2px 0 0;
   accent-color: var(--pine);
+  flex: none;
+}
+
+.payment-option em {
+  display: block;
+  font-style: normal;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 2px;
 }
 
 .checkout-bank select {
@@ -1010,33 +1516,146 @@
   font-size: 12.5px;
   color: var(--muted-ink);
   line-height: 1.5;
-  margin: 4px 0 18px;
+  margin: 4px 0 16px;
 }
 
-.checkout-step .btn-primary {
-  width: 100%;
-  justify-content: center;
+/* Repaso del pedido en el último paso, para confirmar sin volver atrás */
+.checkout-recap {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: var(--paper-deep);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkout-recap li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--muted-ink);
+}
+
+.checkout-recap li b {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* --- Pie fijo: el total y el botón, siempre visibles --- */
+.checkout-foot {
+  flex: none;
+  padding: 12px 22px 15px;
+  background: var(--paper);
+  border-top: 1px solid var(--accent-line);
+  box-shadow: 0 -10px 20px -18px rgba(0, 0, 0, .5);
+}
+
+.checkout-desglose {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.checkout-desglose li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13.5px;
+  color: var(--muted-ink);
+}
+
+.checkout-desglose li b {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.checkout-desglose .free {
+  color: var(--pine);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .05em;
+}
+
+.checkout-desglose .was {
+  color: var(--muted);
+  text-decoration: line-through;
+  font-weight: 500;
+  margin-right: 6px;
+}
+
+.checkout-desglose li.total {
+  border-top: 1px solid var(--accent-line);
+  margin-top: 3px;
+  padding-top: 8px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.checkout-desglose li.total b {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--pine);
 }
 
 .checkout-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+}
+
+.checkout-foot .btn-primary {
+  flex: 1;
+  justify-content: center;
+  background: var(--accent-deep);
+  color: #FFFFFF;
+  padding: 14px 22px;
+  font-size: 15.5px;
+  box-shadow: none;
+}
+
+.checkout-foot .btn-primary:hover {
+  background: var(--pine-soft);
 }
 
 .checkout-back {
   background: none;
   border: 0;
   color: var(--muted-ink);
+  font-family: var(--body);
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  padding: 6px 2px;
   white-space: nowrap;
 }
 
 .checkout-back:hover {
   color: var(--pine);
+}
+
+.checkout-foot-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.checkout-foot-note svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
 }
 
 @media (max-width: 560px) {
@@ -1047,8 +1666,37 @@
 
   .checkout-panel {
     max-width: none;
-    border-radius: 16px 16px 0 0;
-    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
+    max-height: 94vh;
+  }
+
+  .checkout-head {
+    padding: 18px 18px 0;
+  }
+
+  /* En el móvil se toca con el pulgar: la X necesita más superficie */
+  .checkout-close {
+    top: 12px;
+    right: 12px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .checkout-body {
+    padding: 14px 18px 4px;
+  }
+
+  .checkout-foot {
+    padding: 12px 18px calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .checkout-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .checkout-panel h3 {
+    font-size: 22px;
   }
 }
 
@@ -1184,6 +1832,10 @@
 
 
 /* Plan B cuando el navegador bloquea la ventana de WhatsApp */
+.checkout-fallback {
+  padding: 20px 22px 26px;
+}
+
 .checkout-fallback p {
   font-size: 14.5px;
   line-height: 1.55;

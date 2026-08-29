@@ -316,13 +316,60 @@ def etiqueta_envio(precio):
 def nota_envio(precio):
     if envio_gratis(precio):
         return (
-            f"Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral "
-            f"de ${ENVIO_GRATIS_DESDE}."
+            f"Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral de "
+            f"${ENVIO_GRATIS_DESDE}. A domicilio en Quito, o al terminal terrestre "
+            f"de tu ciudad en el resto del país."
         )
+    faltan = ENVIO_GRATIS_DESDE - precio_num(precio)
     return (
-        f"Envío ${ENVIO_COSTO} a cualquier ciudad del Ecuador, y es por pedido: "
-        f"desde ${ENVIO_GRATIS_DESDE} va gratis."
+        f"Envío ${ENVIO_COSTO} por pedido: a domicilio en Quito, o al terminal "
+        f"terrestre de tu ciudad en el resto del país. Te faltan ${faltan:g} para "
+        f"que viaje gratis, y puedes sumar otro bonsái al confirmar."
     )
+
+
+VENDIDO = re.compile(r"vendid|agotad|reservad", re.I)
+
+
+def nombre_corto(pid, producto, cortos):
+    """El nombre que cabe en una fila del pedido, sin el "Bonsái" de adelante."""
+    return cortos.get(pid) or re.sub(r"^Bons[aá]i\s+", "", producto["nombre"]).strip()
+
+
+def nota_pieza(producto):
+    """La línea chica bajo el nombre. Si queda una sola pieza, eso es lo que importa."""
+    badge = (producto.get("badgeTexto") or "").strip()
+    if badge and badge.lower() != "disponible":
+        return badge
+    partes = [producto.get("especie"), producto.get("altura")]
+    return " · ".join(v for v in partes if v) or producto.get("detallePrecio", "")
+
+
+def pieza_js(pid, producto, cortos):
+    return {
+        "id": pid,
+        "nombre": nombre_corto(pid, producto, cortos),
+        "precio": precio_num(producto["precio"]),
+        "imagen": producto["imagen"],
+        "nota": nota_pieza(producto),
+    }
+
+
+def bloque_sumables(pid, catalogo, cortos):
+    """El resto del catálogo disponible, para que el pedido pueda crecer.
+
+    Sin esto la pasarela solo sabe vender una pieza, y como diez de doce bonsáis
+    valen menos que el umbral, el envío gratis sería una promesa inalcanzable:
+    ningún pedido podría llegar. Van ordenados por precio; la pasarela los
+    reordena en vivo para poner arriba al que cierra la brecha.
+    """
+    lista = [
+        pieza_js(otro, prod, cortos)
+        for otro, prod in catalogo.items()
+        if otro != pid and not VENDIDO.search(prod.get("badgeTexto") or "")
+    ]
+    lista.sort(key=lambda p: p["precio"])
+    return lista
 
 
 def total_envio(precio):
@@ -447,7 +494,7 @@ def bloque_canal():
     return PLANTILLA_CANAL.format(url=CANAL_WHATSAPP)
 
 
-def generar(pid, datos, catalogo, con_pagina, plantilla):
+def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
     producto = catalogo.get(pid)
     if not producto:
         print(f"  ! '{pid}' no existe en catalog.json — se omite")
@@ -499,15 +546,14 @@ def generar(pid, datos, catalogo, con_pagina, plantilla):
         "{{CANAL}}": bloque_canal(),
         # Literales JS seguros (json.dumps escapa comillas y acentos correctamente)
         "{{PRODUCTO_JS}}": json.dumps(datos.get("nombreCorto", nombre), ensure_ascii=False),
-        "{{PRECIO_JS}}": json.dumps(precio, ensure_ascii=False),
         "{{ENVIO_JS}}": json.dumps(
-            {
-                "gratis": envio_gratis(precio),
-                "costo": ENVIO_COSTO,
-                "gratisDesde": ENVIO_GRATIS_DESDE,
-                "total": total_envio(precio),
-            },
+            {"costo": ENVIO_COSTO, "gratisDesde": ENVIO_GRATIS_DESDE},
             ensure_ascii=False,
+        ),
+        # El pedido arranca con esta pieza y puede crecer con las demás
+        "{{PIEZA_JS}}": json.dumps(pieza_js(pid, producto, cortos), ensure_ascii=False),
+        "{{SUMABLES_JS}}": json.dumps(
+            bloque_sumables(pid, catalogo, cortos), ensure_ascii=False
         ),
         # Para el píxel de Meta: id del catálogo y precio numérico
         "{{ID_JS}}": json.dumps(pid, ensure_ascii=False),
@@ -572,9 +618,16 @@ def main():
     }
 
     print(f"Generando {len(paginas)} página(s) de producto...\n")
+    # Nombre corto de cada pieza, para las filas del pedido en la pasarela.
+    cortos = {
+        pid: datos.get("nombreCorto")
+        for pid, datos in paginas.items()
+        if datos.get("nombreCorto")
+    }
+
     creados, cambiados = [], []
     for pid, datos in paginas.items():
-        resultado = generar(pid, datos, catalogo, con_pagina, plantilla)
+        resultado = generar(pid, datos, catalogo, con_pagina, cortos, plantilla)
         if resultado:
             archivo, cambio = resultado
             creados.append(archivo)

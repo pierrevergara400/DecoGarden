@@ -331,22 +331,44 @@ document.body.addEventListener('click', (event) => {
     : event.target.matches('.shot img, .proof-photos img, .gallery-shot') ? event.target : null;
   // Si la foto está dentro de un enlace (tarjeta que lleva a su página), dejamos navegar.
   if (target && !(!zoomBtn && target.closest('a'))) {
-    lightboxImg.src = target.src;
-    lightboxImg.alt = target.alt || '';
-    lightbox.classList.add('open');
+    abrirLightbox(target);
   }
 });
 
-lightbox.addEventListener('click', (event) => {
-  if (event.target === lightbox || event.target === lightboxInner) {
-    lightbox.classList.remove('open');
-    lightboxImg.src = '';
-  }
-});
+function abrirLightbox(foto) {
+  lightbox.classList.remove('closing');
+  lightboxImg.src = foto.src;
+  lightboxImg.alt = foto.alt || '';
+  lightbox.classList.add('open');
+  // Sin esto la página seguía desplazándose por detrás de la foto ampliada
+  document.body.style.overflow = 'hidden';
+}
+
+let finLightbox;
+function cerrarLightbox() {
+  if (!lightbox.classList.contains('open') || lightbox.classList.contains('closing')) return;
+  lightbox.classList.add('closing');
+  document.body.style.overflow = '';
+
+  const terminar = () => {
+    clearTimeout(finLightbox);
+    // Quitarlo a mano y no fiarlo a { once: true }: si cierra el temporizador,
+    // el listener seguiría vivo y mataría la apertura siguiente en cuanto
+    // terminara su animación de entrada.
+    lightbox.removeEventListener('animationend', terminar);
+    lightbox.classList.remove('open', 'closing');
+    lightboxImg.removeAttribute('src');
+  };
+  // El temporizador es el respaldo: si la animación no llega a correr, la foto
+  // no se queda congelada en pantalla.
+  finLightbox = setTimeout(terminar, 300);
+  lightbox.addEventListener('animationend', terminar);
+}
+
+// Cualquier punto del lightbox cierra, la foto incluida: lleva cursor
+// zoom-out desde siempre y hasta ahora no hacía nada al pulsarla.
+lightbox.addEventListener('click', cerrarLightbox);
 
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && lightbox.classList.contains('open')) {
-    lightbox.classList.remove('open');
-    lightboxImg.src = '';
-  }
+  if (event.key === 'Escape') cerrarLightbox();
 });
