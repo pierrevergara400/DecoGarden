@@ -1,0 +1,27 @@
+{
+  "_comentario": "Los artículos del blog. Los edita el panel en /admin, o a mano si prefieres. 'cuerpo' es Markdown: ## para subtítulos, - para listas, **negrita**, [texto](enlace), > para citas, ![alt](ruta) para imágenes. Marca 'borrador': true para que un artículo no se publique. Después de tocar este archivo corre: python generar-blog.py && python generar-productos.py",
+  "posts": [
+    {
+      "slug": "cada-cuanto-regar-un-bonsai",
+      "titulo": "Cada cuánto regar un bonsái (y por qué esa pregunta no tiene respuesta)",
+      "tituloSeo": "Cada cuánto regar un bonsái en Ecuador — la guía sin mitos | DecoGarden",
+      "h1": [
+        "Cada cuánto regar un bonsái",
+        "y por qué esa pregunta no tiene respuesta"
+      ],
+      "metaDescripcion": "La mayoría de bonsáis no mueren de sed: mueren ahogados. Cómo saber cuándo regar de verdad, con el clima de Ecuador, sin calendarios ni fórmulas.",
+      "resumen": "Casi todos los bonsáis que se mueren en una casa no se mueren de sed. Se mueren ahogados, regados por alguien que los quería mucho. Te explico cómo saber cuándo tu árbol necesita agua de verdad.",
+      "fecha": "2026-09-07",
+      "actualizado": "2026-09-07",
+      "tags": [
+        "cuidado",
+        "riego",
+        "principiantes"
+      ],
+      "portada": "",
+      "portadaAlt": "",
+      "borrador": false,
+      "cuerpo": "Cuando alguien compra su primer bonsái, la primera pregunta es casi siempre la misma: *¿cada cuánto lo riego?*\n\nY la respuesta honesta —la que no vende cursos ni queda bien en un video de treinta segundos— es que **no existe un número**. Ni cada tres días, ni dos veces por semana, ni los martes y los viernes. Cualquiera que te dé una cifra fija te está dando una receta para matar el árbol.\n\nTe explico por qué, y qué mirar en lugar del calendario.\n\n## El error que mata más bonsáis que el olvido\n\nEn el vivero, cuando alguien vuelve con un árbol enfermo, nueve de cada diez veces el problema es el mismo: exceso de agua.\n\nSuena raro, porque uno asocia \"planta muerta\" con \"planta seca\". Pero un bonsái vive en una maceta muy poco profunda, con muy poca tierra. Si esa tierra nunca alcanza a secarse, las raíces se quedan sin aire. Y una raíz sin aire se pudre. Cuando la hoja se pone amarilla y cae, el daño lleva semanas hecho bajo la tierra, donde no lo viste.\n\n> Un bonsái descuidado un fin de semana casi siempre se recupera. Uno regado todos los días durante un mes, casi nunca.\n\nPor eso el riego por calendario es tan peligroso: no responde a lo que el árbol necesita, sino a lo que tú recuerdas hacer.\n\n## De qué depende de verdad\n\nEl agua que pide tu árbol cambia con cosas que ningún calendario sabe:\n\n- **La especie.** Un Juniperus aguanta seco mucho mejor que un Árbol del Té.\n- **El tamaño de la maceta.** Menos tierra, menos reserva: un mini de 20 cm se seca en la mitad de tiempo que uno de 40.\n- **Dónde vive.** Un balcón con sol de Ibarra a mediodía no es un escritorio con luz indirecta.\n- **La época.** En temporada seca puede pedir agua a diario; en invierno, cada varios días.\n- **El sustrato.** Una mezcla que drena bien se seca más rápido, y eso es bueno.\n\nDos árboles idénticos, uno en Quito y otro en Guayaquil, tienen necesidades distintas. Por eso no te puedo dar un número.\n\n## Lo que sí funciona: el dedo\n\nEsta es la técnica completa, y es gratis.\n\n1. Mete el dedo en la tierra hasta el primer nudillo, cerca del borde de la maceta.\n2. **¿Sale húmedo?** No riegues. Vuelve a revisar mañana.\n3. **¿Sale seco?** Riega ahora.\n\nEso es todo. Revisar es diario; regar, no. Con el tiempo dejas de necesitar el dedo: te basta el peso de la maceta al levantarla, o el color de la superficie de la tierra.\n\n### Cómo regar cuando toca\n\nCuando toca, riega **de verdad**. Nada de un chorrito por encima.\n\nMoja toda la superficie despacio, con regadera de lluvia fina, hasta que el agua salga por los agujeros de abajo. Espera un minuto y repite. Ese segundo pase es el que asegura que se empapó todo el cepellón y no solo la capa de arriba.\n\nY después, deja que drene. Un bonsái no se deja nunca parado sobre un plato con agua: eso es exactamente la situación que pudre las raíces.\n\n## Tres señales de que te estás pasando\n\n- **Tierra siempre oscura y compacta**, que nunca llega a aclararse.\n- **Hojas amarillas que caen** aunque el árbol tenga agua de sobra.\n- **Olor a húmedo o a tierra podrida** al acercarte a la maceta.\n\nSi ves alguna, deja de regar y espera a que la tierra se seque de verdad antes del siguiente riego. La mayoría de los árboles que llegan así se recuperan si se corta el agua a tiempo.\n\n## Y si te vas de viaje\n\nUn bonsái sano aguanta cuatro o cinco días sin ti. Riégalo bien antes de salir, muévelo a un sitio con luz pero sin sol directo, y ya. Es más seguro eso que dejarle instrucciones a alguien que \"le va a echar un poquito cada día\".\n\n---\n\nSi acabas de recibir el tuyo y no estás seguro de si va bien, escríbeme por WhatsApp con una foto de la tierra y del follaje. Durante los primeros 30 días es literalmente parte de lo que compraste: prefiero mil veces responder una duda tonta que ver un árbol que se pudo salvar."
+    }
+  ]
+}

@@ -100,6 +100,17 @@ function etiquetaEnvio(precio) {
 // Campos sin los que una tarjeta no se puede mostrar de forma confiable
 const REQUIRED_FIELDS = ['nombre', 'imagen', 'categoria', 'precio', 'whatsappMsg'];
 
+/* Un bonsai se publica salvo que se diga lo contrario.
+
+   "activo": false lo saca del catalogo sin borrar sus datos: no aparece en la
+   home, no entra en el schema y el generador lo deja fuera del sitemap y de los
+   relacionados. Sirve para preparar un arbol con calma —las fotos, la ficha— y
+   encenderlo cuando este listo. Que la ausencia del campo signifique publicado
+   evita tener que marcar uno por uno los que ya estaban en linea. */
+function estaPublicado(item) {
+  return !item || item.activo !== false;
+}
+
 function isValidCatalogItem(item) {
   if (!item || typeof item !== 'object') return false;
   const hasRequiredFields = REQUIRED_FIELDS.every(field => typeof item[field] === 'string' && item[field].trim() !== '');
@@ -272,9 +283,10 @@ async function loadCatalog() {
     }
     if (!res.ok) throw new Error('Error al cargar catálogo');
     const data = await res.json();
-    catalogData = Array.isArray(data) ? data.filter(isValidCatalogItem).map(normalizeCatalogItem) : [];
-    if (Array.isArray(data) && catalogData.length !== data.length) {
-      console.warn(`Catálogo: se omitieron ${data.length - catalogData.length} bonsái(s) con datos incompletos.`);
+    const publicados = Array.isArray(data) ? data.filter(estaPublicado) : [];
+    catalogData = publicados.filter(isValidCatalogItem).map(normalizeCatalogItem);
+    if (publicados.length !== catalogData.length) {
+      console.warn(`Catálogo: se omitieron ${publicados.length - catalogData.length} bonsái(s) con datos incompletos.`);
     }
     renderCatalog();
     injectCatalogSchema(catalogData);

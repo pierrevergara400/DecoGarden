@@ -68,6 +68,19 @@ def leer_json(ruta):
         return json.load(f)
 
 
+def esta_publicado(producto):
+    """Un bonsái se publica salvo que se diga lo contrario.
+
+    "activo": false en catalog.json lo saca del sitio sin borrar sus datos: no
+    se le genera ficha, no entra en el sitemap ni en paginas.json, y desaparece
+    de los relacionados y de las piezas sumables de la pasarela. Sirve para
+    preparar un árbol con calma —las fotos, el texto— y encenderlo cuando esté
+    listo. Que la ausencia del campo signifique publicado evita tener que marcar
+    uno por uno los que ya estaban en línea.
+    """
+    return not producto or producto.get("activo") is not False
+
+
 def esc(texto):
     """Escapa texto para insertarlo como contenido HTML."""
     return html.escape(str(texto), quote=True)
@@ -680,16 +693,21 @@ def main():
 
     plantilla = PLANTILLA.read_text(encoding="utf-8")
     productos = leer_json(PRODUCTOS)
-    catalogo = {p["id"]: p for p in leer_json(CATALOGO)}
+    # Solo el catálogo publicado llega a las plantillas: así el filtro se aplica
+    # de una vez a la ficha, a los relacionados y a las piezas de la pasarela.
+    catalogo = {p["id"]: p for p in leer_json(CATALOGO) if esta_publicado(p)}
 
     paginas = {k: v for k, v in productos.items() if not k.startswith("_")}
+
+    ocultos = [pid for pid in paginas if pid not in catalogo]
 
     # Mapa id -> archivo, para que los "relacionados" enlacen a su página si existe.
     con_pagina = {
         pid: f"producto-{datos.get('slug', pid)}.html" for pid, datos in paginas.items()
     }
 
-    print(f"Generando {len(paginas)} página(s) de producto...\n")
+    print(f"Generando {len(paginas) - len(ocultos)} página(s) de producto"
+          + (f", {len(ocultos)} oculta(s)" if ocultos else "") + "...\n")
     # Nombre corto de cada pieza, para las filas del pedido en la pasarela.
     cortos = {
         pid: datos.get("nombreCorto")
@@ -697,8 +715,20 @@ def main():
         if datos.get("nombreCorto")
     }
 
+    # La ficha de un bonsái oculto se retira del disco. Se puede: estos archivos
+    # se regeneran enteros en cada ejecución. Dejarla sería peor que borrarla,
+    # porque Cloudflare la seguiría sirviendo en su URL aunque ya no la enlace
+    # nadie, y Google la conservaría indexada desde el sitemap anterior.
+    for pid in ocultos:
+        ficha = BASE / con_pagina[pid]
+        if ficha.exists():
+            ficha.unlink()
+            print(f"  DEL {ficha.name} (oculto en catalog.json)")
+
     creados, cambiados = [], []
     for pid, datos in paginas.items():
+        if pid in ocultos:
+            continue
         resultado = generar(pid, datos, catalogo, con_pagina, cortos, plantilla)
         if resultado:
             archivo, cambio = resultado
@@ -776,6 +806,18 @@ def escribir_sitemap(archivos, cambiados):
         loc = SITIO + ruta_publica(legal)
         fecha = date.fromtimestamp(ruta_legal.stat().st_mtime).isoformat()
         urls.append((loc, fecha, "yearly", "0.3"))
+
+    # El blog: blog.html y cada artículo. Lo genera generar-blog.py, que solo
+    # reescribe lo que cambió de verdad, así que la fecha del archivo es de fiar
+    # y sirve de lastmod sin tener que llevar la cuenta aparte.
+    for ruta_blog in sorted(BASE.glob("blog*.html")):
+        indice = ruta_blog.name == "blog.html"
+        urls.append((
+            SITIO + ruta_publica(ruta_blog.name),
+            date.fromtimestamp(ruta_blog.stat().st_mtime).isoformat(),
+            "weekly" if indice else "monthly",
+            "0.7" if indice else "0.6",
+        ))
 
     lineas = [
         '<?xml version="1.0" encoding="UTF-8"?>',
