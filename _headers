@@ -10,3 +10,8 @@
 /guia-*
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
   Referrer-Policy: no-referrer
+
+# El panel de administracion no tiene nada que hacer en un buscador: sin el
+# servidor local detras es una pagina que no puede ni cargar sus datos.
+/admin*
+  X-Robots-Tag: noindex, nofollow, noarchive

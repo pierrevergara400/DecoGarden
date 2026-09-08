@@ -1,0 +1,621 @@
+/* ==========================================================================
+   admin.css — el panel de /admin.
+
+   No comparte hoja con el sitio público a propósito: aquí manda la densidad de
+   información, no la puesta en escena. Lo único que hereda son los colores de
+   tokens.css, para que el panel se sienta parte de la misma casa.
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+/* El display:none que el navegador le da a [hidden] es una regla de elemento,
+   así que cualquier clase con display propio se la lleva por delante. Sin esto,
+   un aviso oculto con el atributo hidden se sigue viendo. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: var(--body);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Barra superior ----------------------------------------------------- */
+
+.ad-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: var(--pine);
+  color: var(--on-dark);
+}
+
+.ad-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ad-marca strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.ad-marca span {
+  display: block;
+  font-size: .76rem;
+  color: var(--on-dark-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ad-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ad-estado {
+  font-size: .82rem;
+  color: var(--on-dark-soft);
+  min-width: 0;
+}
+
+.ad-estado.error {
+  color: #FFB4A2;
+}
+
+/* --- Botones ------------------------------------------------------------ */
+
+.ad-btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: .88rem;
+  border-radius: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .18s ease, opacity .18s ease;
+}
+
+.ad-btn:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.ad-btn-solido {
+  background: var(--sunshine);
+  color: var(--pine-deep);
+}
+
+.ad-btn-solido:hover:not(:disabled) {
+  background: #FFD75C;
+}
+
+.ad-btn-fantasma {
+  background: transparent;
+  color: var(--on-dark);
+  border-color: rgba(243, 240, 230, .38);
+}
+
+.ad-btn-fantasma:hover:not(:disabled) {
+  background: rgba(243, 240, 230, .12);
+}
+
+/* Dentro de una tarjeta el fantasma vive sobre fondo claro */
+.ad-lista .ad-btn-fantasma,
+.ad-filtros .ad-btn-fantasma {
+  color: var(--pine);
+  border-color: var(--accent-line);
+}
+
+.ad-lista .ad-btn-fantasma:hover:not(:disabled),
+.ad-filtros .ad-btn-fantasma:hover:not(:disabled) {
+  background: var(--paper-deep);
+}
+
+.ad-btn-peligro {
+  background: transparent;
+  color: #A33A2A;
+  border-color: rgba(163, 58, 42, .4);
+}
+
+.ad-btn-peligro:hover:not(:disabled) {
+  background: rgba(163, 58, 42, .08);
+}
+
+/* --- Avisos ------------------------------------------------------------- */
+
+.ad-aviso {
+  padding: 14px 24px;
+  font-size: .88rem;
+  line-height: 1.55;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ad-aviso-error {
+  background: #FBE4DE;
+  color: #7A2B1E;
+  border-bottom: 1px solid #E9BFB4;
+}
+
+.ad-aviso code {
+  background: rgba(0, 0, 0, .07);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: .92em;
+}
+
+/* --- Pestañas ----------------------------------------------------------- */
+
+.ad-pestanas {
+  display: flex;
+  gap: 2px;
+  padding: 0 16px;
+  background: var(--pine-deep);
+  overflow-x: auto;
+}
+
+.ad-pestana {
+  font: inherit;
+  font-weight: 600;
+  font-size: .88rem;
+  background: transparent;
+  color: var(--on-dark-muted);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 13px 18px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ad-pestana:hover {
+  color: var(--on-dark);
+}
+
+.ad-pestana.activa {
+  color: var(--on-dark);
+  border-bottom-color: var(--sunshine);
+}
+
+.ad-cuenta {
+  background: rgba(243, 240, 230, .16);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: .74rem;
+  font-weight: 700;
+}
+
+.ad-cuenta-alerta:not(:empty) {
+  background: #C2503B;
+  color: #fff;
+}
+
+/* --- Lienzo ------------------------------------------------------------- */
+
+.ad-lienzo {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 26px 24px 80px;
+}
+
+.ad-panel {
+  display: none;
+}
+
+.ad-panel.activa {
+  display: block;
+}
+
+.ad-intro {
+  color: var(--muted-ink);
+  line-height: 1.65;
+  max-width: 68ch;
+  margin: 0 0 22px;
+}
+
+.ad-intro code {
+  background: var(--paper-deep);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: .9em;
+}
+
+.ad-filtros {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.ad-buscador input {
+  font: inherit;
+  padding: 9px 14px;
+  border: 1px solid var(--accent-line);
+  border-radius: 10px;
+  background: #fff;
+  min-width: 260px;
+}
+
+.ad-check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .88rem;
+  color: var(--muted-ink);
+  cursor: pointer;
+}
+
+.ad-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ad-vacio {
+  color: var(--muted);
+  padding: 28px 0;
+}
+
+/* --- Tarjeta ------------------------------------------------------------ */
+
+.ad-item {
+  background: #fff;
+  border: 1px solid var(--accent-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ad-item.apagado {
+  background: var(--paper-deep);
+  border-style: dashed;
+}
+
+.ad-item.apagado .ad-item-nombre {
+  color: var(--muted);
+}
+
+.ad-item-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.ad-item-mini {
+  width: 46px;
+  height: 46px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: var(--sage);
+  flex-shrink: 0;
+}
+
+.ad-item.apagado .ad-item-mini {
+  filter: grayscale(1);
+  opacity: .55;
+}
+
+.ad-item-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.ad-item-nombre {
+  font-weight: 700;
+  font-size: .98rem;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ad-item-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.ad-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .74rem;
+  color: var(--muted);
+}
+
+/* --- Marcas de estado --------------------------------------------------- */
+
+.ad-marca-estado {
+  font-size: .72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.ad-marca-ok {
+  background: #DCEBD2;
+  color: #2B5A22;
+}
+
+.ad-marca-alerta {
+  background: #FBE7C6;
+  color: #7A5410;
+}
+
+.ad-marca-falta {
+  background: #FBE0DA;
+  color: #92321F;
+}
+
+.ad-marca-neutra {
+  background: var(--paper-deep);
+  color: var(--muted-ink);
+}
+
+/* --- Interruptor -------------------------------------------------------- */
+
+.ad-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted-ink);
+}
+
+.ad-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ad-switch-pista {
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #C9C6B6;
+  position: relative;
+  transition: background .2s ease;
+}
+
+.ad-switch-pista::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .2s ease;
+}
+
+.ad-switch input:checked+.ad-switch-pista {
+  background: var(--accent);
+}
+
+.ad-switch input:checked+.ad-switch-pista::after {
+  transform: translateX(18px);
+}
+
+.ad-switch input:focus-visible+.ad-switch-pista {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+/* --- Detalle desplegable ------------------------------------------------ */
+
+.ad-desplegar {
+  font: inherit;
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: .84rem;
+  cursor: pointer;
+  padding: 6px 8px;
+  flex-shrink: 0;
+}
+
+.ad-detalle {
+  border-top: 1px solid var(--accent-line);
+  padding: 20px 16px;
+  background: var(--paper);
+}
+
+.ad-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.ad-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ad-campo.ancho {
+  grid-column: 1 / -1;
+}
+
+.ad-campo label {
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--muted-ink);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.ad-campo .pista {
+  font-size: .76rem;
+  color: var(--muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.ad-campo input,
+.ad-campo select,
+.ad-campo textarea {
+  font: inherit;
+  font-size: .92rem;
+  padding: 9px 11px;
+  border: 1px solid var(--accent-line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+
+.ad-campo textarea {
+  resize: vertical;
+  line-height: 1.6;
+  min-height: 90px;
+}
+
+.ad-campo textarea.cuerpo {
+  min-height: 380px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .86rem;
+}
+
+.ad-campo input:focus,
+.ad-campo select:focus,
+.ad-campo textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.ad-pie-detalle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* --- Auditoría de fotos ------------------------------------------------- */
+
+.ad-fotos-cuerpo {
+  padding: 0 16px 16px;
+}
+
+.ad-tomas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ad-toma {
+  font-size: .76rem;
+  border-radius: 8px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+}
+
+.ad-toma.si {
+  background: #DCEBD2;
+  color: #2B5A22;
+}
+
+.ad-toma.no {
+  background: transparent;
+  border-color: #E2B7AC;
+  color: #92321F;
+  border-style: dashed;
+}
+
+.ad-ruta {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .76rem;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+
+/* --- Diálogo ------------------------------------------------------------ */
+
+.ad-dialogo {
+  border: 0;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 720px;
+  width: calc(100% - 48px);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+}
+
+.ad-dialogo::backdrop {
+  background: rgba(18, 59, 33, .55);
+}
+
+.ad-dialogo h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  margin: 0 0 14px;
+  font-size: 1.5rem;
+  color: var(--pine);
+}
+
+.ad-dialogo pre {
+  background: var(--pine-deep);
+  color: var(--on-dark-soft);
+  border-radius: 10px;
+  padding: 16px;
+  font-size: .8rem;
+  line-height: 1.55;
+  max-height: 46vh;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0 0 18px;
+}
+
+.ad-dialogo form {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 620px) {
+  .ad-topbar {
+    padding: 12px 16px;
+  }
+
+  .ad-lienzo {
+    padding: 22px 16px 70px;
+  }
+
+  .ad-item-cabecera {
+    flex-wrap: wrap;
+  }
+
+  .ad-buscador input {
+    min-width: 0;
+    width: 100%;
+  }
+}

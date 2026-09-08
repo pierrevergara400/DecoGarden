@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# El panel solo funciona con el servidor local corriendo; en el sitio
+# publicado no hace nada. Fuera del indice para no ofrecer una puerta
+# que ni siquiera abre.
+Disallow: /admin
+
 Sitemap: https://decogarden.pages.dev/sitemap.xml

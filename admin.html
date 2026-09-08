@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+  Panel de administración de DecoGarden.
+
+  Habla con la API de servidor.py, que solo atiende peticiones desde esta misma
+  máquina. Si abres esta página en decogarden.pages.dev no va a poder guardar
+  nada: allí no hay backend, y el propio panel te lo dice al entrar. No guarda
+  contraseñas ni claves de ningún tipo, justamente para que subirla al repositorio
+  no signifique nada.
+
+  Se usa así:
+
+      python servidor.py
+      abrir http://localhost:8435/admin
+-->
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="theme-color" content="#1E2F27">
+  <title>Panel — DecoGarden</title>
+  <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Karla:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css?v=024e730f">
+  <link rel="stylesheet" href="admin.css?v=6f2a2c63">
+</head>
+
+<body>
+
+  <header class="ad-topbar">
+    <div class="ad-marca">
+      <img src="Media/Decogarden 3.svg" alt="" width="30" height="24">
+      <div>
+        <strong>Panel de DecoGarden</strong>
+        <span id="adRuta">catalog.json · blog.json</span>
+      </div>
+    </div>
+
+    <div class="ad-acciones">
+      <span class="ad-estado" id="adEstado" role="status" aria-live="polite"></span>
+      <button type="button" class="ad-btn ad-btn-fantasma" id="adGuardar" disabled>Guardar cambios</button>
+      <button type="button" class="ad-btn ad-btn-solido" id="adPublicar">Publicar al sitio</button>
+    </div>
+  </header>
+
+  <div class="ad-aviso ad-aviso-error" id="adSinBackend" hidden>
+    <strong>Este panel no puede guardar aquí.</strong>
+    <span>Está pensado para correr en tu computadora. Abre una terminal en la carpeta del proyecto, ejecuta
+      <code>python servidor.py</code> y entra a <code>http://localhost:8435/admin</code>.</span>
+  </div>
+
+  <nav class="ad-pestanas" role="tablist">
+    <button type="button" class="ad-pestana activa" role="tab" data-panel="productos" aria-selected="true">
+      Productos <span class="ad-cuenta" id="adCuentaProductos"></span>
+    </button>
+    <button type="button" class="ad-pestana" role="tab" data-panel="fotos" aria-selected="false">
+      Fotos pendientes <span class="ad-cuenta ad-cuenta-alerta" id="adCuentaFotos"></span>
+    </button>
+    <button type="button" class="ad-pestana" role="tab" data-panel="blog" aria-selected="false">
+      Blog <span class="ad-cuenta" id="adCuentaBlog"></span>
+    </button>
+  </nav>
+
+  <main class="ad-lienzo">
+
+    <!-- ---------------------------------------------------------------- -->
+    <section class="ad-panel activa" id="panel-productos" role="tabpanel">
+      <p class="ad-intro">
+        Un producto apagado desaparece de la home, del sitemap y de los datos que lee Google, sin que se borre nada:
+        vuelves a encenderlo y regresa igual. Úsalo para preparar un árbol con calma antes de enseñarlo.
+      </p>
+      <div class="ad-filtros">
+        <label class="ad-buscador">
+          <input type="search" id="adBuscar" placeholder="Buscar por nombre o id…" autocomplete="off">
+        </label>
+        <label class="ad-check">
+          <input type="checkbox" id="adSoloProblemas">
+          Solo los que tienen algo pendiente
+        </label>
+      </div>
+      <div id="adProductos" class="ad-lista"></div>
+    </section>
+
+    <!-- ---------------------------------------------------------------- -->
+    <section class="ad-panel" id="panel-fotos" role="tabpanel">
+      <p class="ad-intro">
+        Lo que falta por fotografiar, leído de <code>Images/productos/&lt;id&gt;/</code>. El nombre del archivo es lo que
+        define la toma: <code>1-principal.webp</code>, <code>2-tronco.webp</code>, <code>3-follaje.webp</code>… El
+        número solo ordena la galería.
+      </p>
+      <div id="adFotos" class="ad-lista"></div>
+    </section>
+
+    <!-- ---------------------------------------------------------------- -->
+    <section class="ad-panel" id="panel-blog" role="tabpanel">
+      <p class="ad-intro">
+        Cada artículo se convierte en una página HTML de verdad, con su fecha, su resumen y sus datos estructurados: eso
+        es lo que Google puede leer e indexar. Un borrador no se publica y, si ya estaba en línea, se retira.
+      </p>
+      <div class="ad-filtros">
+        <button type="button" class="ad-btn ad-btn-fantasma" id="adNuevoPost">+ Artículo nuevo</button>
+      </div>
+      <div id="adBlog" class="ad-lista"></div>
+    </section>
+
+  </main>
+
+  <!-- Registro de la última publicación -->
+  <dialog class="ad-dialogo" id="adDialogo">
+    <h2 id="adDialogoTitulo">Publicando…</h2>
+    <pre id="adRegistro"></pre>
+    <form method="dialog">
+      <button class="ad-btn ad-btn-solido">Cerrar</button>
+    </form>
+  </dialog>
+
+  <script src="admin.js?v=af0b547a" defer></script>
+</body>
+
+</html>
