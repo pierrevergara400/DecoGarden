@@ -1,0 +1,986 @@
+#!/usr/bin/env python3
+"""
+Genera las páginas de producto a partir de:
+  - plantillas/producto.html   (el diseño, compartido por todas)
+  - datos/productos.json       (el texto propio de cada producto)
+  - public/data/catalog.json   (nombre, especie, altura, edad, precio, imagen)
+
+Uso:
+    python scripts/generar_productos.py
+
+Crea/actualiza un archivo producto-<slug>.html por cada producto de productos.json.
+No edites esos archivos a mano: se sobrescriben en cada ejecución.
+"""
+
+import html
+import io
+import json
+import re
+import sys
+from datetime import date
+
+try:
+    from PIL import Image
+except ImportError:  # sin Pillow se sigue publicando, con la imagen genérica
+    Image = None
+
+from rutas import (
+    BLOG, CATALOGO, ENVIOS as RUTA_ENVIOS, IMAGENES_PRODUCTOS, PAGINAS,
+    PLANTILLAS, PRODUCTOS, PUBLICO, SITEMAP, SITIO,
+)
+from sellado import sellar_assets
+
+PLANTILLA = PLANTILLAS / "producto.html"
+
+# Canal de WhatsApp del pie de página. Mientras esté vacío, la columna no se
+# imprime: mejor un pie de tres columnas que un botón que no lleva a ninguna
+# parte. Pega aquí la URL del canal (https://whatsapp.com/channel/...).
+CANAL_WHATSAPP = "https://whatsapp.com/channel/0029Vb8QEhIAYlUGzhu3G60J"
+
+PLANTILLA_CANAL = """      <div>
+        <h4>Árboles nuevos cada temporada</h4>
+        <p class="canal-texto">Sigue el canal y te aviso cuando llega un lote nuevo al vivero. No es un grupo: nadie
+          ve tu número y nadie puede escribir ahí más que yo.</p>
+        <a class="canal-btn" href="{url}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23" />
+          </svg>
+          Seguir el canal
+        </a>
+      </div>
+"""
+
+CHECK_SVG = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" '
+    'aria-hidden="true">\n              <path d="M20 6 9 17l-5-5" />\n            </svg>'
+)
+
+# Fondos de las tarjetas "Por qué este árbol", en orden.
+FONDOS_PORQUE = [
+    ("var(--pine)", "#D7E8C4"),
+    ("var(--pine-light)", "#EAF3E5"),
+    ("var(--pine-soft)", "#E2EFE6"),
+]
+
+
+def leer_json(ruta):
+    with open(ruta, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def leer_articulos():
+    """Los artículos de blog.json, o nada si todavía no hay blog."""
+    if not BLOG.is_file():
+        return []
+    datos = leer_json(BLOG)
+    posts = datos.get("posts", []) if isinstance(datos, dict) else datos
+    return [p for p in posts if p.get("slug") and p.get("fecha")]
+
+
+def esta_publicado(producto):
+    """Un bonsái se publica salvo que se diga lo contrario.
+
+    "activo": false en catalog.json lo saca del sitio sin borrar sus datos: no
+    se le genera ficha, no entra en el sitemap ni en paginas.json, y desaparece
+    de los relacionados y de las piezas sumables de la pasarela. Sirve para
+    preparar un árbol con calma —las fotos, el texto— y encenderlo cuando esté
+    listo. Que la ausencia del campo signifique publicado evita tener que marcar
+    uno por uno los que ya estaban en línea.
+    """
+    return not producto or producto.get("activo") is not False
+
+
+def esc(texto):
+    """Escapa texto para insertarlo como contenido HTML."""
+    return html.escape(str(texto), quote=True)
+
+
+def ruta_publica(archivo):
+    """La URL con la que se anuncia un archivo, que no es su nombre en disco.
+
+    Cloudflare Pages sirve producto-x.html en /producto-x y redirige la versión
+    con extensión con un 308. Si declaramos las URLs con .html —en el canonical,
+    el sitemap o los enlaces internos— estamos anunciando rutas que redirigen.
+    Esta es la única función que traduce archivo -> URL: en disco los archivos
+    siguen llamándose igual.
+
+        producto-guayacan.html -> producto-guayacan
+        index.html             -> ''   (para que SITIO + ruta dé la home)
+    """
+    if archivo == "index.html":
+        return ""
+    if archivo.endswith(".html"):
+        return archivo[: -len(".html")]
+    return archivo
+
+
+IMAGENES = (".webp", ".jpg", ".jpeg", ".png", ".avif")
+VIDEOS = (".mp4", ".webm", ".mov")
+
+# El nombre del archivo define el texto alternativo, para no tener que
+# escribirlo a mano. Se compara sin el prefijo numérico: "2-tronco.webp" -> "tronco"
+TEXTOS_ALT = {
+    "principal": "{n}",
+    "frontal": "{n}, árbol completo de frente",
+    "perspectiva": "{n} visto en perspectiva",
+    "trasera": "{n} visto desde atrás",
+    "tronco": "Detalle del tronco de {n}",
+    "follaje": "Detalle del follaje de {n}",
+    "hoja": "Detalle de la hoja de {n}",
+    "maceta": "Maceta de {n}",
+    "escala": "{n} junto a un objeto que muestra su tamaño real",
+    "tamano": "{n} junto a un objeto que muestra su tamaño real",
+    "conjunto": "{n} junto a otros bonsáis del vivero",
+    "entrega": "Cómo llega empacado {n}",
+    "empaque": "Cómo llega empacado {n}",
+    "raiz": "Detalle de la base y las raíces de {n}",
+    "video": "Video de {n}",
+    "giro": "Video de {n} girando",
+}
+
+
+def descubrir_galeria(pid, nombre):
+    """Lee Images/productos/<id>/ y arma la galería sola.
+
+    Así basta con dejar los archivos en la carpeta: no hay que declararlos.
+    El orden lo da el nombre del archivo (por eso conviene 1-, 2-, 3-...).
+    Un video toma como portada el archivo <mismo-nombre>-poster.<ext> si existe.
+    """
+    carpeta = IMAGENES_PRODUCTOS / pid
+    if not carpeta.is_dir():
+        return []
+
+    archivos = sorted(
+        (f for f in carpeta.iterdir() if f.is_file() and not f.name.startswith(".")),
+        key=lambda f: f.name.lower(),
+    )
+    posters = {f.stem[: -len("-poster")] for f in archivos if f.stem.endswith("-poster")}
+
+    galeria = []
+    for f in archivos:
+        ext = f.suffix.lower()
+        if f.stem.endswith("-poster"):
+            continue  # es la portada de un video, no una foto suelta
+
+        # "2-tronco" -> "tronco"
+        clave = re.sub(r"^\d+[-_]?", "", f.stem).lower()
+        alt = TEXTOS_ALT.get(clave, "{n}").format(n=nombre)
+        ruta = f"Images/productos/{pid}/{f.name}"
+
+        if ext in VIDEOS:
+            item = {"tipo": "video", "src": ruta, "alt": alt}
+            if f.stem in posters:
+                for p in archivos:
+                    if p.stem == f.stem + "-poster":
+                        item["poster"] = f"Images/productos/{pid}/{p.name}"
+                        break
+            galeria.append(item)
+        elif ext in IMAGENES:
+            galeria.append({"src": ruta, "alt": alt})
+        else:
+            print(f"  ! {f.name}: formato no soportado, se omite")
+
+    return galeria
+
+
+# --- Previsualización al compartir el enlace -------------------------------
+# Cuadrada porque las fotos de producto lo son: un 1200x630 le cortaría la copa
+# y la maceta al árbol, que es justo lo que se quiere enseñar.
+OG_DIR = PUBLICO / "Images" / "og"
+OG_LADO = 1200
+OG_GENERICA = "Images/og-preview.jpg"
+OG_GENERICA_LADO = 1254
+# Pasado ese peso WhatsApp empieza a no renderizar la tarjeta
+OG_MAX_BYTES = 300 * 1024
+
+
+def foto_principal(producto, galeria):
+    """La foto que abre la ficha: es la que se espera ver al compartirla."""
+    for item in galeria:
+        if item.get("tipo") != "video":
+            return item["src"]
+    return producto["imagen"]
+
+
+def generar_og(pid, origen):
+    """Escribe Images/og/<id>.jpg, cuadrada de 1200, para la previsualización.
+
+    Casi todo se comparte por WhatsApp y su rastreador trata mal el WebP: si el
+    og:image apuntara al archivo del catálogo, buena parte de las tarjetas
+    saldrían en blanco. Por eso se genera un JPEG aparte en vez de reutilizar
+    la foto que ya existe.
+    """
+    if Image is None:
+        return None
+
+    ruta = PUBLICO / origen
+    if not ruta.is_file():
+        print(f"  ! {origen} no existe — la previsualización cae en la genérica")
+        return None
+
+    with Image.open(ruta) as original:
+        im = original.convert("RGB")
+
+    # Recorte centrado y luego escalado. Las fotos ya son casi cuadradas, así
+    # que esto solo lima el borde largo.
+    lado = min(im.size)
+    izq = (im.width - lado) // 2
+    arriba = (im.height - lado) // 2
+    im = im.crop((izq, arriba, izq + lado, arriba + lado))
+    im = im.resize((OG_LADO, OG_LADO), Image.LANCZOS)
+
+    # Se baja la calidad solo si hace falta, para no degradar sin motivo
+    for calidad in (88, 82, 76, 70):
+        buffer = io.BytesIO()
+        im.save(buffer, "JPEG", quality=calidad, optimize=True, progressive=True)
+        datos = buffer.getvalue()
+        if len(datos) <= OG_MAX_BYTES:
+            break
+
+    OG_DIR.mkdir(parents=True, exist_ok=True)
+    destino = OG_DIR / f"{pid}.jpg"
+    # Solo se escribe si cambió: si no, cada ejecución ensuciaría el diff
+    if not destino.exists() or destino.read_bytes() != datos:
+        destino.write_bytes(datos)
+        print(f"  IMG Images/og/{pid}.jpg ({len(datos) // 1024} KB, calidad {calidad})")
+    return f"Images/og/{pid}.jpg"
+
+
+def bloque_galeria(producto, galeria):
+    """Construye el visor + miniaturas. Si no hay fotos propias,
+    usa la foto única de catalog.json."""
+    if not galeria:
+        galeria = [{"src": producto["imagen"], "alt": producto["nombre"]}]
+
+    medios, miniaturas = [], []
+    for i, item in enumerate(galeria):
+        es_video = item.get("tipo") == "video"
+        activo = i == 0
+        clases = "gallery-media" + (" gallery-shot" if not es_video else "")
+        if activo:
+            clases += " is-active"
+        oculto = "" if activo else " hidden"
+        alt = esc(item.get("alt", producto["nombre"]))
+
+        if es_video:
+            poster = f' poster="{esc(item["poster"])}"' if item.get("poster") else ""
+            medios.append(
+                f'          <video class="{clases}" src="{esc(item["src"])}"{poster} '
+                f'controls playsinline preload="metadata"{oculto}></video>'
+            )
+            # La miniatura del video usa el poster; si no hay, queda el ícono de play
+            fondo = (
+                f'<img src="{esc(item["poster"])}" alt="" loading="lazy">'
+                if item.get("poster")
+                else ""
+            )
+            miniaturas.append(
+                f'          <button type="button" class="gallery-thumb is-video'
+                f'{" active" if activo else ""}" aria-label="Ver video: {alt}">'
+                f"{fondo}"
+                f'<span class="play-badge" aria-hidden="true">'
+                f'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>'
+                f"</span></button>"
+            )
+        else:
+            carga = (
+                ' loading="eager" fetchpriority="high"' if activo else ' loading="lazy"'
+            )
+            medios.append(
+                f'          <img class="{clases}" src="{esc(item["src"])}" '
+                f'alt="{alt}"{carga}{oculto}>'
+            )
+            miniaturas.append(
+                f'          <button type="button" class="gallery-thumb'
+                f'{" active" if activo else ""}" aria-label="Ver foto: {alt}">'
+                f'<img src="{esc(item["src"])}" alt="" loading="lazy"></button>'
+            )
+
+    # El contador solo tiene sentido con más de un medio
+    contador = (
+        f'          <span class="counter"><span class="counter-actual">1</span> / {len(galeria)}</span>\n'
+        if len(galeria) > 1
+        else ""
+    )
+
+    # Con una sola foto mostramos el recuadro "Pronto" invitando a que haya más
+    pronto = (
+        '          <div class="more-slot">\n'
+        '            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">\n'
+        '              <line x1="12" y1="5" x2="12" y2="19" />\n'
+        '              <line x1="5" y1="12" x2="19" y2="12" />\n'
+        "            </svg>\n"
+        "            <span>Pronto</span>\n"
+        "          </div>"
+        if len(galeria) == 1
+        else ""
+    )
+
+    zoom = (
+        '          <button type="button" class="gallery-zoom" aria-label="Ampliar foto">\n'
+        '            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">\n'
+        '              <circle cx="11" cy="11" r="7" />\n'
+        '              <line x1="21" y1="21" x2="16.65" y2="16.65" />\n'
+        '              <line x1="8" y1="11" x2="14" y2="11" />\n'
+        '              <line x1="11" y1="8" x2="11" y2="14" />\n'
+        "            </svg>\n"
+        "          </button>"
+    )
+
+    # Flechas para pasar de un medio a otro. Con uno solo no hay a dónde ir, así que
+    # no se imprimen: un control que no lleva a ninguna parte estorba más de lo que ayuda.
+    flechas = (
+        """          <button type="button" class="gallery-nav prev" aria-label="Foto anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button type="button" class="gallery-nav next" aria-label="Foto siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>"""
+        if len(galeria) > 1
+        else ""
+    )
+
+    partes = [
+        '        <div class="main-shot">',
+        contador.rstrip("\n") if contador else None,
+        "\n".join(medios),
+        flechas if flechas else None,
+        zoom,
+        "        </div>",
+        '        <div class="thumbs">',
+        "\n".join(miniaturas),
+        pronto if pronto else None,
+        "        </div>",
+    ]
+    return "\n".join(p for p in partes if p)
+
+
+def bloque_beneficios(beneficios):
+    partes = []
+    for texto in beneficios:
+        partes.append(
+            f"          <li>\n            {CHECK_SVG}\n            {esc(texto)}\n          </li>"
+        )
+    return "\n".join(partes)
+
+
+def bloque_specs(producto, specs_extra):
+    filas = [
+        ("Altura", producto.get("altura", "")),
+        ("Edad", producto.get("edad", "")),
+        ("Especie", producto.get("especie", "")),
+    ]
+    filas += list(specs_extra.items())
+    return "\n".join(
+        f"          <div><dt>{esc(k)}</dt><dd>{esc(v)}</dd></div>"
+        for k, v in filas
+        if v
+    )
+
+
+# --- Reglas de envío -------------------------------------------------------
+# Mismos números que ENVIO en app.js. Si cambian, cámbialos en los dos sitios.
+ENVIO_COSTO = 6
+ENVIO_GRATIS_DESDE = 60
+
+# Cómo se entrega. Vive en envios.json porque cambia por motivos de negocio
+# —un transportista nuevo, una ciudad más— y no debería obligar a tocar código.
+ENVIOS = leer_json(RUTA_ENVIOS) if RUTA_ENVIOS.is_file() else {}
+ENTREGA = ENVIOS.get("entrega", {})
+TRANSPORTISTA = ENTREGA.get("transportista", "nuestro transportista")
+CIUDADES_DOMICILIO = ENTREGA.get("domicilio", [])
+DIAS_DESPACHO = ENTREGA.get("diasDespacho", "")
+PLAZO_DOMICILIO = ENTREGA.get("plazoDomicilio", "")
+PLAZO_OFICINA = ENTREGA.get("plazoOficina", "")
+
+# "a domicilio en Quito" / "a domicilio en Quito y Guayaquil": el texto se arma
+# solo para que añadir una ciudad a domicilio no obligue a repasar la web entera.
+def lista_natural(items):
+    items = list(items)
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    return ", ".join(items[:-1]) + " y " + items[-1]
+
+
+DOMICILIO_TXT = lista_natural(CIUDADES_DOMICILIO)
+
+# Todas las ciudades a las que se envía, con sus puntos de retiro. Quito también
+# entra: que ahí haya entrega a domicilio no quita que alguien prefiera pasar a
+# recogerlo cuando le venga bien, en vez de esperar en casa.
+OFICINAS = {
+    c: ENVIOS.get("oficinas", {}).get(c, [])
+    for c in ENVIOS.get("ciudades", [])
+    if ENVIOS.get("oficinas", {}).get(c)
+}
+ENTREGA_RESUMEN = (
+    f"a domicilio en {DOMICILIO_TXT}, o a la oficina de {TRANSPORTISTA} de tu "
+    f"ciudad en el resto del país"
+)
+
+
+def precio_num(precio):
+    try:
+        return float(re.sub(r"[^0-9.]", "", precio or ""))
+    except ValueError:
+        return 0.0
+
+
+def envio_gratis(precio):
+    """Una sola pieza solo viaja gratis si por sí sola pasa el umbral."""
+    return precio_num(precio) >= ENVIO_GRATIS_DESDE
+
+
+def etiqueta_envio(precio):
+    return "Envío gratis" if envio_gratis(precio) else f"+ ${ENVIO_COSTO} de envío"
+
+
+def nota_envio(precio):
+    if envio_gratis(precio):
+        return (
+            f"Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral de "
+            f"${ENVIO_GRATIS_DESDE}. Llega {ENTREGA_RESUMEN}."
+        )
+    faltan = ENVIO_GRATIS_DESDE - precio_num(precio)
+    return (
+        f"Envío ${ENVIO_COSTO} por pedido: llega {ENTREGA_RESUMEN}. Te faltan "
+        f"${faltan:g} para que viaje gratis, y puedes sumar otro bonsái al confirmar."
+    )
+
+
+VENDIDO = re.compile(r"vendid|agotad|reservad", re.I)
+
+
+def nombre_corto(pid, producto, cortos):
+    """El nombre que cabe en una fila del pedido, sin el "Bonsái" de adelante."""
+    return cortos.get(pid) or re.sub(r"^Bons[aá]i\s+", "", producto["nombre"]).strip()
+
+
+def nota_pieza(producto):
+    """La línea chica bajo el nombre. Si queda una sola pieza, eso es lo que importa."""
+    badge = (producto.get("badgeTexto") or "").strip()
+    if badge and badge.lower() != "disponible":
+        return badge
+    partes = [producto.get("especie"), producto.get("altura")]
+    return " · ".join(v for v in partes if v) or producto.get("detallePrecio", "")
+
+
+def pieza_js(pid, producto, cortos):
+    return {
+        "id": pid,
+        "nombre": nombre_corto(pid, producto, cortos),
+        "precio": precio_num(producto["precio"]),
+        "imagen": producto["imagen"],
+        "nota": nota_pieza(producto),
+    }
+
+
+def bloque_sumables(pid, catalogo, cortos):
+    """El resto del catálogo disponible, para que el pedido pueda crecer.
+
+    Sin esto la pasarela solo sabe vender una pieza, y como diez de doce bonsáis
+    valen menos que el umbral, el envío gratis sería una promesa inalcanzable:
+    ningún pedido podría llegar. Van ordenados por precio; la pasarela los
+    reordena en vivo para poner arriba al que cierra la brecha.
+    """
+    lista = [
+        pieza_js(otro, prod, cortos)
+        for otro, prod in catalogo.items()
+        if otro != pid and not VENDIDO.search(prod.get("badgeTexto") or "")
+    ]
+    lista.sort(key=lambda p: p["precio"])
+    return lista
+
+
+def total_envio(precio):
+    total = precio_num(precio) if envio_gratis(precio) else precio_num(precio) + ENVIO_COSTO
+    return f"${total:g}"
+
+
+def elegir_combo(pid, producto, catalogo):
+    """El bonsái que, sumado a este, deja el envío en cero.
+
+    Es la misma recomendación que ya hace la pasarela cuando abres el pedido; lo
+    único que cambia es que ahora se ve antes de abrirla. Que salga en la página
+    y no dentro del modal importa: la decisión de gastar treinta dólares más se
+    toma mirando el árbol, no en un formulario a medio llenar.
+
+    Elegimos el más barato que cierre la brecha, no el que más suba el pedido.
+    El más caro dejaría más margen, pero convierte peor y se nota que empuja.
+    """
+    if VENDIDO.search(producto.get("badgeTexto") or ""):
+        return None  # no hay combo que ofrecer sobre algo que ya no está
+    brecha = ENVIO_GRATIS_DESDE - precio_num(producto["precio"])
+    if brecha <= 0:
+        return None  # ya tiene envío gratis: el combo no ahorraría nada
+
+    candidatos = sorted(
+        (
+            (otro, prod)
+            for otro, prod in catalogo.items()
+            if otro != pid and not VENDIDO.search(prod.get("badgeTexto") or "")
+        ),
+        key=lambda par: precio_num(par[1]["precio"]),
+    )
+    for otro, prod in candidatos:
+        if precio_num(prod["precio"]) >= brecha:
+            return otro, prod
+    return None
+
+
+def pieza_combo(nombre, prod):
+    return (
+        '        <div class="combo-pieza">\n'
+        '          <img src="{src}" alt="{alt}" width="88" height="88" '
+        'loading="lazy" decoding="async">\n'
+        '          <span class="combo-nombre">{nombre}</span>\n'
+        '          <span class="combo-precio">{precio}</span>\n'
+        '        </div>'
+    ).format(
+        src=esc(prod["imagen"]),
+        alt=esc(prod["nombre"]),
+        nombre=esc(nombre),
+        precio=esc(prod["precio"]),
+    )
+
+
+def bloque_combo(pid, producto, catalogo, cortos):
+    """La tarjeta del combo: los dos árboles y lo que cuesta llevárselos.
+
+    Se arma aquí y no en el navegador para que exista en el HTML. Es parte de la
+    oferta de la página, y lo que solo aparece después de ejecutar un script no
+    lo ve ni un buscador ni quien llegue con la conexión a medias.
+
+    El texto no promete un descuento que no existe: los dos árboles cuestan lo
+    que cuestan. Lo que se ahorra es el envío, y eso es lo que dice.
+    """
+    elegido = elegir_combo(pid, producto, catalogo)
+    if not elegido:
+        return ""
+
+    otro_id, companero = elegido
+    juntos = precio_num(producto["precio"]) + precio_num(companero["precio"])
+    este = pieza_combo(nombre_corto(pid, producto, cortos), producto)
+    otro = pieza_combo(nombre_corto(otro_id, companero, cortos), companero)
+
+    return f"""      <div class="combo" data-combo="{esc(otro_id)}">
+        <div class="combo-cabecera">
+          <span class="combo-etiqueta">Combo</span>
+          <h3>Llévate los dos y la entrega corre por nuestra cuenta</h3>
+        </div>
+        <div class="combo-piezas">
+{este}
+          <span class="combo-mas" aria-hidden="true">+</span>
+{otro}
+        </div>
+        <div class="combo-cuentas">
+          <span class="combo-total">Los dos: <b>${juntos:g}</b></span>
+          <span class="combo-envio">envío gratis</span>
+        </div>
+        <p class="combo-letra">Un pedido de ${ENVIO_GRATIS_DESDE} o más viaja sin coste de entrega. Por separado,
+          cada uno sumaría ${ENVIO_COSTO} de envío.</p>
+        <button type="button" class="btn btn-ghost combo-btn" data-combo-abrir>
+          Llevar los dos — ${juntos:g}
+        </button>
+      </div>"""
+
+
+def opciones_ciudad():
+    """El desplegable de ciudades, escrito en el HTML y no pintado por JS.
+
+    Quien llega con la conexión a medias o con el JavaScript bloqueado sigue
+    viendo a qué ciudades enviamos, que es una de las primeras cosas que se
+    pregunta alguien que compra una planta viva por internet.
+    """
+    partes = ['          <option value="">Elige tu ciudad…</option>']
+    for ciudad in sorted(OFICINAS):
+        partes.append(
+            f'          <option value="{esc(ciudad)}">{esc(ciudad)}</option>'
+        )
+    return "\n".join(partes)
+
+
+def bloque_badge(badge, precio):
+    """El badge manual manda; si no hay, se muestra la regla de envío."""
+    if not badge:
+        badge = etiqueta_envio(precio)
+    clase = "save-tag" if envio_gratis(precio) else "save-tag ship-paid"
+    return f'          <span class="{clase}">{esc(badge)}</span>'
+
+
+def bloque_porque(tarjetas):
+    partes = []
+    for i, tarjeta in enumerate(tarjetas):
+        fondo, color_p = FONDOS_PORQUE[i % len(FONDOS_PORQUE)]
+        partes.append(
+            f'        <div class="why-card" style="background:{fondo}">\n'
+            f'          <div class="n" style="background:var(--paper);color:var(--pine)">{i + 1:02d}</div>\n'
+            f'          <h3 style="color:#F3F0E6">{esc(tarjeta["titulo"])}</h3>\n'
+            f'          <p style="color:{color_p}">{esc(tarjeta["texto"])}</p>\n'
+            f"        </div>"
+        )
+    return "\n".join(partes)
+
+
+def bloque_cuidado(filas):
+    partes = []
+    for i, fila in enumerate(filas):
+        invertida = i % 2 == 1
+        clase = "care-row reverse" if invertida else "care-row"
+        foto = (
+            f'        <div class="care-photo">{esc(fila["foto"])}<br>(pendiente)</div>'
+        )
+        texto = (
+            f"        <div>\n"
+            f'          <span class="tag-label">{esc(fila["etiqueta"])}</span>\n'
+            f"          <h3>{esc(fila['titulo'])}</h3>\n"
+            f"          <p>{esc(fila['texto'])}</p>\n"
+            f"        </div>"
+        )
+        interior = f"{texto}\n{foto}" if invertida else f"{foto}\n{texto}"
+        partes.append(f'      <div class="{clase}">\n{interior}\n      </div>')
+    return "\n\n".join(partes)
+
+
+def bloque_relacionados(relacionados, catalogo, con_pagina):
+    partes = []
+    for entrada in relacionados:
+        if isinstance(entrada, str):
+            entrada = {"id": entrada}
+        pid = entrada["id"]
+        prod = catalogo.get(pid)
+        if not prod:
+            print(f"  ! Relacionado '{pid}' no existe en catalog.json — se omite")
+            continue
+        nombre = entrada.get("nombre", prod["nombre"])
+        pagina = con_pagina.get(pid)
+        if not pagina:
+            # Cae al catálogo genérico: se pierde justo la intención de quien
+            # hizo clic en ese árbol concreto. Vale la pena saberlo.
+            print(f"  ! Relacionado '{pid}' no tiene página — su tarjeta caerá en el catálogo")
+        destino = f"/{ruta_publica(pagina)}" if pagina else "/#catalogo"
+        partes.append(
+            f'        <a class="related-card" href="{esc(destino)}" style="text-decoration:none">\n'
+            f'          <div class="pic"><img src="{esc(prod["imagen"])}" '
+            f'alt="{esc(prod["nombre"])}" loading="lazy"></div>\n'
+            f"          <strong>{esc(nombre)}</strong>\n"
+            f'          <span>{esc(prod["precio"])}</span>\n'
+            f"        </a>"
+        )
+    return "\n".join(partes)
+
+
+def bloque_faq(preguntas):
+    partes = []
+    for i, item in enumerate(preguntas):
+        abierto = " open" if i == 0 else ""
+        partes.append(
+            f"        <details{abierto}>\n"
+            f'          <summary>{esc(item["p"])}<span class="plus"></span></summary>\n'
+            f"          <p>{esc(item['r'])}</p>\n"
+            f"        </details>"
+        )
+    return "\n".join(partes)
+
+
+def bloque_canal():
+    """La columna del canal de WhatsApp, o nada si todavía no hay canal."""
+    if not CANAL_WHATSAPP:
+        return ""
+    return PLANTILLA_CANAL.format(url=CANAL_WHATSAPP)
+
+
+def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
+    producto = catalogo.get(pid)
+    if not producto:
+        print(f"  ! '{pid}' no existe en catalog.json — se omite")
+        return None
+
+    nombre = producto["nombre"]
+    precio = producto["precio"]
+    archivo = con_pagina[pid]
+
+    h1_partes = datos["h1"]
+    h1 = f"{esc(h1_partes[0])} <em>{esc(h1_partes[1])}</em>" if len(h1_partes) > 1 else esc(h1_partes[0])
+
+    eyebrow = " · ".join(
+        v for v in (producto.get("especie"), producto.get("altura"), producto.get("edad")) if v
+    )
+
+    # Lo declarado a mano manda; si no, se descubre leyendo la carpeta
+    galeria = datos.get("galeria") or descubrir_galeria(pid, nombre)
+    og_imagen = generar_og(pid, foto_principal(producto, galeria))
+
+    reemplazos = {
+        "{{TITULO}}": esc(datos.get("titulo", nombre)),
+        "{{OG_IMAGEN}}": og_imagen or OG_GENERICA,
+        "{{OG_LADO}}": str(OG_LADO if og_imagen else OG_GENERICA_LADO),
+        "{{META_DESC}}": esc(datos["metaDescripcion"]),
+        "{{RUTA}}": ruta_publica(archivo),
+        "{{NOMBRE}}": esc(nombre),
+        "{{NOMBRE_CORTO}}": esc(datos.get("nombreCorto", nombre)),
+        "{{IMAGEN}}": esc(producto["imagen"]),
+        "{{GALERIA}}": bloque_galeria(producto, galeria),
+        "{{EYEBROW}}": esc(eyebrow),
+        "{{H1}}": h1,
+        "{{PRECIO}}": esc(precio),
+        "{{PRECIO_NUM}}": re.sub(r"[^0-9.]", "", precio),
+        "{{BENEFICIOS}}": bloque_beneficios(datos["beneficios"]),
+        "{{BADGE_PRECIO}}": bloque_badge(datos.get("badgePrecio"), precio),
+        "{{ENVIO_TAG}}": esc(etiqueta_envio(precio)),
+        "{{ENVIO_NOTA}}": esc(nota_envio(precio)),
+        "{{ENVIO_LINEA}}": "Gratis" if envio_gratis(precio) else f"${ENVIO_COSTO}",
+        "{{ENVIO_TOTAL}}": total_envio(precio),
+        "{{ENVIO_VALOR}}": "0" if envio_gratis(precio) else str(ENVIO_COSTO),
+        "{{SPECS}}": bloque_specs(producto, datos.get("specsExtra", {})),
+        "{{RESUMEN}}": esc(datos["resumen"]),
+        "{{POR_QUE}}": bloque_porque(datos["porQue"]),
+        "{{CUIDADO}}": bloque_cuidado(datos["cuidado"]),
+        "{{CIERRE_TITULO}}": esc(datos["cierre"]["titulo"]),
+        "{{CIERRE_TEXTO}}": esc(datos["cierre"]["texto"]),
+        "{{RELACIONADOS}}": bloque_relacionados(
+            datos.get("relacionados", []), catalogo, con_pagina
+        ),
+        "{{FAQ}}": bloque_faq(datos["faq"]),
+        "{{CANAL}}": bloque_canal(),
+        # Literales JS seguros (json.dumps escapa comillas y acentos correctamente)
+        "{{PRODUCTO_JS}}": json.dumps(datos.get("nombreCorto", nombre), ensure_ascii=False),
+        "{{ENVIO_JS}}": json.dumps(
+            {"costo": ENVIO_COSTO, "gratisDesde": ENVIO_GRATIS_DESDE},
+            ensure_ascii=False,
+        ),
+        # El pedido arranca con esta pieza y puede crecer con las demás
+        "{{PIEZA_JS}}": json.dumps(pieza_js(pid, producto, cortos), ensure_ascii=False),
+        "{{COMBO}}": bloque_combo(pid, producto, catalogo, cortos),
+        "{{TRANSPORTISTA}}": esc(TRANSPORTISTA),
+        "{{DOMICILIO_TXT}}": esc(DOMICILIO_TXT),
+        "{{ENTREGA_RESUMEN}}": esc(ENTREGA_RESUMEN),
+        "{{DIAS_DESPACHO}}": esc(DIAS_DESPACHO),
+        "{{PLAZO_DOMICILIO}}": esc(PLAZO_DOMICILIO),
+        "{{PLAZO_OFICINA}}": esc(PLAZO_OFICINA),
+        "{{CIUDADES_OPCIONES}}": opciones_ciudad(),
+        "{{OFICINAS_JS}}": json.dumps(OFICINAS, ensure_ascii=False),
+        "{{DOMICILIO_JS}}": json.dumps(CIUDADES_DOMICILIO, ensure_ascii=False),
+        "{{SUMABLES_JS}}": json.dumps(
+            bloque_sumables(pid, catalogo, cortos), ensure_ascii=False
+        ),
+        # Para el píxel de Meta: id del catálogo y precio numérico
+        "{{ID_JS}}": json.dumps(pid, ensure_ascii=False),
+    }
+
+    salida = plantilla
+    for marca, valor in reemplazos.items():
+        salida = salida.replace(marca, valor)
+
+    salida = sellar_assets(salida)
+
+    pendientes = re.findall(r"\{\{[A-Z_]+\}\}", salida)
+    if pendientes:
+        print(f"  ! Quedaron marcas sin reemplazar en {archivo}: {set(pendientes)}")
+
+    destino = PUBLICO / archivo
+    # Solo escribimos si algo cambió, para no falsear la fecha del sitemap
+    anterior = destino.read_text(encoding="utf-8") if destino.exists() else None
+    cambio = anterior != salida
+    if cambio:
+        destino.write_text(salida, encoding="utf-8")
+    return archivo, cambio
+
+
+def sellar_paginas_a_mano():
+    """Sella los assets de las páginas que no genera este script.
+
+    index.html y las legales se escriben a mano pero enlazan los mismos .css y
+    .js, así que sufren el mismo problema de caché vieja — y la home es
+    justamente la que más gente revisita.
+
+    Solo escribe si el sello cambió: la fecha de modificación de estos archivos
+    alimenta el lastmod del sitemap y no queremos falsearla en cada ejecución.
+    """
+    tocadas = []
+    for ruta in sorted(PUBLICO.glob("*.html")):
+        # Las fichas ya pasaron por sellar_assets al generarse
+        if ruta.name.startswith("producto-"):
+            continue
+        antes = ruta.read_text(encoding="utf-8")
+        despues = sellar_assets(antes)
+        if despues != antes:
+            ruta.write_text(despues, encoding="utf-8")
+            tocadas.append(ruta.name)
+    return tocadas
+
+
+def main():
+    for ruta in (PLANTILLA, PRODUCTOS, CATALOGO):
+        if not ruta.exists():
+            sys.exit(f"Falta el archivo {ruta.name}")
+
+    plantilla = PLANTILLA.read_text(encoding="utf-8")
+    productos = leer_json(PRODUCTOS)
+    # Solo el catálogo publicado llega a las plantillas: así el filtro se aplica
+    # de una vez a la ficha, a los relacionados y a las piezas de la pasarela.
+    catalogo = {p["id"]: p for p in leer_json(CATALOGO) if esta_publicado(p)}
+
+    paginas = {k: v for k, v in productos.items() if not k.startswith("_")}
+
+    ocultos = [pid for pid in paginas if pid not in catalogo]
+
+    # Mapa id -> archivo, para que los "relacionados" enlacen a su página si existe.
+    con_pagina = {
+        pid: f"producto-{datos.get('slug', pid)}.html" for pid, datos in paginas.items()
+    }
+
+    print(f"Generando {len(paginas) - len(ocultos)} página(s) de producto"
+          + (f", {len(ocultos)} oculta(s)" if ocultos else "") + "...\n")
+    # Nombre corto de cada pieza, para las filas del pedido en la pasarela.
+    cortos = {
+        pid: datos.get("nombreCorto")
+        for pid, datos in paginas.items()
+        if datos.get("nombreCorto")
+    }
+
+    # La ficha de un bonsái oculto se retira del disco. Se puede: estos archivos
+    # se regeneran enteros en cada ejecución. Dejarla sería peor que borrarla,
+    # porque Cloudflare la seguiría sirviendo en su URL aunque ya no la enlace
+    # nadie, y Google la conservaría indexada desde el sitemap anterior.
+    for pid in ocultos:
+        ficha = PUBLICO / con_pagina[pid]
+        if ficha.exists():
+            ficha.unlink()
+            print(f"  DEL {ficha.name} (oculto en catalog.json)")
+
+    creados, cambiados = [], []
+    for pid, datos in paginas.items():
+        if pid in ocultos:
+            continue
+        resultado = generar(pid, datos, catalogo, con_pagina, cortos, plantilla)
+        if resultado:
+            archivo, cambio = resultado
+            creados.append(archivo)
+            if cambio:
+                cambiados.append(archivo)
+            print(f"  {'ACT' if cambio else ' = '} {archivo}")
+
+    # Mapa que lee app.js para enlazar las tarjetas del catálogo a su página.
+    solo_creados = {
+        pid: f"/{ruta_publica(arch)}"
+        for pid, arch in con_pagina.items()
+        if arch in creados
+    }
+    PAGINAS.write_text(
+        json.dumps(solo_creados, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    print(f"  OK  paginas.json ({len(solo_creados)} enlace(s))")
+
+    selladas = sellar_paginas_a_mano()
+    for nombre in selladas:
+        print(f"  ACT {nombre} (assets sellados)")
+
+    escribir_sitemap(creados, cambiados)
+    print("  OK  sitemap.xml")
+
+    sin_cambio = len(creados) - len(cambiados)
+    print(f"\nListo: {len(cambiados)} actualizada(s), {sin_cambio} sin cambios.")
+
+
+def escribir_sitemap(archivos, cambiados):
+    """Reescribe sitemap.xml con la home + las páginas de producto.
+
+    lastmod solo avanza para lo que realmente cambió: si le decimos a Google
+    que todo se modificó en cada ejecución, deja de confiar en el dato.
+    """
+    hoy = date.today().isoformat()
+    ruta = SITEMAP
+
+    # Fechas que ya estaban publicadas, para conservarlas.
+    # Los sitemaps antiguos declaraban las URLs con .html; se les quita al leer
+    # para que el cambio de forma no reinicie todas las fechas de golpe.
+    previas = {}
+    if ruta.exists():
+        xml = ruta.read_text(encoding="utf-8")
+        for loc, fecha in re.findall(
+            r"<loc>\s*(.*?)\s*</loc>\s*<lastmod>\s*(.*?)\s*</lastmod>", xml, re.S
+        ):
+            previas[loc.removesuffix(".html")] = fecha
+
+    def fecha_de(loc, cambio):
+        if cambio or loc not in previas:
+            return hoy
+        return previas[loc]
+
+    # La home no la genera este script: usamos la fecha real de index.html
+    index = PUBLICO / "index.html"
+    fecha_home = (
+        date.fromtimestamp(index.stat().st_mtime).isoformat() if index.exists() else hoy
+    )
+
+    urls = [(SITIO, fecha_home, "weekly", "1.0")]
+    for a in sorted(archivos):
+        loc = SITIO + ruta_publica(a)
+        urls.append((loc, fecha_de(loc, a in cambiados), "monthly", "0.8"))
+
+    # Páginas legales: se escriben a mano, así que su fecha sale del archivo
+    for legal in ("privacidad.html", "terminos.html"):
+        ruta_legal = PUBLICO / legal
+        if not ruta_legal.exists():
+            continue
+        loc = SITIO + ruta_publica(legal)
+        fecha = date.fromtimestamp(ruta_legal.stat().st_mtime).isoformat()
+        urls.append((loc, fecha, "yearly", "0.3"))
+
+    # El blog: la fecha sale de blog.json, no del archivo en disco.
+    #
+    # La fecha del archivo miente con demasiada facilidad: un clone, un checkout
+    # o restaurar una copia la ponen a hoy sin que el artículo haya cambiado una
+    # coma, y el sitemap acaba diciéndole a Google que revisara algo que está
+    # igual. El dato bueno es "actualizado", que el panel sella cuando de verdad
+    # editas el texto. Un retoque del CSS o de la plantilla no mueve esa fecha, y
+    # está bien que no la mueva: lo que le importa a Google es si cambió lo que
+    # se lee, no cómo se ve.
+    publicados = [
+        post for post in leer_articulos()
+        if not post.get("borrador") and (PUBLICO / f"blog-{post['slug']}.html").is_file()
+    ]
+    for post in publicados:
+        urls.append((
+            SITIO + f"blog-{post['slug']}",
+            post.get("actualizado") or post["fecha"],
+            "monthly",
+            "0.6",
+        ))
+
+    # El índice cambia cuando entra o se toca un artículo, así que su fecha es
+    # la más reciente de los que lista. Sin artículos no hay índice que ofrecer.
+    if publicados and (PUBLICO / "blog.html").is_file():
+        urls.append((
+            SITIO + "blog",
+            max(p.get("actualizado") or p["fecha"] for p in publicados),
+            "weekly",
+            "0.7",
+        ))
+
+    lineas = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for loc, fecha, freq, prio in urls:
+        lineas += [
+            "  <url>",
+            f"    <loc>{loc}</loc>",
+            f"    <lastmod>{fecha}</lastmod>",
+            f"    <changefreq>{freq}</changefreq>",
+            f"    <priority>{prio}</priority>",
+            "  </url>",
+        ]
+    lineas.append("</urlset>")
+    ruta.write_text("\n".join(lineas) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()

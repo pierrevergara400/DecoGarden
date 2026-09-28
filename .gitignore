@@ -33,17 +33,18 @@ scratchpad*
 *.CR2
 *.NEF
 *.dng
-Images/**/originales/
-Images/**/raw/
+**/originales/
+**/raw/
 
 
 # ==========================================================================
-# OJO: los archivos que genera `python generar-productos.py` SÍ se versionan:
+# OJO: lo que generan los scripts SÍ se versiona:
 #
-#   producto-*.html      paginas.json      sitemap.xml
+#   public/producto-*.html   public/blog*.html
+#   public/data/paginas.json public/sitemap.xml
 #
-# Cloudflare Pages publica este repo tal cual, sin ejecutar nada. Si los
-# ignoras, el sitio se despliega sin las páginas de producto.
+# Cloudflare Pages publica la carpeta public/ tal cual, sin ejecutar nada. Si
+# los ignoras, el sitio se despliega sin las páginas de producto.
 # ==========================================================================
 
 # ==========================================================================
@@ -51,16 +52,17 @@ Images/**/raw/
 #
 # Este repositorio es PÚBLICO. Nada de lo de abajo puede subirse nunca:
 #
-#   guia-fuente.md      el texto de la guía en claro
-#   guia-secreto.json   el código de acceso y la sal del cifrado
-#   qr/                 los QR, que llevan el código dentro de la imagen
+#   privado/guia-fuente.md     el texto de la guía en claro
+#   privado/guia-secreto.json  el código de acceso y la sal del cifrado
+#   privado/qr/                los QR, que llevan el código dentro de la imagen
 #
-# Lo único que se versiona es guia-<slug>.html, donde el contenido va
+# Lo único que se versiona es public/guia-<slug>.html, donde el contenido va
 # cifrado con AES-256-GCM: en GitHub se ve un bloque ilegible.
 #
 # Y recuerda que git guarda historial: si uno de estos archivos se commitea
 # aunque sea una vez, queda ahí para siempre aunque después lo borres.
 # ==========================================================================
+privado/
 guia-fuente.md
 guia-secreto.json
 qr/

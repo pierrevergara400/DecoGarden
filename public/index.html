@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1E2F27">
+  <title>DecoGarden — Bonsáis vivos, con quien te enseñe a cuidarlos</title>
+  <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="Icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="canonical" href="https://decogarden.pages.dev/">
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Bonsáis cultivados en San Antonio de Ibarra, con guía de cuidado, garantía de llegada sana y acompañamiento por WhatsApp durante 30 días.">
+  <meta name="keywords" content="bonsai, vivero, plantas, ecuador, ibarra, decoracion, jardineria">
+  <meta name="author" content="DecoGarden">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://decogarden.pages.dev/">
+  <meta property="og:title" content="DecoGarden — Bonsáis vivos con asesoría experta">
+  <meta property="og:description"
+    content="Encuentra tu bonsái ideal en nuestro catálogo. Incluye guía de cuidado personalizada y soporte por WhatsApp durante los primeros 30 días. Envío $6, gratis desde $60: a domicilio en Quito y a tu oficina de Urbano Express en el resto del país.">
+  <meta property="og:image" content="https://decogarden.pages.dev/Images/og-preview.jpg">
+  <meta property="og:image:secure_url" content="https://decogarden.pages.dev/Images/og-preview.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1254">
+  <meta property="og:image:height" content="1254">
+  <meta property="og:image:alt" content="Bonsái Juniperus Bequia Imperial en maceta de madera">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://decogarden.pages.dev/">
+  <meta property="twitter:title" content="DecoGarden — Bonsáis vivos con asesoría experta">
+  <meta property="twitter:description"
+    content="Encuentra tu bonsái ideal en nuestro catálogo. Incluye guía de cuidado personalizada y soporte por WhatsApp durante los primeros 30 días. Envío $6, gratis desde $60: a domicilio en Quito y a tu oficina de Urbano Express en el resto del país.">
+  <meta property="twitter:image" content="https://decogarden.pages.dev/Images/og-preview.jpg">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Karla:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+  </noscript>
+
+  <link rel="stylesheet" href="assets/css/tokens.css?v=024e730f">
+  <link rel="stylesheet" href="assets/css/style.css?v=76b8f199">
+  <link rel="preload" as="fetch" href="data/catalog.json" crossorigin>
+
+  <!-- Datos estructurados: negocio local -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GardenStore",
+    "name": "DecoGarden",
+    "alternateName": "Vivero DecoGarden | Bonsáis de Autor y Jardinería",
+    "url": "https://decogarden.pages.dev/",
+    "image": "https://decogarden.pages.dev/Images/og-preview.jpg",
+    "logo": "https://decogarden.pages.dev/Media/Decogarden%202.svg",
+    "description": "Vivero de bonsáis en San Antonio de Ibarra. Cada árbol incluye ficha de cuidado, garantía de llegada sana y acompañamiento por WhatsApp durante 30 días.",
+    "priceRange": "$$",
+    "telephone": "+593963136655",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Av. Antonio José de Sucre y Panamericana, Entrada a San Antonio de Ibarra",
+      "addressLocality": "San Antonio de Ibarra",
+      "addressRegion": "Imbabura",
+      "postalCode": "100109",
+      "addressCountry": "EC"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 0.3371423,
+      "longitude": -78.1694917
+    },
+    "hasMap": "https://maps.app.goo.gl/EtwU6xSdnhNhqLqH9",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "09:00",
+        "closes": "18:30"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Sunday",
+        "opens": "09:00",
+        "closes": "17:00"
+      }
+    ],
+    "areaServed": "EC",
+    "sameAs": [
+      "https://www.instagram.com/decogarden_ibarra",
+      "https://www.facebook.com/decogarden.ec",
+      "https://www.tiktok.com/@decogarden_ibarra"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "bestRating": "5",
+      "reviewCount": "3"
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "author": { "@type": "Person", "name": "Christopher" },
+        "reviewBody": "El bonsái llegó muy bien. Muchas gracias, ahí está, llegó muy bien."
+      },
+      {
+        "@type": "Review",
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "author": { "@type": "Person", "name": "Jorge Mera" },
+        "reviewBody": "Excelente experiencia de compra. El bonsái que adquirí es hermoso, saludable y se nota el cuidado y dedicación en cada detalle. La atención fue amable, paciente y con recomendaciones claras sobre su mantenimiento. Sin duda, se percibe el amor por las plantas y el respeto por el arte del bonsái. Totalmente recomendado."
+      },
+      {
+        "@type": "Review",
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "author": { "@type": "Person", "name": "Andrés" },
+        "reviewBody": "Primera vez que tengo un bonsái y no sabía nada. Con la ficha que me dieron fue fácil, ya lleva semanas sano."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Meta Pixel -->
+  <script src="assets/js/pixel.js?v=37455f7b"></script>
+  <script src="assets/js/origen.js?v=dc7e211b"></script>
+</head>
+
+<body>
+
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <a class="brand" href="#" aria-label="Ir al inicio">
+          <img src="Media/Decogarden 2.svg" style="width: 9rem;" width="144" height="24" alt="DecoGarden logo">
+        </a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false"
+          aria-controls="mainNav">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="mainnav" id="mainNav">
+          <a class="navlink" href="#catalogo">Catálogo</a>
+          <a class="navlink" href="/blog">Blog</a>
+          <a class="navlink" href="#incluye">Qué incluye</a>
+          <a class="navlink" href="#faq">Preguntas</a>
+          <a class="navlink" href="#cierre" style="color:var(--accent)">Escríbeme →</a>
+        </nav>
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">DecoGarden · San Antonio de Ibarra</span>
+          <h1>Un bonsái vivo y <em>alguien</em> que te enseñe a cuidarlo.</h1>
+          <p class="lead">Elige tu árbol del catálogo y te lo aparto hoy. Cultivado aquí en Ibarra, llega vivo y sano a
+            tu puerta, con su ficha de cuidado y alguien que te enseña a cuidarlo por WhatsApp durante sus primeros 30
+            días. Aunque nunca hayas cuidado una planta en tu vida.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#catalogo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+              </svg>
+              Ver bonsáis disponibles
+            </a>
+            <a class="btn btn-ghost"
+              href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20vi%20su%20pagina%20y%20quiero%20un%20bonsai%20que%20pueda%20cuidar%20sin%20miedo.%20%C2%BFMe%20ayudan%20a%20elegir%3F"
+              target="_blank" rel="noopener">Escríbeme
+              por WhatsApp</a>
+          </div>
+          <div class="micro"><span class="dot"></span> Respuesta el mismo día · Envío $6 a todo el Ecuador, gratis desde $60</div>
+        </div>
+
+        <div class="hero-art">
+          <img src="Media/Decogarden 3.svg" alt="Ilustración de un bonsái" width="300" height="238" fetchpriority="high"
+            loading="eager" />
+          <div class="ring"></div>
+          <div class="disc"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="trust">
+      <div class="wrap">
+        <div class="item"><b>Garantía de llegada sana</b><span>o lo reponemos</span></div>
+        <div class="item"><b>Acompañamiento 30 días</b><span>te guío por WhatsApp</span></div>
+        <div class="item"><b>Ficha de cuidado</b><span>según tu especie</span></div>
+        <div class="item"><b>Hecho en Imbabura</b><span>cultivado, no importado</span></div>
+      </div>
+    </div>
+
+    <section class="fear blk">
+      <div class="wrap">
+        <div class="fear-inner">
+          <div class="rv">
+            <span class="eyebrow">Hablemos claro</span>
+            <h2>“¿Y si <em>se me muere</em>?”</h2>
+            <p>Es lo primero que piensa casi todo el que quiere un bonsái. Y es una duda justa: es un árbol vivo, no un
+              adorno.</p>
+            <p><strong>Por eso no te vendo solo la planta.</strong> Un bonsái vivo no viene con manual, viene con
+              alguien al otro lado del mensaje que te enseña a cuidarlo, paso a paso, hasta que ya no necesites
+              preguntar.</p>
+          </div>
+          <div class="wire rv">
+            <div class="q">Un bonsái no se muere por difícil, se muere por quedarse solo.</div>
+            <div class="a">La mayoría no falla por falta de talento, sino porque nadie les dijo cuánta agua, cuánta luz
+              y cuándo. Ese es exactamente el hueco que llenamos: tú pones el gusto, yo pongo el oficio.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="includes blk" id="incluye">
+      <div class="wrap">
+        <div class="kicker-wrap rv">
+          <span class="eyebrow">Lo que te llevas</span>
+          <h2 class="sec-title">No es una maceta. Es un <em>acompañamiento</em>.</h2>
+          <p class="sec-sub">Cada pedido incluye todo lo necesario para que tu bonsái llegue vivo, se quede sano, y
+            tengas
+            a alguien que te enseñe a cuidarlo mientras aprendes.</p>
+        </div>
+
+        <div class="stack rv">
+          <div class="row">
+            <span class="n">01</span>
+            <div>
+              <h3>Tu bonsái, sano y listo</h3>
+              <div class="d">Cultivado y aclimatado aquí en San Antonio de Ibarra. Nada de árboles estresados de bodega:
+                sale de vivero directo a tu casa.</div>
+            </div>
+            <span class="tag">Incluido</span>
+          </div>
+          <div class="row">
+            <span class="n">02</span>
+            <div>
+              <h3>Ficha de cuidado de tu especie</h3>
+              <div class="d">Riego, luz, poda y qué hacer en cada época — específica para el árbol que elijas, no un
+                instructivo genérico de internet.</div>
+            </div>
+            <span class="tag">Incluido</span>
+          </div>
+          <div class="row">
+            <span class="n">03</span>
+            <div>
+              <h3>Garantía de supervivencia</h3>
+              <div class="d">Si tu bonsái llega dañado o no supera sus primeros días pese a seguir la guía, te lo
+                repongo.
+                Compras tranquilo.</div>
+            </div>
+            <span class="tag">Incluido</span>
+          </div>
+          <div class="row">
+            <span class="n">04</span>
+            <div>
+              <h3>Soporte por WhatsApp · 30 días</h3>
+              <div class="d">Me escribes con cualquier duda o una foto si algo te preocupa. Respondo el mismo día. No te
+                dejo solo con el árbol.</div>
+            </div>
+            <span class="tag">Incluido</span>
+          </div>
+          <div class="row">
+            <span class="n">05</span>
+            <div>
+              <h3>Kit de cuidado</h3>
+              <div class="d">Tijera, fertilizante y sustrato para que no tengas que salir a buscar nada. Opcional, se
+                añade a tu pedido.</div>
+            </div>
+            <span class="tag" style="color:var(--accent)">Opcional</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="wrap">
+        <div class="kicker-wrap rv">
+          <span class="eyebrow">Cómo funciona</span>
+          <h2 class="sec-title">De la duda a tu árbol, en <em>tres pasos</em>.</h2>
+        </div>
+        <div class="steps rv">
+          <div class="step">
+            <div class="sn">PASO 01</div>
+            <h3>Eliges tu bonsái</h3>
+            <p>Míralos en el <a href="#catalogo">catálogo</a> de abajo. Cuando veas el que te gusta, tocas “Lo quiero” y
+              me llega tu mensaje con el nombre del árbol. Yo te lo aparto.</p>
+          </div>
+          <div class="step">
+            <div class="sn">PASO 02</div>
+            <h3>Te llega sano</h3>
+            <p>Empacado para viajar sin sufrir, con su ficha de cuidado adentro. Envío $6, gratis desde $60:
+              a domicilio en Quito, o a la oficina de Urbano Express de tu ciudad en el resto del país.</p>
+          </div>
+          <div class="step">
+            <div class="sn">PASO 03</div>
+            <h3>Te acompaño</h3>
+            <p>Los primeros 30 días me tienes a un mensaje de distancia. Cualquier duda, foto o susto: lo resolvemos
+              juntos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog blk" id="catalogo">
+      <div class="wrap">
+        <div class="kicker-wrap rv">
+          <span class="eyebrow">El vivero</span>
+          <h2 class="sec-title">Elige el tuyo. <em>Te lo aparto hoy.</em></h2>
+          <p class="sec-sub">Cada bonsái es una pieza única y sale directo del vivero en San Antonio de Ibarra. Toca “Lo
+            quiero” en el que te guste y me llega tu mensaje con el nombre del árbol — con ficha de cuidado, garantía
+            y acompañamiento incluidos.</p>
+          <p class="catalog-stat">Este mes ya se fueron 11 bonsáis a nuevos hogares.</p>
+        </div>
+
+        <div class="envio-regla rv">
+          <div>
+            <b>$6 a cualquier ciudad</b>
+            <span>Tarifa plana para todo el Ecuador continental, vivas donde vivas: a domicilio en Quito, o a la
+              oficina de Urbano Express de tu ciudad en el resto del país.</span>
+          </div>
+          <div class="free">
+            <b>Gratis desde $60</b>
+            <span>Dos bonsáis casi siempre pasan el umbral, y el envío se va a cero para todo el pedido.</span>
+          </div>
+          <div>
+            <b>Salidas miércoles y viernes</b>
+            <span>Entre 48 y 72 horas según tu distancia a San Antonio de Ibarra. O lo retiras aquí, sin costo.</span>
+          </div>
+        </div>
+
+        <div class="filters rv">
+          <button class="filter-tab active" data-filter="todos" aria-pressed="true">Todos</button>
+          <button class="filter-tab" data-filter="entrada" aria-pressed="false">Para empezar</button>
+          <button class="filter-tab" data-filter="coleccion" aria-pressed="false">De colección</button>
+        </div>
+
+        <div class="catalog-grid">
+          <!-- Skeleton mientras carga catalog.json; renderCatalog() en app.js lo reemplaza -->
+          <div class="bonsai-card skeleton-card">
+            <div class="shot"></div>
+          </div>
+          <div class="bonsai-card skeleton-card">
+            <div class="shot"></div>
+          </div>
+          <div class="bonsai-card skeleton-card">
+            <div class="shot"></div>
+          </div>
+        </div>
+
+        <div class="more-wrap" style="display:none">
+          <button class="btn-more" id="verMas">Ver más bonsáis</button>
+        </div>
+
+        <p class="catalog-note rv">¿No ves la especie que buscas? <a
+            href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20busco%20una%20especie%20en%20particular.%20%C2%BFMe%20ayudas%3F"
+            target="_blank" rel="noopener">Escríbeme
+            y te la consigo →</a></p>
+      </div>
+    </section>
+
+    <section class="blk set-blk">
+      <div class="wrap">
+        <div class="kicker-wrap rv">
+          <span class="eyebrow">Para llevar más de uno</span>
+          <h2 class="sec-title">Set Consultorio. <em>Tres árboles, un solo envío.</em></h2>
+          <p class="sec-sub">Siete de cada diez personas que me compran trabajan en salud, y casi siempre terminan
+            queriendo uno para el consultorio, uno para la sala de espera y uno para la casa. Este set es exactamente
+            eso, sin tener que pedir tres veces.</p>
+        </div>
+
+        <div class="set-oferta rv">
+          <div class="set-detalle">
+            <h3>Un bonsái grande y dos clásicos, elegidos contigo</h3>
+            <ul>
+              <li>Escoges los tres del catálogo: uno de la línea grande y dos de $25.</li>
+              <li>Suelto costaría <b>$105</b> más envío.</li>
+              <li>Envío gratis incluido: el set pasa de sobra el umbral de $60.</li>
+              <li>Ficha de cuidado por especie y garantía de 30 días en cada pieza.</li>
+            </ul>
+          </div>
+          <div class="set-precio">
+            <span class="set-num">$99</span>
+            <span class="set-sub">Tres bonsáis · envío gratis</span>
+            <a class="btn btn-primary" href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20me%20interesa%20el%20Set%20Consultorio%3A%20tres%20bonsais%20por%20%2499%20con%20envio%20gratis.%20%C2%BFMe%20ayudan%20a%20elegirlos%3F" target="_blank" rel="noopener">
+              Armar mi set
+            </a>
+            <span class="set-nota">Te escribo para elegir las tres especies juntos.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="blk">
+      <div class="wrap">
+        <div class="kicker-wrap rv">
+          <span class="eyebrow">Quienes ya lo tienen</span>
+          <h2 class="sec-title">Llegaron sanos. <em>Siguen vivos.</em></h2>
+        </div>
+        <!-- Cada reseña es una tarjeta con sus fotos arriba. Para sumar una:
+             copia un <article class="card resena">. Las fotos son opcionales;
+             con dos o más en el mismo .resena-fotos, app.js arma el carrusel. -->
+        <div class="resenas rv">
+          <article class="card resena">
+            <div class="resena-fotos">
+              <img src="Images/testimonio-1.webp" alt="Mensaje de Christopher confirmando que su bonsái llegó bien"
+                onerror="this.remove()" loading="lazy" decoding="async">
+            </div>
+            <div class="stars">★★★★★</div>
+            <div class="quote">El bonsái llegó muy bien. Muchas gracias, ahí está, llegó muy bien.</div>
+            <div class="who">— Christopher, Ambato</div>
+          </article>
+          <article class="card resena">
+            <div class="resena-fotos">
+              <img src="Images/testimonio-2.webp" alt="Bonsái de dos juníperos en maceta de barro, en casa del cliente"
+                onerror="this.remove()" loading="lazy" decoding="async">
+            </div>
+            <div class="stars">★★★★★</div>
+            <div class="quote">Excelente experiencia de compra. El bonsái que adquirí es hermoso, saludable y se nota el
+              cuidado y dedicación en cada detalle. La atención fue amable, paciente y con recomendaciones claras sobre
+              su mantenimiento. Sin duda, se percibe el amor por las plantas y el respeto por el arte del bonsái.
+              Totalmente recomendado.</div>
+            <div class="who">— Jorge Mera, Ibarra</div>
+          </article>
+          <article class="card resena">
+            <div class="stars">★★★★★</div>
+            <div class="quote">Primera vez que tengo un bonsái y no sabía nada. Con la ficha que me dieron fue fácil, ya
+              lleva semanas sano.</div>
+            <div class="who">— Andrés, Cuenca</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq blk" id="faq">
+      <div class="wrap">
+        <div class="kicker-wrap rv">
+          <span class="eyebrow">Antes de escribirme</span>
+          <h2 class="sec-title">Lo que todos preguntan.</h2>
+        </div>
+        <div class="faq-list rv">
+          <details open>
+            <summary>No sé nada de plantas. ¿Igual puedo?<span class="plus"></span></summary>
+            <p>Sí, y de hecho la mayoría de mis clientes empezó justo ahí. Para eso existe la ficha de cuidado y el
+              soporte de 30 días: te digo exactamente cuánta agua, cuánta luz y cuándo. No necesitas experiencia,
+              necesitas que alguien te guíe — y esa es la parte que yo pongo.</p>
+          </details>
+          <details>
+            <summary>¿Cómo pido un bonsái del catálogo?<span class="plus"></span></summary>
+            <p>Muy fácil: mira el <a href="#catalogo">catálogo</a>, toca “Lo quiero” en el árbol que te gustó y se abre
+              WhatsApp con el mensaje ya
+              escrito y el nombre del bonsái. Me llega, te confirmo disponibilidad, coordinamos pago y envío. Mientras
+              tanto te lo aparto.</p>
+          </details>
+          <details>
+            <summary>¿Cómo llega si vivo en otra ciudad?<span class="plus"></span></summary>
+            <p>Depende de dónde vivas. <strong>A domicilio solo llegamos a Quito</strong>: ahí te lo dejamos en
+              la puerta al día siguiente del despacho. Al resto del país lo mando con <strong>Urbano Express</strong>
+              y lo retiras en la oficina que elijas de tu ciudad — te paso la guía por WhatsApp para que lo recojas.
+              Lo hago así a propósito: el reparto a domicilio fuera de Quito añade varios días, y un bonsái metido en
+              una caja no aguanta esa espera. Cuesta lo mismo en los dos casos: $6, gratis desde $60. Si prefieres,
+              también puedes retirarlo aquí en San Antonio de Ibarra.</p>
+          </details>
+          <details>
+            <summary>¿Cuánto cuesta el envío?<span class="plus"></span></summary>
+            <p>$6 a cualquier ciudad del Ecuador continental, sea Quito o Loja, y es por pedido: si llevas dos árboles
+              pagas $6 una sola vez. <strong>Desde $60 el envío va gratis</strong>, así que con dos bonsáis casi
+              siempre te sale sin costo. La tarifa es la misma vayas a recibirlo a domicilio en Quito o a retirarlo
+              en tu oficina de Urbano Express. Si prefieres recogerlo aquí en San Antonio de Ibarra, tampoco pagas
+              envío.</p>
+          </details>
+          <details>
+            <summary>¿La garantía es real?<span class="plus"></span></summary>
+            <p>Real. Si el árbol llega dañado o no supera sus primeros días siguiendo la ficha de cuidado, te lo
+              repongo.
+              No te vendo un árbol y desaparezco: mi negocio depende de que el tuyo viva.</p>
+          </details>
+          <details>
+            <summary>¿Cuánto cuesta?<span class="plus"></span></summary>
+            <p>El precio de cada bonsái está en su tarjeta del <a href="#catalogo">catálogo</a> y va desde $20. Es el
+              mismo para todos: no se negocia en el chat, porque cada árbol lo formo yo y la garantía corre por mi
+              cuenta. Los de entrada son más accesibles e incluyen ficha, garantía y soporte; los de colección son
+              piezas únicas con años de formación. Si tienes un presupuesto en mente, escríbeme y te muestro
+              opciones.</p>
+          </details>
+          <details>
+            <summary>¿Cómo puedo pagar?<span class="plus"></span></summary>
+            <p>Transferencia bancaria directa, o con tarjeta a través de link de pago si lo prefieres. Coordinamos el
+              método que te resulte más fácil al confirmar tu pedido por WhatsApp.</p>
+          </details>
+          <details>
+            <summary>¿Cuánto tiempo me quita al día?<span class="plus"></span></summary>
+            <p>Menos del que imaginas: un bonsái sano necesita minutos, no horas. Riego según su especie, buena luz y
+              una
+              revisada. Todo eso está en tu ficha, y cualquier duda me la consultas.</p>
+          </details>
+          <details>
+            <summary>¿Cómo cuido mi bonsái cuando llegue?<span class="plus"></span></summary>
+            <p>Cada árbol trae su ficha de cuidado específica: cuánta agua, cuánta luz y cada cuánto revisarlo, según su
+              especie. No es un instructivo genérico — es la guía exacta para el bonsái que elegiste. Y si algo no
+              cuadra con lo que ves, me escribes por WhatsApp durante tus primeros 30 días y lo resolvemos juntos, con
+              foto si hace falta.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final blk" id="cierre">
+      <div class="glow"></div>
+      <div class="wrap">
+        <span class="eyebrow">Empecemos</span>
+        <h2>Cuéntame para quién es y te ayudo a <em>elegirlo</em>.</h2>
+        <p>Un mensaje y arrancamos. Sin compromiso: primero te recomiendo el árbol correcto, después decides.</p>
+        <a class="btn btn-primary"
+          href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20quiero%20que%20me%20ayudes%20a%20elegir%20un%20bonsai.%20Es%20para%3A%20"
+          target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
+          </svg>
+          Escríbeme por WhatsApp
+        </a>
+        <div class="micro">Respuesta el mismo día · Atendido personalmente por Pierre</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="brand">
+        <img src="Media/Decogarden 2.svg" style="width: 9rem;" alt="DecoGarden logo">
+      </div>
+      <div class="fnav">
+        <a href="https://www.instagram.com/decogarden_ibarra" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/decogarden.ec" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.tiktok.com/@decogarden_ibarra" target="_blank" rel="noopener">TikTok</a>
+        <a href="https://wa.me/593963136655" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://whatsapp.com/channel/0029Vb8QEhIAYlUGzhu3G60J" target="_blank" rel="noopener">Canal</a>
+        <a href="/blog">Blog</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="/privacidad">Privacidad</a>
+        <a href="/terminos">Términos</a>
+        <a href="#" data-abrir-cookies>Cookies</a>
+      </div>
+      <div class="loc">Vivero de bonsáis y plantas · San Antonio de Ibarra, Imbabura — Ecuador · Envío $6 a todo el país,
+        gratis desde $60
+      </div>
+    </div>
+  </footer>
+
+  <a class="float" href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20quiero%20info%20de%20sus%20bonsais"
+    target="_blank" rel="noopener" aria-label="Escríbeme por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path
+        d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m4.52 11.99c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
+    </svg>
+    <span>Escríbeme</span>
+  </a>
+
+  <script src="assets/js/app.js?v=c0eaa7eb" defer></script>
+</body>
+
+</html>

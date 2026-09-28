@@ -1,0 +1,8 @@
+# Redirecciones de Cloudflare Pages.
+#
+# El panel vive en panel/, fuera de public/, así que ni siquiera se publica.
+# Esto es solo para que quien escriba /admin en el sitio caiga en la home y no
+# en un 404. En local scripts/servidor.py no lee este archivo, así que
+# http://localhost:8435/admin sigue abriendo el panel.
+/admin       /  302
+/admin.html  /  302
