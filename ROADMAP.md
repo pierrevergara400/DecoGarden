@@ -153,10 +153,11 @@ Lo que hoy obliga a salir del panel:
 
 Cosas que no se ven pero que muerden:
 
-- **El `lastmod` del blog sale de la fecha del archivo**, no de su contenido.
-  Un `git clone` o un `checkout` la falsean y el sitemap le miente a Google. Las
-  fichas de producto ya lo hacen bien (conservan la fecha anterior si el
-  contenido no cambió); el blog debería hacer lo mismo.
+- ~~El `lastmod` del blog sale de la fecha del archivo.~~ **Hecho el 28 de
+  septiembre.** Ahora sale del campo `actualizado` de `blog.json`, que el panel
+  sella cuando editas el texto. Un `clone`, un `checkout` o restaurar una copia
+  ya no mueven la fecha; retocar el CSS o la plantilla tampoco, y está bien que
+  no lo hagan: a Google le importa si cambió lo que se lee.
 - **No hay pruebas.** El convertidor de Markdown y los validadores del panel son
   código con lógica de verdad y ninguna red debajo. Media docena de pruebas
   cubrirían lo que importa.

@@ -115,8 +115,8 @@
 
   <div class="marquee-bar" aria-hidden="true">
     <div class="track">
-      <span>{{ENVIO_TAG}}</span><span>·</span><span>A domicilio en Quito o al terminal de tu ciudad</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
-      <span>{{ENVIO_TAG}}</span><span>·</span><span>A domicilio en Quito o al terminal de tu ciudad</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>{{ENVIO_TAG}}</span><span>·</span><span>A domicilio en {{DOMICILIO_TXT}} o a tu oficina de {{TRANSPORTISTA}}</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
+      <span>{{ENVIO_TAG}}</span><span>·</span><span>A domicilio en {{DOMICILIO_TXT}} o a tu oficina de {{TRANSPORTISTA}}</span><span>·</span><span>Envíos miércoles y viernes</span><span>·</span><span>Garantía de llegada sana</span><span>·</span><span>30 días de acompañamiento por WhatsApp</span><span>·</span><span>Guía de cuidado incluida</span><span>·</span>
     </div>
   </div>
 
@@ -146,6 +146,7 @@
             <em>{{PRECIO}}</em>
           </span>
         </button>
+{{COMBO}}
         <div class="trust-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3Z" />
@@ -234,7 +235,7 @@
           <div class="process-n">04</div>
           <div>
             <h3>Lo recibes</h3>
-            <p>A domicilio si vives en Quito. En el resto del país lo retiras en el terminal terrestre de tu
+            <p>A domicilio si vives en {{DOMICILIO_TXT}}, al día siguiente del despacho. En el resto del país lo retiras en la oficina de {{TRANSPORTISTA}} de tu
               ciudad. Salidas miércoles y viernes, 48 a 72h.</p>
           </div>
         </div>
@@ -313,7 +314,7 @@
       </svg>
       Comprar ahora — {{PRECIO}}
     </button>
-    <div class="micro">{{ENVIO_TAG}} · Domicilio en Quito o terminal en tu ciudad · Envíos miércoles y viernes</div>
+    <div class="micro">{{ENVIO_TAG}} · Domicilio en {{DOMICILIO_TXT}} u oficina de {{TRANSPORTISTA}} · Envíos {{DIAS_DESPACHO}}</div>
   </section>
 
   <section class="blk">
@@ -458,14 +459,14 @@
                  que no vamos a poder usar. -->
             <label class="payment-option">
               <input type="radio" name="entrega" value="domicilio" required>
-              <span>A domicilio en Quito
-                <em>Te lo llevamos hasta la puerta.</em>
+              <span>A domicilio en {{DOMICILIO_TXT}}
+                <em>Hasta tu puerta, {{PLAZO_DOMICILIO}} después del despacho.</em>
               </span>
             </label>
             <label class="payment-option">
-              <input type="radio" name="entrega" value="terminal" required>
-              <span>Retiro en el terminal de mi ciudad
-                <em>Va por encomienda de bus desde Ibarra. Misma tarifa.</em>
+              <input type="radio" name="entrega" value="oficina" required>
+              <span>Retiro en oficina de {{TRANSPORTISTA}}
+                <em>Eliges el mostrador que te quede cerca. Misma tarifa.</em>
               </span>
             </label>
 
@@ -481,11 +482,19 @@
               <input type="text" name="direccion" autocomplete="street-address">
             </label>
             <label id="campoCiudad" hidden>Ciudad donde lo retiras
-              <input type="text" name="ciudad" autocomplete="address-level2"
-                placeholder="Ambato, Cuenca, Loja...">
+              <select name="ciudad" id="selCiudad" autocomplete="address-level2">
+{{CIUDADES_OPCIONES}}
+              </select>
             </label>
-            <p class="checkout-note" id="notaEntrega">Los envíos salen miércoles y viernes, y tardan de 48 a 72h
-              desde San Antonio de Ibarra. Te confirmamos la fecha exacta por WhatsApp.</p>
+            <label id="campoOficina" hidden>Oficina donde lo retiras
+              <select name="oficina" id="selOficina"></select>
+            </label>
+            <!-- La dirección y el horario del mostrador elegido. Enseñarlos aquí
+                 y no solo en el WhatsApp del final evita la pregunta que más se
+                 repite después de comprar: "¿y dónde lo recojo?". -->
+            <p class="checkout-oficina" id="datosOficina" hidden></p>
+            <p class="checkout-note" id="notaEntrega">Los envíos salen {{DIAS_DESPACHO}} desde San Antonio de
+              Ibarra. Te confirmamos la fecha exacta por WhatsApp.</p>
           </section>
 
           <section class="checkout-step" data-step="3" hidden>
@@ -555,6 +564,7 @@
       const ENVIO = {{ENVIO_JS}};
       const PIEZA = {{PIEZA_JS}};        // el bonsái de esta página
       const SUMABLES = {{SUMABLES_JS}};  // el resto del catálogo disponible
+      const OFICINAS = {{OFICINAS_JS}};  // ciudad -> mostradores de {{TRANSPORTISTA}}
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -647,6 +657,10 @@
       const medidorPie = document.getElementById('shipMeterFoot');
       const campoDireccion = document.getElementById('campoDireccion');
       const campoCiudad = document.getElementById('campoCiudad');
+      const campoOficina = document.getElementById('campoOficina');
+      const selCiudad = document.getElementById('selCiudad');
+      const selOficina = document.getElementById('selOficina');
+      const datosOficina = document.getElementById('datosOficina');
       const notaEntrega = document.getElementById('notaEntrega');
       const bankField = document.getElementById('checkoutBankField');
       const bankSelect = bankField.querySelector('select');
@@ -773,26 +787,56 @@
         return elegido ? elegido.value : null;
       }
 
-      // A domicilio solo llegamos a Quito; el resto del país retira en el
-      // terminal de su ciudad. Cada caso pide un dato distinto, así que
-      // mostramos uno u otro en vez de pedir los dos siempre.
+      // A domicilio solo llegamos a {{DOMICILIO_TXT}}; el resto del país retira
+      // en la oficina de {{TRANSPORTISTA}} que elija. Cada caso pide un dato
+      // distinto, así que mostramos uno u otro en vez de pedir los dos siempre.
       function aplicarEntrega() {
         const modo = modoEntrega();
+        const enOficina = modo === 'oficina';
         campoDireccion.hidden = modo !== 'domicilio';
-        campoCiudad.hidden = modo !== 'terminal';
+        campoCiudad.hidden = !enOficina;
+        campoOficina.hidden = !enOficina || !selCiudad.value;
         campoDireccion.querySelector('input').required = modo === 'domicilio';
-        campoCiudad.querySelector('input').required = modo === 'terminal';
+        selCiudad.required = enOficina;
+        selOficina.required = enOficina;
         if (modo === 'domicilio') {
-          notaEntrega.textContent = 'Solo entregamos a domicilio dentro de Quito. Salimos miércoles y viernes desde '
-            + 'San Antonio de Ibarra, y te confirmamos el día por WhatsApp.';
-        } else if (modo === 'terminal') {
-          notaEntrega.textContent = 'Lo despachamos por encomienda de bus al terminal terrestre de tu ciudad y te '
-            + 'pasamos la guía por WhatsApp para que lo retires. Salidas miércoles y viernes, 48 a 72h.';
+          notaEntrega.textContent = 'Solo entregamos a domicilio dentro de {{DOMICILIO_TXT}}. Salimos {{DIAS_DESPACHO}} '
+            + 'desde San Antonio de Ibarra y llega en {{PLAZO_DOMICILIO}}; te confirmamos el día por WhatsApp.';
+        } else if (enOficina) {
+          notaEntrega.textContent = 'Lo despachamos con {{TRANSPORTISTA}} a la oficina que elijas y te pasamos la guía '
+            + 'por WhatsApp para que lo retires. Salidas {{DIAS_DESPACHO}}, {{PLAZO_OFICINA}}.';
         } else {
           notaEntrega.textContent = 'Los envíos salen miércoles y viernes, y tardan de 48 a 72h desde San Antonio '
             + 'de Ibarra. Te confirmamos la fecha exacta por WhatsApp.';
         }
         pintarTotales();
+      }
+
+      // Al elegir ciudad se cargan sus mostradores. Si solo hay uno, queda
+      // elegido: no tiene sentido obligar a abrir un desplegable de una opción.
+      function pintarOficinas() {
+        const lista = OFICINAS[selCiudad.value] || [];
+        selOficina.innerHTML = lista.length > 1
+          ? '<option value="">Elige la oficina…</option>' + lista.map((o, i) =>
+              `<option value="${i}">${o.nombre}</option>`).join('')
+          : lista.map((o, i) => `<option value="${i}">${o.nombre}</option>`).join('');
+        campoOficina.hidden = !selCiudad.value;
+        pintarDatosOficina();
+      }
+
+      function oficinaElegida() {
+        const lista = OFICINAS[selCiudad.value] || [];
+        return selOficina.value === '' ? null : lista[Number(selOficina.value)] || null;
+      }
+
+      function pintarDatosOficina() {
+        const o = modoEntrega() === 'oficina' ? oficinaElegida() : null;
+        datosOficina.hidden = !o;
+        // Vaciarlo, y no solo esconderlo: si no, al cambiar de ciudad queda
+        // dentro la dirección de la anterior esperando a volver a asomar.
+        datosOficina.innerHTML = o
+          ? `<strong>${o.direccion}</strong>` + (o.horario ? `<span>${o.horario}</span>` : '')
+          : '';
       }
 
       function pintarTotales() {
@@ -801,8 +845,8 @@
         document.getElementById('dgSubtotal').textContent = dinero(subtotal());
         const modo = modoEntrega();
         document.getElementById('dgEnvioLabel').textContent =
-          modo === 'domicilio' ? 'Envío a domicilio en Quito'
-            : modo === 'terminal' ? 'Envío al terminal de tu ciudad'
+          modo === 'domicilio' ? 'Envío a domicilio en {{DOMICILIO_TXT}}'
+            : modo === 'oficina' ? `Envío a tu oficina${selCiudad.value ? ' en ' + selCiudad.value : ''}`
               : 'Envío a todo el Ecuador';
         document.getElementById('dgEnvio').innerHTML = envioGratis()
           ? `<span class="was">$${ENVIO.costo}</span><span class="free">Gratis</span>`
@@ -890,9 +934,26 @@
         overlay.addEventListener('animationend', alTerminarAnimacion);
       }
 
+      selCiudad.addEventListener('change', () => { pintarOficinas(); aplicarEntrega(); });
+      selOficina.addEventListener('change', pintarDatosOficina);
+
       document.querySelectorAll('[data-open-checkout]').forEach(btn => {
         btn.addEventListener('click', abrirCheckout);
       });
+
+      // El combo de la página: suma el compañero al pedido y abre la pasarela
+      // con los dos dentro.
+      const combo = document.querySelector('[data-combo]');
+      if (combo) {
+        combo.querySelector('[data-combo-abrir]').addEventListener('click', () => {
+          const companero = SUMABLES.find(p => p.id === combo.dataset.combo);
+          if (companero && !enPedido(companero.id)) {
+            pedido.push(companero);
+            recienSumado = companero.id;
+          }
+          abrirCheckout();
+        });
+      }
       document.getElementById('checkoutClose').addEventListener('click', cerrarCheckout);
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !overlay.hidden) cerrarCheckout();
@@ -970,9 +1031,13 @@
         msg += `Total: ${dinero(total())}\n`;
         msg += `Nombre: ${datos.get('nombre')}\n`;
         msg += `WhatsApp: ${datos.get('telefono')}\n`;
-        msg += modoEntrega() === 'domicilio'
-          ? `Entrega: a domicilio en Quito\nDirección: ${datos.get('direccion')}\n`
-          : `Entrega: retiro en el terminal terrestre de ${datos.get('ciudad')}\n`;
+        if (modoEntrega() === 'domicilio') {
+          msg += `Entrega: a domicilio en {{DOMICILIO_TXT}}\nDirección: ${datos.get('direccion')}\n`;
+        } else {
+          const o = oficinaElegida();
+          msg += `Entrega: retiro en {{TRANSPORTISTA}} de ${selCiudad.value}\n`;
+          if (o) msg += `Oficina: ${o.nombre} — ${o.direccion}\n`;
+        }
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;
         msg += dgOrigen();

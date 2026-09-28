@@ -68,6 +68,16 @@ def leer_json(ruta):
         return json.load(f)
 
 
+def leer_articulos():
+    """Los artículos de blog.json, o nada si todavía no hay blog."""
+    ruta = BASE / "blog.json"
+    if not ruta.is_file():
+        return []
+    datos = leer_json(ruta)
+    posts = datos.get("posts", []) if isinstance(datos, dict) else datos
+    return [p for p in posts if p.get("slug") and p.get("fecha")]
+
+
 def esta_publicado(producto):
     """Un bonsái se publica salvo que se diga lo contrario.
 
@@ -378,6 +388,45 @@ def bloque_specs(producto, specs_extra):
 ENVIO_COSTO = 6
 ENVIO_GRATIS_DESDE = 60
 
+# Cómo se entrega. Vive en envios.json porque cambia por motivos de negocio
+# —un transportista nuevo, una ciudad más— y no debería obligar a tocar código.
+ENVIOS = leer_json(BASE / "envios.json") if (BASE / "envios.json").is_file() else {}
+ENTREGA = ENVIOS.get("entrega", {})
+TRANSPORTISTA = ENTREGA.get("transportista", "nuestro transportista")
+CIUDADES_DOMICILIO = ENTREGA.get("domicilio", [])
+DIAS_DESPACHO = ENTREGA.get("diasDespacho", "")
+PLAZO_DOMICILIO = ENTREGA.get("plazoDomicilio", "")
+PLAZO_OFICINA = ENTREGA.get("plazoOficina", "")
+
+# "a domicilio en Quito" / "a domicilio en Quito y Guayaquil": el texto se arma
+# solo para que añadir una ciudad a domicilio no obligue a repasar la web entera.
+def lista_natural(items):
+    items = list(items)
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    return ", ".join(items[:-1]) + " y " + items[-1]
+
+
+DOMICILIO_TXT = lista_natural(CIUDADES_DOMICILIO)
+
+# Las ciudades con retiro en oficina. Quito queda fuera porque ahí entregamos en
+# la puerta: ofrecer las dos cosas obligaría a elegir entre 25 mostradores a
+# quien ya tiene la opción cómoda.
+CIUDADES_OFICINA = [
+    c for c in ENVIOS.get("ciudades", []) if c not in CIUDADES_DOMICILIO
+]
+OFICINAS = {
+    c: ENVIOS.get("oficinas", {}).get(c, [])
+    for c in CIUDADES_OFICINA
+    if ENVIOS.get("oficinas", {}).get(c)
+}
+ENTREGA_RESUMEN = (
+    f"a domicilio en {DOMICILIO_TXT}, o a la oficina de {TRANSPORTISTA} de tu "
+    f"ciudad en el resto del país"
+)
+
 
 def precio_num(precio):
     try:
@@ -399,14 +448,12 @@ def nota_envio(precio):
     if envio_gratis(precio):
         return (
             f"Envío gratis a todo el Ecuador: este bonsái ya pasa el umbral de "
-            f"${ENVIO_GRATIS_DESDE}. A domicilio en Quito, o al terminal terrestre "
-            f"de tu ciudad en el resto del país."
+            f"${ENVIO_GRATIS_DESDE}. Llega {ENTREGA_RESUMEN}."
         )
     faltan = ENVIO_GRATIS_DESDE - precio_num(precio)
     return (
-        f"Envío ${ENVIO_COSTO} por pedido: a domicilio en Quito, o al terminal "
-        f"terrestre de tu ciudad en el resto del país. Te faltan ${faltan:g} para "
-        f"que viaje gratis, y puedes sumar otro bonsái al confirmar."
+        f"Envío ${ENVIO_COSTO} por pedido: llega {ENTREGA_RESUMEN}. Te faltan "
+        f"${faltan:g} para que viaje gratis, y puedes sumar otro bonsái al confirmar."
     )
 
 
@@ -457,6 +504,109 @@ def bloque_sumables(pid, catalogo, cortos):
 def total_envio(precio):
     total = precio_num(precio) if envio_gratis(precio) else precio_num(precio) + ENVIO_COSTO
     return f"${total:g}"
+
+
+def elegir_combo(pid, producto, catalogo):
+    """El bonsái que, sumado a este, deja el envío en cero.
+
+    Es la misma recomendación que ya hace la pasarela cuando abres el pedido; lo
+    único que cambia es que ahora se ve antes de abrirla. Que salga en la página
+    y no dentro del modal importa: la decisión de gastar treinta dólares más se
+    toma mirando el árbol, no en un formulario a medio llenar.
+
+    Elegimos el más barato que cierre la brecha, no el que más suba el pedido.
+    El más caro dejaría más margen, pero convierte peor y se nota que empuja.
+    """
+    if VENDIDO.search(producto.get("badgeTexto") or ""):
+        return None  # no hay combo que ofrecer sobre algo que ya no está
+    brecha = ENVIO_GRATIS_DESDE - precio_num(producto["precio"])
+    if brecha <= 0:
+        return None  # ya tiene envío gratis: el combo no ahorraría nada
+
+    candidatos = sorted(
+        (
+            (otro, prod)
+            for otro, prod in catalogo.items()
+            if otro != pid and not VENDIDO.search(prod.get("badgeTexto") or "")
+        ),
+        key=lambda par: precio_num(par[1]["precio"]),
+    )
+    for otro, prod in candidatos:
+        if precio_num(prod["precio"]) >= brecha:
+            return otro, prod
+    return None
+
+
+def pieza_combo(nombre, prod):
+    return (
+        '        <div class="combo-pieza">\n'
+        '          <img src="{src}" alt="{alt}" width="88" height="88" '
+        'loading="lazy" decoding="async">\n'
+        '          <span class="combo-nombre">{nombre}</span>\n'
+        '          <span class="combo-precio">{precio}</span>\n'
+        '        </div>'
+    ).format(
+        src=esc(prod["imagen"]),
+        alt=esc(prod["nombre"]),
+        nombre=esc(nombre),
+        precio=esc(prod["precio"]),
+    )
+
+
+def bloque_combo(pid, producto, catalogo, cortos):
+    """La tarjeta del combo: los dos árboles y lo que cuesta llevárselos.
+
+    Se arma aquí y no en el navegador para que exista en el HTML. Es parte de la
+    oferta de la página, y lo que solo aparece después de ejecutar un script no
+    lo ve ni un buscador ni quien llegue con la conexión a medias.
+
+    El texto no promete un descuento que no existe: los dos árboles cuestan lo
+    que cuestan. Lo que se ahorra es el envío, y eso es lo que dice.
+    """
+    elegido = elegir_combo(pid, producto, catalogo)
+    if not elegido:
+        return ""
+
+    otro_id, companero = elegido
+    juntos = precio_num(producto["precio"]) + precio_num(companero["precio"])
+    este = pieza_combo(nombre_corto(pid, producto, cortos), producto)
+    otro = pieza_combo(nombre_corto(otro_id, companero, cortos), companero)
+
+    return f"""      <div class="combo" data-combo="{esc(otro_id)}">
+        <div class="combo-cabecera">
+          <span class="combo-etiqueta">Combo</span>
+          <h3>Llévate los dos y la entrega corre por nuestra cuenta</h3>
+        </div>
+        <div class="combo-piezas">
+{este}
+          <span class="combo-mas" aria-hidden="true">+</span>
+{otro}
+        </div>
+        <div class="combo-cuentas">
+          <span class="combo-total">Los dos: <b>${juntos:g}</b></span>
+          <span class="combo-envio">envío gratis</span>
+        </div>
+        <p class="combo-letra">Un pedido de ${ENVIO_GRATIS_DESDE} o más viaja sin coste de entrega. Por separado,
+          cada uno sumaría ${ENVIO_COSTO} de envío.</p>
+        <button type="button" class="btn btn-ghost combo-btn" data-combo-abrir>
+          Llevar los dos — ${juntos:g}
+        </button>
+      </div>"""
+
+
+def opciones_ciudad():
+    """El desplegable de ciudades, escrito en el HTML y no pintado por JS.
+
+    Quien llega con la conexión a medias o con el JavaScript bloqueado sigue
+    viendo a qué ciudades enviamos, que es una de las primeras cosas que se
+    pregunta alguien que compra una planta viva por internet.
+    """
+    partes = ['          <option value="">Elige tu ciudad…</option>']
+    for ciudad in sorted(OFICINAS):
+        partes.append(
+            f'          <option value="{esc(ciudad)}">{esc(ciudad)}</option>'
+        )
+    return "\n".join(partes)
 
 
 def bloque_badge(badge, precio):
@@ -637,6 +787,15 @@ def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
         ),
         # El pedido arranca con esta pieza y puede crecer con las demás
         "{{PIEZA_JS}}": json.dumps(pieza_js(pid, producto, cortos), ensure_ascii=False),
+        "{{COMBO}}": bloque_combo(pid, producto, catalogo, cortos),
+        "{{TRANSPORTISTA}}": esc(TRANSPORTISTA),
+        "{{DOMICILIO_TXT}}": esc(DOMICILIO_TXT),
+        "{{ENTREGA_RESUMEN}}": esc(ENTREGA_RESUMEN),
+        "{{DIAS_DESPACHO}}": esc(DIAS_DESPACHO),
+        "{{PLAZO_DOMICILIO}}": esc(PLAZO_DOMICILIO),
+        "{{PLAZO_OFICINA}}": esc(PLAZO_OFICINA),
+        "{{CIUDADES_OPCIONES}}": opciones_ciudad(),
+        "{{OFICINAS_JS}}": json.dumps(OFICINAS, ensure_ascii=False),
         "{{SUMABLES_JS}}": json.dumps(
             bloque_sumables(pid, catalogo, cortos), ensure_ascii=False
         ),
@@ -807,16 +966,35 @@ def escribir_sitemap(archivos, cambiados):
         fecha = date.fromtimestamp(ruta_legal.stat().st_mtime).isoformat()
         urls.append((loc, fecha, "yearly", "0.3"))
 
-    # El blog: blog.html y cada artículo. Lo genera generar-blog.py, que solo
-    # reescribe lo que cambió de verdad, así que la fecha del archivo es de fiar
-    # y sirve de lastmod sin tener que llevar la cuenta aparte.
-    for ruta_blog in sorted(BASE.glob("blog*.html")):
-        indice = ruta_blog.name == "blog.html"
+    # El blog: la fecha sale de blog.json, no del archivo en disco.
+    #
+    # La fecha del archivo miente con demasiada facilidad: un clone, un checkout
+    # o restaurar una copia la ponen a hoy sin que el artículo haya cambiado una
+    # coma, y el sitemap acaba diciéndole a Google que revisara algo que está
+    # igual. El dato bueno es "actualizado", que el panel sella cuando de verdad
+    # editas el texto. Un retoque del CSS o de la plantilla no mueve esa fecha, y
+    # está bien que no la mueva: lo que le importa a Google es si cambió lo que
+    # se lee, no cómo se ve.
+    publicados = [
+        post for post in leer_articulos()
+        if not post.get("borrador") and (BASE / f"blog-{post['slug']}.html").is_file()
+    ]
+    for post in publicados:
         urls.append((
-            SITIO + ruta_publica(ruta_blog.name),
-            date.fromtimestamp(ruta_blog.stat().st_mtime).isoformat(),
-            "weekly" if indice else "monthly",
-            "0.7" if indice else "0.6",
+            SITIO + f"blog-{post['slug']}",
+            post.get("actualizado") or post["fecha"],
+            "monthly",
+            "0.6",
+        ))
+
+    # El índice cambia cuando entra o se toca un artículo, así que su fecha es
+    # la más reciente de los que lista. Sin artículos no hay índice que ofrecer.
+    if publicados and (BASE / "blog.html").is_file():
+        urls.append((
+            SITIO + "blog",
+            max(p.get("actualizado") or p["fecha"] for p in publicados),
+            "weekly",
+            "0.7",
         ))
 
     lineas = [

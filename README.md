@@ -68,6 +68,53 @@ Los `producto-*.html`, `blog*.html`, `sitemap.xml` y `paginas.json` se
 sobrescriben enteros en cada ejecución: no los edites a mano, edita la plantilla
 (`_plantilla-*.html`) o el JSON.
 
+## Envíos
+
+Quién transporta, a dónde y qué promete la web vive en `envios.json`. La web no
+tiene ningún dato de envío escrito a mano: todo sale de ahí.
+
+```
+entrega    a domicilio en Quito; al resto, retiro en oficina de Urbano Express
+ciudades   las 28 en las que Urbano tiene oficina
+oficinas   74 mostradores con dirección, horario y coordenadas
+```
+
+**Quito es el único sitio con entrega a domicilio.** Desde Ibarra el paquete
+llega al día siguiente y sale a reparto esa misma tarde. En el resto del país el
+reparto a domicilio añade varios días, y un bonsái encajonado no aguanta esa
+espera: por eso va a oficina, donde el cliente elige el mostrador que le queda
+cerca y lo recoge cuando quiere.
+
+En la pasarela, quien elige retiro ve un desplegable de ciudades y otro de
+oficinas, con la dirección y el horario del mostrador que escogió. Esa dirección
+viaja también en el mensaje de WhatsApp del pedido.
+
+### Cuando Urbano abre o cierra una oficina
+
+```bash
+python actualizar-oficinas.py
+```
+
+Baja el listado de la web de Urbano y reescribe la parte `oficinas` de
+`envios.json`. Avisa de las ciudades nuevas y de las que desaparecieron. Lo que
+NO toca es `entrega` ni `ciudades`: esos son tuyos y se conservan.
+
+Revisa siempre lo que sale antes de publicar. Es la dirección a la que va a ir
+un cliente a recoger un árbol, y si Urbano la tiene mal en su web, la tendrás
+mal tú también. Hoy hay dos entradas en Quito cuya "dirección" es solo
+`AGENTE AUTORIZADO ...`; como en Quito entregas a domicilio, no salen en el
+selector, pero conviene saberlo.
+
+### Cambiar a dónde envías
+
+Quita o añade ciudades en `ciudades` dentro de `envios.json`. Están las 28 con
+oficina, no solo aquellas donde corres anuncios: quien te encuentre por el blog
+o por Instagram desde otra ciudad también puede comprar. Después:
+
+```bash
+python generar-productos.py
+```
+
 ## Escribir un artículo
 
 En la pestaña Blog del panel, "+ Artículo nuevo". Nace como borrador, así que
