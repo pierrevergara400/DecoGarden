@@ -17,8 +17,13 @@ para leer el catálogo, guardarlo y regenerar el sitio. Esa parte solo responde 
 peticiones que vienen de esta misma máquina: escribe archivos y ejecuta los
 generadores, así que no tiene por qué estar disponible para nadie más de la red.
 
+Por defecto solo escucha en esta máquina (127.0.0.1): nadie más de la red ve
+el sitio ni el panel. Con --red escucha también en la red local, para abrir la
+web desde el móvil y ver cómo queda; el panel sigue siendo solo tuyo.
+
 Uso:
-    python servidor.py [puerto]      # por defecto, 8435
+    python servidor.py [puerto]      # por defecto, 8435, solo esta máquina
+    python servidor.py --red         # visible desde el móvil, panel cerrado
 """
 
 import json
@@ -33,7 +38,28 @@ from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
 BASE = Path(__file__).resolve().parent
-PUERTO = int(sys.argv[1]) if len(sys.argv) > 1 else 8435
+
+_args = [a for a in sys.argv[1:] if a != "--red"]
+PUERTO = int(_args[0]) if _args else 8435
+
+# A qué interfaz nos atamos. Escuchar en toda la red es cómodo para mirar la web
+# desde el móvil, pero mientras esté así cualquiera del wifi puede pedir las
+# páginas del sitio. Por defecto no: el servidor existe para que trabajes tú.
+RED_ABIERTA = "--red" in sys.argv
+INTERFAZ = "0.0.0.0" if RED_ABIERTA else "127.0.0.1"
+
+# Los Host que aceptamos en las peticiones al panel. Un navegador manda en Host
+# el nombre que tú escribiste, no la IP a la que resolvió: es la única forma de
+# distinguir "localhost:8435" de un dominio de fuera que apunta a 127.0.0.1
+# —el ataque se llama DNS rebinding— porque para el resto del navegador esa
+# página es del mismo origen y puede mandar lo que quiera.
+def _hosts_validos(puerto):
+    nombres = ("localhost", "127.0.0.1", "[::1]", "::1")
+    return {f"{n}:{puerto}" for n in nombres} | set(nombres)
+
+
+HOSTS_PANEL = _hosts_validos(PUERTO)
+ORIGENES_PANEL = {f"http://localhost:{PUERTO}", f"http://127.0.0.1:{PUERTO}"}
 
 CATALOGO = BASE / "catalog.json"
 BLOG = BASE / "blog.json"
@@ -216,14 +242,33 @@ def publicar():
 class ManejadorPages(SimpleHTTPRequestHandler):
     # --- API del panel ----------------------------------------------------
 
-    def _es_local(self):
+    def _puede_usar_el_panel(self):
         """El panel escribe archivos y ejecuta guiones: solo desde esta máquina.
 
-        El servidor escucha en toda la red para poder abrir la web desde el
-        móvil y ver cómo queda. Eso está bien para mirar; no lo está para
-        guardar. Quien no venga de localhost solo puede leer el sitio.
+        Tres comprobaciones, porque cada una tapa un agujero distinto:
+
+        1. La conexión viene de esta máquina. Deja fuera a cualquiera del wifi
+           cuando el servidor está abierto con --red.
+        2. El Host es localhost o 127.0.0.1. Sin esto, una web de fuera cuyo
+           dominio resuelva a 127.0.0.1 sería, para el navegador, del mismo
+           origen que el panel, y podría guardar y publicar en tu nombre.
+        3. Si viene Origin, es el del panel. Cierra la puerta que deja abierta
+           que POST sin cabeceras propias no dispare comprobación previa: sin
+           esto, cualquier página podía hacerte regenerar el sitio.
+
+        Lo que no intenta esto es defenderte de un programa que ya esté
+        corriendo en tu equipo: quien pueda hablar con este servidor también
+        puede abrir catalog.json y escribirlo directamente. Una contraseña aquí
+        daría sensación de seguridad sin añadir ninguna.
         """
-        return self.client_address[0] in ("127.0.0.1", "::1", "localhost")
+        if self.client_address[0] not in ("127.0.0.1", "::1"):
+            return False, "El panel solo funciona desde esta máquina."
+        if (self.headers.get("Host") or "").lower() not in HOSTS_PANEL:
+            return False, "Entra por http://localhost:%d/admin." % PUERTO
+        origen = self.headers.get("Origin")
+        if origen and origen.lower() not in ORIGENES_PANEL:
+            return False, "Petición de otro origen: rechazada."
+        return True, None
 
     def _json(self, codigo, datos):
         cuerpo = json.dumps(datos, ensure_ascii=False).encode("utf-8")
@@ -241,8 +286,9 @@ class ManejadorPages(SimpleHTTPRequestHandler):
         return json.loads(self.rfile.read(largo).decode("utf-8"))
 
     def _api(self, ruta):
-        if not self._es_local():
-            self._json(403, {"error": "El panel solo funciona desde esta máquina."})
+        permitido, motivo = self._puede_usar_el_panel()
+        if not permitido:
+            self._json(403, {"error": motivo})
             return True
 
         try:
@@ -374,11 +420,15 @@ class ManejadorPages(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     manejador = partial(ManejadorPages, directory=str(BASE))
     print(f"DecoGarden en http://localhost:{PUERTO}  (Ctrl+C para parar)")
-    print(f"Panel        en http://localhost:{PUERTO}/admin")
+    print(f"Panel      en http://localhost:{PUERTO}/admin")
+    if RED_ABIERTA:
+        print("Red        abierta: el sitio se ve desde el wifi. El panel no.")
+    else:
+        print("Red        cerrada: solo esta máquina. Usa --red para el móvil.")
     try:
         # Con hilos, como hace `python -m http.server`: los navegadores dejan
         # conexiones abiertas sin pedir nada, y un servidor de una sola conexión
         # se queda bloqueado esperándolas.
-        ThreadingHTTPServer(("", PUERTO), manejador).serve_forever()
+        ThreadingHTTPServer((INTERFAZ, PUERTO), manejador).serve_forever()
     except KeyboardInterrupt:
         print("\nServidor detenido.")

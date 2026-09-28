@@ -1,0 +1,10 @@
+# Redirecciones de Cloudflare Pages.
+#
+# El panel de administración no tiene nada que hacer en el sitio publicado: sin
+# servidor.py detrás es una página que no puede ni cargar sus datos. Aquí rebota
+# a la home, así que en decogarden.pages.dev /admin simplemente no existe.
+#
+# Esto no afecta al panel en local: servidor.py no lee este archivo, así que
+# http://localhost:8435/admin sigue funcionando igual.
+/admin       /  302
+/admin.html  /  302
