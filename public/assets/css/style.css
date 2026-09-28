@@ -1028,6 +1028,20 @@
       box-shadow: 0 18px 40px -18px rgba(25, 83, 43, .35)
     }
 
+    /* Las de los lados se pueden pulsar para traerlas al centro (app.js).
+       Mano y no lupa: su foto no se amplía hasta que esté en el centro. */
+    .resenas-pista.con-centro>.resena:not(.es-centro),
+    .resenas-pista.con-centro>.resena:not(.es-centro) img {
+      cursor: pointer
+    }
+
+    /* El carrusel está quieto mientras el ratón está encima, así que acortar
+       la transición aquí solo afecta a esta respuesta */
+    .resenas-pista.con-centro>.resena:not(.es-centro):hover {
+      opacity: .7;
+      transition-duration: .25s
+    }
+
     /* El salto invisible del final al principio no debe animar nada: ni la
        pista ni el paso de tarjeta destacada de la copia a la original */
     .resenas-pista.sin-transicion,

@@ -489,7 +489,7 @@ const EN_MOVIL = 3;
 if (resenas) {
   const originales = [...resenas.querySelectorAll(':scope > .resena')];
   let pista = null, controles = null, masWrap = null;
-  let indice = 0, temporizador = null, conCentro = false;
+  let indice = 0, temporizador = null, conCentro = false, respaldo = null;
   let enPantalla = false, encima = false;
 
   const puedeAvanzar = () =>
@@ -530,18 +530,29 @@ if (resenas) {
     }
     indice += direccion;
     colocar(true);
+    // transitionend no siempre llega (pestaña oculta a medio camino, pestaña
+    // en segundo plano): un temporizador algo más largo que la animación hace
+    // de respaldo. Volver al principio dos veces no hace nada.
+    clearTimeout(respaldo);
+    respaldo = setTimeout(volverAlPrincipio, 1000);
   }
 
-  const alTerminar = (event) => {
-    if (event.target !== pista || event.propertyName !== 'transform') return;
-    if (indice >= originales.length) {
+  // Si la pista quedó sobre las copias del final, salta sin animación a las
+  // originales, que se ven idénticas.
+  function volverAlPrincipio() {
+    if (pista && indice >= originales.length) {
       indice -= originales.length;
       colocar(false);
     }
+  }
+
+  const alTerminar = (event) => {
+    if (event.target === pista && event.propertyName === 'transform') volverAlPrincipio();
   };
 
   function desmontar() {
     clearInterval(temporizador);
+    clearTimeout(respaldo);
     if (pista) {
       pista.removeEventListener('transitionend', alTerminar);
       resenas.append(...originales);
@@ -563,11 +574,12 @@ if (resenas) {
     pista.className = 'resenas-pista' + (conCentro ? ' con-centro' : '');
     pista.append(...originales);
     // Copias de las primeras para que el final empalme con el principio. No
-    // son contenido nuevo: fuera del lector de pantalla y del tabulador.
+    // son contenido nuevo: fuera del lector de pantalla (aria-hidden) y del
+    // tabulador (organizar() les quita el foco a sus botones). No usamos inert:
+    // una copia puede quedar en el centro, y inert le impediría ampliar su foto.
     originales.slice(0, visibles).forEach(r => {
       const copia = r.cloneNode(true);
       copia.setAttribute('aria-hidden', 'true');
-      copia.inert = true;
       // Son las mismas fotos que ya bajaron las originales: sin lazy, para que
       // la copia no aparezca con el recuadro vacío mientras entra en escena.
       copia.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = 'eager'; });
@@ -635,6 +647,7 @@ if (resenas) {
     // Las fotos de cada reseña (y de sus copias) se montan después: una copia
     // trae el HTML del carrusel de fotos pero no sus oyentes.
     resenas.querySelectorAll('.resena-fotos').forEach(montarCarrusel);
+    resenas.querySelectorAll('[aria-hidden="true"] :is(a, button)').forEach(el => { el.tabIndex = -1; });
   }
 
   organizar();
@@ -649,6 +662,27 @@ if (resenas) {
     enPantalla = entrada.isIntersecting;
     reprogramar();
   }).observe(resenas);
+
+  // Clic en una reseña de los lados: pasa al centro. Hasta que no esté ahí, el
+  // clic solo sirve para traerla: ni se amplía su foto ni responden las flechas
+  // de sus fotos. Va en fase de captura para cortar el clic antes de que le
+  // llegue al lightbox o a esas flechas.
+  //
+  // La tarjeta se busca por posición: el clic puede caer en cualquier cosa de
+  // dentro (la foto, una flecha, el texto) y lo que importa es qué tarjeta es.
+  resenas.addEventListener('click', (e) => {
+    if (!pista || !conCentro) return;
+    const tarjetas = [...pista.children];
+    const tocada = tarjetas.find(r => {
+      const b = r.getBoundingClientRect();
+      return e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top && e.clientY <= b.bottom;
+    });
+    if (!tocada || tocada.classList.contains('es-centro')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    mover(Math.sign(tarjetas.indexOf(tocada) - (indice + 1)));
+    reprogramar();
+  }, true);
 
   document.addEventListener('visibilitychange', reprogramar);
   resenas.addEventListener('mouseenter', () => { encima = true; reprogramar(); });
