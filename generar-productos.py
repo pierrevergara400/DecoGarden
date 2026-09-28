@@ -411,15 +411,12 @@ def lista_natural(items):
 
 DOMICILIO_TXT = lista_natural(CIUDADES_DOMICILIO)
 
-# Las ciudades con retiro en oficina. Quito queda fuera porque ahí entregamos en
-# la puerta: ofrecer las dos cosas obligaría a elegir entre 25 mostradores a
-# quien ya tiene la opción cómoda.
-CIUDADES_OFICINA = [
-    c for c in ENVIOS.get("ciudades", []) if c not in CIUDADES_DOMICILIO
-]
+# Todas las ciudades a las que se envía, con sus puntos de retiro. Quito también
+# entra: que ahí haya entrega a domicilio no quita que alguien prefiera pasar a
+# recogerlo cuando le venga bien, en vez de esperar en casa.
 OFICINAS = {
     c: ENVIOS.get("oficinas", {}).get(c, [])
-    for c in CIUDADES_OFICINA
+    for c in ENVIOS.get("ciudades", [])
     if ENVIOS.get("oficinas", {}).get(c)
 }
 ENTREGA_RESUMEN = (
@@ -796,6 +793,7 @@ def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
         "{{PLAZO_OFICINA}}": esc(PLAZO_OFICINA),
         "{{CIUDADES_OPCIONES}}": opciones_ciudad(),
         "{{OFICINAS_JS}}": json.dumps(OFICINAS, ensure_ascii=False),
+        "{{DOMICILIO_JS}}": json.dumps(CIUDADES_DOMICILIO, ensure_ascii=False),
         "{{SUMABLES_JS}}": json.dumps(
             bloque_sumables(pid, catalogo, cortos), ensure_ascii=False
         ),

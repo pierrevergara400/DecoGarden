@@ -453,22 +453,35 @@
           </section>
 
           <section class="checkout-step" data-step="2" hidden>
-            <p class="checkout-step-label">Cómo lo recibes</p>
-            <!-- Ninguna viene marcada a propósito: la mayoría del país no está
-                 en Quito, y dar el domicilio por hecho pediría una dirección
-                 que no vamos a poder usar. -->
-            <label class="payment-option">
-              <input type="radio" name="entrega" value="domicilio" required>
-              <span>A domicilio en {{DOMICILIO_TXT}}
-                <em>Hasta tu puerta, {{PLAZO_DOMICILIO}} después del despacho.</em>
-              </span>
+            <p class="checkout-step-label">A dónde va</p>
+            <!-- Primero la ciudad y después cómo se entrega, y no al revés.
+                 Quien compra sabe dónde vive; lo que no tiene por qué saber es
+                 si en su ciudad hay entrega a domicilio. Preguntando la ciudad
+                 primero, cada quien ve solo las opciones que existen para él, y
+                 nadie elige un domicilio al que no llegamos. -->
+            <label id="campoCiudad">Tu ciudad
+              <select name="ciudad" id="selCiudad" autocomplete="address-level2" required>
+{{CIUDADES_OPCIONES}}
+              </select>
             </label>
-            <label class="payment-option">
-              <input type="radio" name="entrega" value="oficina" required>
-              <span>Retiro en oficina de {{TRANSPORTISTA}}
-                <em>Eliges el mostrador que te quede cerca. Misma tarifa.</em>
-              </span>
-            </label>
+
+            <!-- Solo aparece donde hay más de una forma de recibirlo. Donde solo
+                 cabe el retiro, una pregunta de una sola respuesta sobra. -->
+            <div id="bloqueModo" hidden>
+              <p class="checkout-sublabel">Cómo prefieres recibirlo</p>
+              <label class="payment-option">
+                <input type="radio" name="entrega" value="domicilio">
+                <span>En mi domicilio
+                  <em>Hasta tu puerta, {{PLAZO_DOMICILIO}} después del despacho.</em>
+                </span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="entrega" value="oficina">
+                <span>Paso a retirarlo
+                  <em>En la oficina de {{TRANSPORTISTA}} que te quede cerca. Misma tarifa.</em>
+                </span>
+              </label>
+            </div>
 
             <div class="checkout-row">
               <label>Nombre completo
@@ -478,23 +491,17 @@
                 <input type="tel" name="telefono" required autocomplete="tel" inputmode="tel" placeholder="09...">
               </label>
             </div>
-            <label id="campoDireccion" hidden>Dirección y referencia en Quito
+            <label id="campoDireccion" hidden>Dirección y referencia
               <input type="text" name="direccion" autocomplete="street-address">
             </label>
-            <label id="campoCiudad" hidden>Ciudad donde lo retiras
-              <select name="ciudad" id="selCiudad" autocomplete="address-level2">
-{{CIUDADES_OPCIONES}}
-              </select>
-            </label>
-            <label id="campoOficina" hidden>Oficina donde lo retiras
+            <label id="campoOficina" hidden>Dónde lo retiras
               <select name="oficina" id="selOficina"></select>
             </label>
             <!-- La dirección y el horario del mostrador elegido. Enseñarlos aquí
                  y no solo en el WhatsApp del final evita la pregunta que más se
                  repite después de comprar: "¿y dónde lo recojo?". -->
             <p class="checkout-oficina" id="datosOficina" hidden></p>
-            <p class="checkout-note" id="notaEntrega">Los envíos salen {{DIAS_DESPACHO}} desde San Antonio de
-              Ibarra. Te confirmamos la fecha exacta por WhatsApp.</p>
+            <p class="checkout-note" id="notaEntrega">Elige tu ciudad y te digo cómo llega.</p>
           </section>
 
           <section class="checkout-step" data-step="3" hidden>
@@ -564,7 +571,8 @@
       const ENVIO = {{ENVIO_JS}};
       const PIEZA = {{PIEZA_JS}};        // el bonsái de esta página
       const SUMABLES = {{SUMABLES_JS}};  // el resto del catálogo disponible
-      const OFICINAS = {{OFICINAS_JS}};  // ciudad -> mostradores de {{TRANSPORTISTA}}
+      const OFICINAS = {{OFICINAS_JS}};  // ciudad -> puntos de retiro de {{TRANSPORTISTA}}
+      const CON_DOMICILIO = {{DOMICILIO_JS}};  // ciudades donde entregamos en la puerta
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -656,8 +664,8 @@
       const medidorRelleno = document.getElementById('shipMeterFill');
       const medidorPie = document.getElementById('shipMeterFoot');
       const campoDireccion = document.getElementById('campoDireccion');
-      const campoCiudad = document.getElementById('campoCiudad');
       const campoOficina = document.getElementById('campoOficina');
+      const bloqueModo = document.getElementById('bloqueModo');
       const selCiudad = document.getElementById('selCiudad');
       const selOficina = document.getElementById('selOficina');
       const datosOficina = document.getElementById('datosOficina');
@@ -787,40 +795,62 @@
         return elegido ? elegido.value : null;
       }
 
-      // A domicilio solo llegamos a {{DOMICILIO_TXT}}; el resto del país retira
-      // en la oficina de {{TRANSPORTISTA}} que elija. Cada caso pide un dato
-      // distinto, así que mostramos uno u otro en vez de pedir los dos siempre.
+      // Qué se puede hacer en la ciudad elegida. Donde hay domicilio caben las
+      // dos formas y hay que preguntar; donde no, el retiro es la única y no
+      // tiene sentido presentarlo como una elección.
+      function hayDomicilio() {
+        return CON_DOMICILIO.includes(selCiudad.value);
+      }
+
+      // El modo efectivo: lo que eligió, o el único que existe en su ciudad.
+      function modoEfectivo() {
+        if (!selCiudad.value) return null;
+        return hayDomicilio() ? modoEntrega() : 'oficina';
+      }
+
       function aplicarEntrega() {
-        const modo = modoEntrega();
-        const enOficina = modo === 'oficina';
+        const ciudad = selCiudad.value;
+        const conDomicilio = hayDomicilio();
+        const modo = modoEfectivo();
+
+        bloqueModo.hidden = !ciudad || !conDomicilio;
+        // Los radios solo son obligatorios cuando de verdad se muestran: si no,
+        // el formulario se negaría a avanzar por un campo que nadie ve.
+        form.querySelectorAll('input[name="entrega"]').forEach(r => {
+          r.required = !!ciudad && conDomicilio;
+          if (!conDomicilio) r.checked = false;
+        });
+
         campoDireccion.hidden = modo !== 'domicilio';
-        campoCiudad.hidden = !enOficina;
-        campoOficina.hidden = !enOficina || !selCiudad.value;
         campoDireccion.querySelector('input').required = modo === 'domicilio';
-        selCiudad.required = enOficina;
+
+        const enOficina = modo === 'oficina';
+        campoOficina.hidden = !enOficina;
         selOficina.required = enOficina;
-        if (modo === 'domicilio') {
-          notaEntrega.textContent = 'Solo entregamos a domicilio dentro de {{DOMICILIO_TXT}}. Salimos {{DIAS_DESPACHO}} '
-            + 'desde San Antonio de Ibarra y llega en {{PLAZO_DOMICILIO}}; te confirmamos el día por WhatsApp.';
+        if (enOficina) pintarOficinas(); else pintarDatosOficina();
+
+        if (!ciudad) {
+          notaEntrega.textContent = 'Elige tu ciudad y te digo cómo llega.';
+        } else if (modo === 'domicilio') {
+          notaEntrega.textContent = `Te lo llevamos hasta la puerta en ${ciudad}. Salimos {{DIAS_DESPACHO}} desde `
+            + 'San Antonio de Ibarra y llega en {{PLAZO_DOMICILIO}}; te confirmamos el día por WhatsApp.';
         } else if (enOficina) {
-          notaEntrega.textContent = 'Lo despachamos con {{TRANSPORTISTA}} a la oficina que elijas y te pasamos la guía '
-            + 'por WhatsApp para que lo retires. Salidas {{DIAS_DESPACHO}}, {{PLAZO_OFICINA}}.';
+          notaEntrega.textContent = `Lo despachamos con {{TRANSPORTISTA}} a ${ciudad} y te pasamos la guía por `
+            + 'WhatsApp para que lo retires. Salidas {{DIAS_DESPACHO}}, {{PLAZO_OFICINA}}.';
         } else {
-          notaEntrega.textContent = 'Los envíos salen miércoles y viernes, y tardan de 48 a 72h desde San Antonio '
-            + 'de Ibarra. Te confirmamos la fecha exacta por WhatsApp.';
+          notaEntrega.textContent = `En ${ciudad} puedes recibirlo en tu casa o pasar a retirarlo. Elige arriba.`;
         }
         pintarTotales();
       }
 
-      // Al elegir ciudad se cargan sus mostradores. Si solo hay uno, queda
+      // Al elegir ciudad se cargan sus puntos de retiro. Si solo hay uno, queda
       // elegido: no tiene sentido obligar a abrir un desplegable de una opción.
       function pintarOficinas() {
         const lista = OFICINAS[selCiudad.value] || [];
         selOficina.innerHTML = lista.length > 1
-          ? '<option value="">Elige la oficina…</option>' + lista.map((o, i) =>
+          ? '<option value="">Elige dónde…</option>' + lista.map((o, i) =>
               `<option value="${i}">${o.nombre}</option>`).join('')
           : lista.map((o, i) => `<option value="${i}">${o.nombre}</option>`).join('');
-        campoOficina.hidden = !selCiudad.value;
         pintarDatosOficina();
       }
 
@@ -830,7 +860,7 @@
       }
 
       function pintarDatosOficina() {
-        const o = modoEntrega() === 'oficina' ? oficinaElegida() : null;
+        const o = modoEfectivo() === 'oficina' ? oficinaElegida() : null;
         datosOficina.hidden = !o;
         // Vaciarlo, y no solo esconderlo: si no, al cambiar de ciudad queda
         // dentro la dirección de la anterior esperando a volver a asomar.
@@ -843,10 +873,11 @@
         document.getElementById('dgSubtotalLabel').textContent =
           pedido.length === 1 ? 'Subtotal (1 bonsái)' : `Subtotal (${pedido.length} bonsáis)`;
         document.getElementById('dgSubtotal').textContent = dinero(subtotal());
-        const modo = modoEntrega();
+        const modo = modoEfectivo();
+        const ciudad = selCiudad.value;
         document.getElementById('dgEnvioLabel').textContent =
-          modo === 'domicilio' ? 'Envío a domicilio en {{DOMICILIO_TXT}}'
-            : modo === 'oficina' ? `Envío a tu oficina${selCiudad.value ? ' en ' + selCiudad.value : ''}`
+          modo === 'domicilio' ? `Envío a domicilio en ${ciudad}`
+            : modo === 'oficina' ? `Envío a {{TRANSPORTISTA}} de ${ciudad}`
               : 'Envío a todo el Ecuador';
         document.getElementById('dgEnvio').innerHTML = envioGratis()
           ? `<span class="was">$${ENVIO.costo}</span><span class="free">Gratis</span>`
@@ -934,8 +965,10 @@
         overlay.addEventListener('animationend', alTerminarAnimacion);
       }
 
-      selCiudad.addEventListener('change', () => { pintarOficinas(); aplicarEntrega(); });
-      selOficina.addEventListener('change', pintarDatosOficina);
+      // Cambiar de ciudad rehace el paso entero: puede aparecer o desaparecer
+      // la pregunta del domicilio y cambia por completo la lista de retiro.
+      selCiudad.addEventListener('change', aplicarEntrega);
+      selOficina.addEventListener('change', () => { pintarDatosOficina(); pintarTotales(); });
 
       document.querySelectorAll('[data-open-checkout]').forEach(btn => {
         btn.addEventListener('click', abrirCheckout);
@@ -1007,8 +1040,12 @@
       });
 
       function validarDatos() {
-        if (!modoEntrega()) {
+        if (!selCiudad.value) return selCiudad.reportValidity();
+        if (!modoEfectivo()) {
           return form.querySelector('input[name="entrega"]').reportValidity();
+        }
+        if (modoEfectivo() === 'oficina' && !oficinaElegida()) {
+          return selOficina.reportValidity();
         }
         // Los campos del modo que no se eligió están ocultos: pedirlos sería
         // exigir un dato que ni siquiera se ve en pantalla.
@@ -1031,12 +1068,12 @@
         msg += `Total: ${dinero(total())}\n`;
         msg += `Nombre: ${datos.get('nombre')}\n`;
         msg += `WhatsApp: ${datos.get('telefono')}\n`;
-        if (modoEntrega() === 'domicilio') {
-          msg += `Entrega: a domicilio en {{DOMICILIO_TXT}}\nDirección: ${datos.get('direccion')}\n`;
+        if (modoEfectivo() === 'domicilio') {
+          msg += `Entrega: a domicilio en ${selCiudad.value}\nDirección: ${datos.get('direccion')}\n`;
         } else {
           const o = oficinaElegida();
-          msg += `Entrega: retiro en {{TRANSPORTISTA}} de ${selCiudad.value}\n`;
-          if (o) msg += `Oficina: ${o.nombre} — ${o.direccion}\n`;
+          msg += `Entrega: retiro en {{TRANSPORTISTA}}, ${selCiudad.value}\n`;
+          if (o) msg += `Punto: ${o.nombre} — ${o.direccion}\n`;
         }
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;

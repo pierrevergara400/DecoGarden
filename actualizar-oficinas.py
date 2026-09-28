@@ -44,7 +44,29 @@ CABECERAS = {
 # Puntos que no son mostrador de atención al público: bodegas y centros de
 # clasificación. Un cliente que vaya ahí a recoger su bonsái se encuentra una
 # nave industrial, así que no entran en el listado.
-NO_PUBLICAS = re.compile(r"log[ií]stica|bodega|postal|matriz|stodom", re.I)
+#
+# "matriz" estuvo aquí por error y se llevó por delante las oficinas
+# principales de Quito y Guayaquil, que son justo las que más conviene ofrecer.
+NO_PUBLICAS = re.compile(r"log[ií]stica|bodega\s|postal|stodom", re.I)
+
+# Urbano mezcla en el mismo mapa sus propias oficinas y los negocios que operan
+# como punto autorizado: una papelería, una heladería, un local de informática.
+# Los dos sirven para retirar, pero no son lo mismo —el horario de una tienda
+# depende de la tienda—, y para un bonsái frágil importa a cuál va.
+#
+# Urbano NO marca la diferencia en sus datos, así que esto es una deducción a
+# partir de cómo escribe la dirección, no un dato oficial. Acierta en la
+# mayoría y falla en los casos ambiguos, como una oficina dentro de un centro
+# comercial. Por eso "tipo" solo se usa para ordenar la lista, y no se le
+# enseña al cliente como si fuera un hecho: lo que sí es cierto y sí se
+# enseña es el horario, que es la diferencia que de verdad le afecta.
+ES_PUNTO = re.compile(
+    r"agente\s+autorizado"
+    r"|\blocal[\s:]+[A-ZÁÉÍÓÚÑ]"       # "Local King Solutions"
+    r"|helader|librer|papeler|farmacia|bazar|minimarket|cyber|internet"
+    r"|import(?:adora)?\b|inform[áa]tica|pesolimpio|mundo\s+express",
+    re.I,
+)
 
 
 def sin_tildes(texto):
@@ -115,6 +137,8 @@ def recoger():
         if not direccion:
             descartadas += 1
             continue
+        # Deducido, no oficial. Ver el comentario de ES_PUNTO.
+        propia = not ES_PUNTO.search(direccion) and not ES_PUNTO.search(titulo)
         por_ciudad.setdefault(ciudad, {})
         # El mismo mostrador aparece repetido con el nombre en mayúsculas y en
         # minúsculas. La dirección es lo que de verdad lo identifica.
@@ -122,14 +146,22 @@ def recoger():
         if clave not in por_ciudad[ciudad]:
             por_ciudad[ciudad][clave] = {
                 "nombre": titulo,
+                "tipo": "oficina" if propia else "punto",
                 "direccion": direccion,
                 "horario": horario,
                 "lat": round(float(m["lat"]), 6),
                 "lng": round(float(m["lng"]), 6),
             }
 
+    def orden(o):
+        return (
+            o["tipo"] != "oficina",                       # propias arriba
+            "matriz" not in o["nombre"].lower(),          # y la matriz la primera
+            o["nombre"],
+        )
+
     limpio = {
-        ciudad: sorted(oficinas.values(), key=lambda o: o["nombre"])
+        ciudad: sorted(oficinas.values(), key=orden)
         for ciudad, oficinas in sorted(por_ciudad.items())
     }
     return limpio, descartadas
@@ -153,7 +185,10 @@ def main():
     datos["_comentario"] = (
         "Oficinas de Urbano Express, bajadas de su web con actualizar-oficinas.py. "
         "No las edites a mano: se sobrescriben. Lo que sí es tuyo es 'ciudades', "
-        "que decide a dónde envías, y 'entrega', que es lo que promete el sitio."
+        "que decide a dónde envías, y 'entrega', que es lo que promete el sitio. "
+        "OJO: 'tipo' (oficina / punto) es una deducción a partir de la dirección, "
+        "no un dato que publique Urbano. Solo se usa para ordenar la lista; no se "
+        "le muestra al cliente. Confírmalo con tu contacto de Urbano."
     )
     datos["fuente"] = AGENCIAS
     datos["oficinas"] = oficinas
@@ -164,7 +199,9 @@ def main():
     )
 
     total = sum(len(v) for v in oficinas.values())
-    print(f"{len(oficinas)} ciudades, {total} oficinas de atención al público.")
+    propias = sum(1 for v in oficinas.values() for o in v if o["tipo"] == "oficina")
+    print(f"{len(oficinas)} ciudades, {total} puntos de retiro: "
+          f"{propias} oficinas de Urbano y {total - propias} puntos autorizados.")
     if descartadas:
         print(f"  ({descartadas} puntos descartados: bodegas y centros logísticos)")
     for ciudad in nuevas:

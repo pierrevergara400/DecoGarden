@@ -486,6 +486,17 @@
   opacity: .85;
 }
 
+/* Subtitulo dentro de un paso, para separar dos preguntas distintas sin
+   partirlo en dos pantallas. */
+.checkout-sublabel {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 /* --- La oficina elegida, dentro de la pasarela ---------------------------
 
    La dirección y el horario del mostrador aparecen en cuanto se elige, no solo

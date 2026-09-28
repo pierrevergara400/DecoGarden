@@ -50,7 +50,7 @@
 
   <link rel="stylesheet" href="tokens.css?v=024e730f">
   <link rel="stylesheet" href="style.css?v=ebe789bb">
-  <link rel="stylesheet" href="producto.css?v=cf4d6797">
+  <link rel="stylesheet" href="producto.css?v=e33ada40">
 
   <script type="application/ld+json">
   {
@@ -419,7 +419,7 @@
       </div>
 
       <div class="care-row">
-        <div class="care-photo">foto — bequia mini envuelto para regalo<br>(pendiente)</div>
+        <div class="care-photo">foto — la bequia mini empacada para el envío<br>(pendiente)</div>
         <div>
           <span class="tag-label">Para quien busca un regalo con significado</span>
           <h3>El Árbol de la Vida, para regalar</h3>
@@ -624,36 +624,14 @@
           </section>
 
           <section class="checkout-step" data-step="2" hidden>
-            <p class="checkout-step-label">Cómo lo recibes</p>
-            <!-- Ninguna viene marcada a propósito: la mayoría del país no está
-                 en Quito, y dar el domicilio por hecho pediría una dirección
-                 que no vamos a poder usar. -->
-            <label class="payment-option">
-              <input type="radio" name="entrega" value="domicilio" required>
-              <span>A domicilio en Quito
-                <em>Hasta tu puerta, 24 horas después del despacho.</em>
-              </span>
-            </label>
-            <label class="payment-option">
-              <input type="radio" name="entrega" value="oficina" required>
-              <span>Retiro en oficina de Urbano Express
-                <em>Eliges el mostrador que te quede cerca. Misma tarifa.</em>
-              </span>
-            </label>
-
-            <div class="checkout-row">
-              <label>Nombre completo
-                <input type="text" name="nombre" required autocomplete="name">
-              </label>
-              <label>WhatsApp
-                <input type="tel" name="telefono" required autocomplete="tel" inputmode="tel" placeholder="09...">
-              </label>
-            </div>
-            <label id="campoDireccion" hidden>Dirección y referencia en Quito
-              <input type="text" name="direccion" autocomplete="street-address">
-            </label>
-            <label id="campoCiudad" hidden>Ciudad donde lo retiras
-              <select name="ciudad" id="selCiudad" autocomplete="address-level2">
+            <p class="checkout-step-label">A dónde va</p>
+            <!-- Primero la ciudad y después cómo se entrega, y no al revés.
+                 Quien compra sabe dónde vive; lo que no tiene por qué saber es
+                 si en su ciudad hay entrega a domicilio. Preguntando la ciudad
+                 primero, cada quien ve solo las opciones que existen para él, y
+                 nadie elige un domicilio al que no llegamos. -->
+            <label id="campoCiudad">Tu ciudad
+              <select name="ciudad" id="selCiudad" autocomplete="address-level2" required>
           <option value="">Elige tu ciudad…</option>
           <option value="Ambato">Ambato</option>
           <option value="Babahoyo">Babahoyo</option>
@@ -678,21 +656,51 @@
           <option value="Portoviejo">Portoviejo</option>
           <option value="Puyo">Puyo</option>
           <option value="Quevedo">Quevedo</option>
+          <option value="Quito">Quito</option>
           <option value="Riobamba">Riobamba</option>
           <option value="Santo Domingo">Santo Domingo</option>
           <option value="Tena">Tena</option>
           <option value="Tulcán">Tulcán</option>
               </select>
             </label>
-            <label id="campoOficina" hidden>Oficina donde lo retiras
+
+            <!-- Solo aparece donde hay más de una forma de recibirlo. Donde solo
+                 cabe el retiro, una pregunta de una sola respuesta sobra. -->
+            <div id="bloqueModo" hidden>
+              <p class="checkout-sublabel">Cómo prefieres recibirlo</p>
+              <label class="payment-option">
+                <input type="radio" name="entrega" value="domicilio">
+                <span>En mi domicilio
+                  <em>Hasta tu puerta, 24 horas después del despacho.</em>
+                </span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="entrega" value="oficina">
+                <span>Paso a retirarlo
+                  <em>En la oficina de Urbano Express que te quede cerca. Misma tarifa.</em>
+                </span>
+              </label>
+            </div>
+
+            <div class="checkout-row">
+              <label>Nombre completo
+                <input type="text" name="nombre" required autocomplete="name">
+              </label>
+              <label>WhatsApp
+                <input type="tel" name="telefono" required autocomplete="tel" inputmode="tel" placeholder="09...">
+              </label>
+            </div>
+            <label id="campoDireccion" hidden>Dirección y referencia
+              <input type="text" name="direccion" autocomplete="street-address">
+            </label>
+            <label id="campoOficina" hidden>Dónde lo retiras
               <select name="oficina" id="selOficina"></select>
             </label>
             <!-- La dirección y el horario del mostrador elegido. Enseñarlos aquí
                  y no solo en el WhatsApp del final evita la pregunta que más se
                  repite después de comprar: "¿y dónde lo recojo?". -->
             <p class="checkout-oficina" id="datosOficina" hidden></p>
-            <p class="checkout-note" id="notaEntrega">Los envíos salen miércoles y viernes desde San Antonio de
-              Ibarra. Te confirmamos la fecha exacta por WhatsApp.</p>
+            <p class="checkout-note" id="notaEntrega">Elige tu ciudad y te digo cómo llega.</p>
           </section>
 
           <section class="checkout-step" data-step="3" hidden>
@@ -762,7 +770,8 @@
       const ENVIO = {"costo": 6, "gratisDesde": 60};
       const PIEZA = {"id": "bequia-pequena", "nombre": "Bequia Mini, el Árbol de la Vida", "precio": 35.0, "imagen": "Images/bonsai-bequia-pequena.webp", "nota": "Tsuga Canadensis · 20 cm"};        // el bonsái de esta página
       const SUMABLES = [{"id": "arbol-del-te", "nombre": "Árbol del Té o Mānuka", "precio": 20.0, "imagen": "Images/bonsai-arbol-del-te.webp", "nota": "Leptospermum scoparium · 20 cm"}, {"id": "bonsai-mini-juniperus-horizontalis", "nombre": "Junípero Cascada Mini", "precio": 20.0, "imagen": "Images/bonsai-junipero-cascada-mini.webp", "nota": "Juniperus horizontalis · 20 cm"}, {"id": "guayacan", "nombre": "Guayacán", "precio": 25.0, "imagen": "Images/bonsai-guayacan.webp", "nota": "Handroanthus chrysanthus · 40 cm"}, {"id": "junipero-dorado", "nombre": "Pino Cola de Pavo", "precio": 25.0, "imagen": "Images/bonsai-junipero-dorado.webp", "nota": "Última pieza"}, {"id": "flor-arana", "nombre": "Flor de Araña", "precio": 25.0, "imagen": "Images/bonsai-flor-arana.webp", "nota": "Última pieza"}, {"id": "azalea", "nombre": "Azalea", "precio": 30.0, "imagen": "Images/bonsai-azalea.webp", "nota": "Rhododendron indicum · 25 cm"}, {"id": "pino-estrella", "nombre": "Pino Estrella", "precio": 35.0, "imagen": "Images/bonsai-pino-estrella.webp", "nota": "Pinus pentaphylla · 30 cm"}, {"id": "bosque-guayacanes", "nombre": "Bosque de Guayacanes", "precio": 45.0, "imagen": "Images/bonsai-bosque-guayacanes.webp", "nota": "Última pieza"}, {"id": "juniperus-shakan", "nombre": "Juniperus Estilo Shakan", "precio": 55.0, "imagen": "Images/bonsai-junipero-shakan.webp", "nota": "Juniperus Chinensis · 30 cm"}, {"id": "junipero-shakan-mayor", "nombre": "Juniperus Estilo Shakan Mayor", "precio": 70.0, "imagen": "Images/bonsai-junipero-shakan-mayor.webp", "nota": "Última pieza"}, {"id": "bequia-imperial", "nombre": "Bequia Imperial, el Árbol de la Vida", "precio": 150.0, "imagen": "Images/bonsai-bequia-imperial.webp", "nota": "Última pieza"}];  // el resto del catálogo disponible
-      const OFICINAS = {"Ambato": [{"nombre": "Ambato - Atahualpa", "direccion": "Av. Atahualpa y César Silva, frente al AKI, Ambato. Local: Naru Express", "horario": "Lunes a viernes de 8h30 a 18h00. Sábados de 9h00 a 13h30", "lat": -1.257126, "lng": -78.630894}, {"nombre": "Ambato - Miguel Delibes", "direccion": "Sector La Cantera, Calle Miguel Delibes y Manuela Sáenz. Local Vértice, frente a las bodegas del Paseo Shopping.", "horario": "Lunes a viernes de 9h00 a 19h00.", "lat": -1.2647, "lng": -78.638703}, {"nombre": "Ambato - Primera Imprenta", "direccion": "Calle Primera Imprenta entre Unidad Nacional y Filomentor Cuesta", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.23566, "lng": -78.621243}], "Babahoyo": [{"nombre": "Babahoyo", "direccion": "Av. Sucre 520 entre 5 de junio y García Moreno. Sector Clemente Baquerizo", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.799961, "lng": -79.532106}], "Cayambe": [{"nombre": "CAYAMBE", "direccion": "Calle Azcásubi S/N y 24 de mayo", "horario": "Lunes a viernes de 9h00 a 17h30", "lat": 0.045801, "lng": -78.142474}, {"nombre": "Cayambe", "direccion": "Calle Azcásubi N 4-70 y 24 de Mayo", "horario": "Lunes a viernes de 09:00 a 12:00 y 14:00 a 17:30", "lat": 0.045898, "lng": -78.142549}], "Chone": [{"nombre": "Chone", "direccion": "Calle Rocafuerte entre Atahualpa y Vargas Torres SN, Sector centro, diagonal a la Gasolinera Chimborazo", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.696973, "lng": -80.092838}], "Cuenca": [{"nombre": "Cuenca - Av. de los conquistadores", "direccion": "Av. de los Conquistadores S/N y Bartolomé Ruiz, diagonal al Centro Educativo NOVA, sector Don Bosco", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -2.915721, "lng": -79.026357}, {"nombre": "Cuenca - Córdova", "direccion": "Presidente Córdova 8-42 Y Luis Cordero Ref Bajos Del Hotel Rio Piedra. Local Giga Soluciones Informáticas", "horario": "Lunes a viernes de 09h00 a 18h00. Sábado de 09h30 a 13h00", "lat": -2.898801, "lng": -79.004737}, {"nombre": "Cuenca - Sevilla", "direccion": "Sevilla 1-32 y. Av. Gil Ramírez Dávalos. Ref.: a cuadra y media del Terminal Terrestre", "horario": "Lunes a viernes de 8h30 a 17h30. Sábado de 9h00 a 12h30", "lat": -2.890556, "lng": -78.990315}], "Esmeraldas": [{"nombre": "Esmeraldas", "direccion": "Guayas 209 entre Olmedo y Colón", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": 0.970941, "lng": -79.654781}], "Guaranda": [{"nombre": "Guaranda", "direccion": "Jhonson City 203 entre Sucre y Convención. Sector Monturfar, frente al Edificio Radio Surcos", "horario": "Lunes a viernes de 7h30 a 08h30 en la mañana y tarde de 14h30 a 17h30", "lat": -1.596852, "lng": -79.000498}], "Guayaquil": [{"nombre": "Guayaquil - Aguirre", "direccion": "Calle Aguirre No. 1501 y José de Antepara esq. Local R3PCNET I.T.", "horario": "Lunes a viernes de 8h30 a 17h00", "lat": -2.19124, "lng": -79.891527}, {"nombre": "Guayaquil - Garzocentro", "direccion": "Cdla. La Garzota calle Agustín Freire Icaza 601 y Trigésima Segunda. Garzocentro Shopping Center. Local Luxus Importadora", "horario": "Lunes a sábado de 10h00 a 19h00. Domingo de 12h00 a 18h00", "lat": -2.143802, "lng": -79.892279}, {"nombre": "Guayaquil - Guasmo", "direccion": "Guasmo Oeste, 9 de Octubre, Mz 0052, solar 16. Heladería Fruti Cremoso.", "horario": "Lunes a viernes de 10h00 a 19h00.", "lat": -2.261626, "lng": -79.89871}, {"nombre": "Guayaquil - Pascuales", "direccion": "Av. Manuel Gómez Lince y 3er Pasaje 38E, Centro Comercial La Muralla, LOCAL 7", "horario": "Lunes a viernes de 8h40 a 18h00. Sábado de 9h00 a 15h00", "lat": -2.089489, "lng": -79.931899}, {"nombre": "Guayaquil - Portete", "direccion": "Portete 2500 y Tungurahua - Lizardo García Referencia: A dos cuadras del Colegio San Francisco de Asís", "horario": "Lunes a viernes de 9h00 a 13h00 / 14h00 a 18h30.", "lat": -2.20558, "lng": -79.902059}, {"nombre": "Guayaquil - Zaldumbide", "direccion": "Cdla. Sagrada Familia, calle Gonzalo Zaldumbide Mz. 55 solar 09, y Av. Carlos Luis Plaza Dañín. Sector Kennedy Norte", "horario": "Lunes a viernes de 9h00 a 13h30 y de 14h30 a 18h00. Sábado de 10h00 a 16h00", "lat": -2.171582, "lng": -79.896349}], "Ibarra": [{"nombre": "Ibarra", "direccion": "Av. Mariano Acosta 14-77 y Cristóbal de Troya, referencia, redondel de la Madre.", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": 0.347277, "lng": -78.132719}], "La Concordia": [{"nombre": "La Concordia", "direccion": "Calle Primero de Mayo entre Av. Eloy Alfaro y 10 de Agosto. Local Click SD", "horario": "Lunes a viernes de 08:00 a 18:00. Sábado de 18:00 a 17:00", "lat": 0.005262, "lng": -79.398844}], "Lago agrio": [{"nombre": "LAGO AGRIO", "direccion": "Calle Manabí s/n y Calle La Ronda, diagonal a agencia Agripac", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": 0.085433, "lng": -76.88196}, {"nombre": "Lago agrio", "direccion": "Calle La Ronda s/n y Calle Manabí esquina, diagonal a Agripac", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": 0.085433, "lng": -76.88196}], "Latacunga": [{"nombre": "LATACUNGA", "direccion": "Unidad Nacional 61-52 y Euclides Salazar frente a Gasolinera El Fogón", "horario": "Lunes a viernes 09h00 a 17h30", "lat": -0.942768, "lng": -78.61161}, {"nombre": "Latacunga", "direccion": "Calle Eucalipto y Av. Unidad Nacional, sector EL NIAGARA referencia Diagonal a la fábrica PRODICEREAL", "horario": "Lunes a viernes 09h00 a 17h30", "lat": -0.95749, "lng": -78.611746}], "Libertad": [{"nombre": "Libertad", "direccion": "Barrio 10 de Agosto, Calle 10ma entre 4ta y 5ta Avenida, junto al Colegio Dr. Luis Celleri", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -2.221885, "lng": -80.918882}], "Loja": [{"nombre": "Loja", "direccion": "Juan el Bautista y Francisco de Miranda, detrás de Iglesia Daniel Alvarez", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -4.019436, "lng": -79.210682}], "Macas": [{"nombre": "Macas", "direccion": "Bolívar y 24 de Mayo frente al Consejo Provincial junto a Notaria Primera", "horario": "Lunes a viernes de 7h30 a 08h30 en la mañana y tarde de 14h30 a 17h30", "lat": -2.304352, "lng": -78.117956}, {"nombre": "Macas - Agente autorizado", "direccion": "Calle 29 de Mayo y Amazonas. Local Internet El Rincón del Vago", "horario": "De lunes a viernes de 09h00 a 20h00", "lat": -2.307413, "lng": -78.120139}], "Machala": [{"nombre": "Machala", "direccion": "Páez entre 8va y 9na Norte", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -3.25568, "lng": -79.953393}, {"nombre": "Machala - Rocafuerte", "direccion": "Av. Rocafuerte 309 Entre 23 De Abril Y Napoleón Mera", "horario": "Lunes a Viernes de 10h00 a 17h00", "lat": -3.264084, "lng": -79.954086}], "Manta": [{"nombre": "MANTA", "direccion": "Av. 113 calle Oliva Miranda primera transversal Multibodegas Puerto Plaza Bodegas 2 junto a Bodegas Pinturas Unidas y Pegatanke. Sector sur, Parroquia los esteros, frente a la Urb. Villas del seguro.", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -0.96659, "lng": -80.701277}, {"nombre": "Manta", "direccion": "Av 113 calle Oliva Miranda primera transversal Multibodegas Puerto Plaza Bodegas 2 junto a Bodegas Pinturas Unidas y Pegatanke. Sector sur, Parroquia los esteros, frente a la Urb. Villas del seguro.", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -0.96659, "lng": -80.701277}], "Milagro": [{"nombre": "Milagro", "direccion": "Calle Ernesto Seminario Entre García Moreno y 10 de Agosto Edf Club Rotario junto a UTPL", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -2.127272, "lng": -79.595506}], "Orellana": [{"nombre": "ORELLANA", "direccion": "AV. QUITO ENTRE ENRIQUE CASTILLO Y JORGE RODRIGUEZ referencia diagonal a ITALCOMPU.", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.460786, "lng": -76.990749}, {"nombre": "Orellana", "direccion": "Av. quito entre enrique castillo y jorge rodriguez referencia diagonal a italcompu", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.468105, "lng": -76.987059}, {"nombre": "Orellana - Vicente Rocafuerte", "direccion": "Vicente Rocafuerte y Fray Alejo de Vidania", "horario": "Lunes a Viernes de 08h00 a 17h00", "lat": -0.470559, "lng": -76.982468}], "Otavalo": [{"nombre": "Otavalo - Vicente Ramón Roca", "direccion": "Vicente Ramón Roca, entre Cristóbal Colón y Abdón Calderón. Local Super Geek", "horario": "Lunes a Viernes de 09h30 a 13h00 y de 14h30 a 17h00", "lat": 0.22669, "lng": -78.261956}], "Portoviejo": [{"nombre": "Portoviejo", "direccion": "Km 3 1/2 Vía a Manta, diagonal a PC Repuestos", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.071425, "lng": -80.488333}], "Puyo": [{"nombre": "PUYO", "direccion": "Francisco de Orellana y Av. Alberto Zambrano cerca al Cementerio", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -1.490369, "lng": -77.99323}, {"nombre": "Puyo", "direccion": "Francisco de Orellana y Av Alberto Zambrano cerca al Cementerio", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -1.490369, "lng": -77.99323}], "Quevedo": [{"nombre": "QUEVEDO", "direccion": "Km 1 Vía Valencia, Diagonal a Comisariato Devis", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.017145, "lng": -79.451141}, {"nombre": "Quevedo", "direccion": "KM 1 1/2 Vía a Valencia, Diagonal a Comisariato Devis", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.017145, "lng": -79.451141}], "Riobamba": [{"nombre": "Riobamba", "direccion": "Pedro Vicente Maldonado y Manuel Albán a una cuadra de la Gasolinera La Politécnica", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.662295, "lng": -78.674046}, {"nombre": "Riobamba - La prensa", "direccion": "Av. La Prensa 9 y Av.Canónigo Ramos. Local Importadora RM", "horario": "Lunes a viernes de 9h00 a 14h00 / 15:00 a 19:00. Sábado: 9h00 a 14h00 / 15h00 a 18h00", "lat": -1.661094, "lng": -78.663169}, {"nombre": "Riobamba - Santa Rosa", "direccion": "Santa Rosa, Calle Colombia y Pichincha 2653 Local Duty Tactical", "horario": "Lunes a viernes de 8h00 a 13h00 / 14:00 a 18:30.", "lat": -1.673777, "lng": -78.654215}], "Santo Domingo": [{"nombre": "Santo Domingo", "direccion": "Sector Las Palmas Av. Santa Rosa y Padre Iturralde esquina", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -0.251407, "lng": -79.178326}], "Tena": [{"nombre": "Tena", "direccion": "Barrio La Playa calle Serafin Gutierrez y Rafaela Segala diagonal al restaurante La Fogata", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.996712, "lng": -77.813694}], "Tulcán": [{"nombre": "TULCAN", "direccion": "Sucre y 9 de Octubre, Centro Comercial Jardín del Norte ofic 112", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": 0.810411, "lng": -77.719985}, {"nombre": "Tulcán", "direccion": "Av. San Francisco y Av. Brasil a 50 metros de la Clínica Cesmed", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": 0.810411, "lng": -77.719985}]};  // ciudad -> mostradores de Urbano Express
+      const OFICINAS = {"Ambato": [{"nombre": "Ambato - Primera Imprenta", "tipo": "oficina", "direccion": "Calle Primera Imprenta entre Unidad Nacional y Filomentor Cuesta", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.23566, "lng": -78.621243}, {"nombre": "Ambato - Atahualpa", "tipo": "punto", "direccion": "Av. Atahualpa y César Silva, frente al AKI, Ambato. Local: Naru Express", "horario": "Lunes a viernes de 8h30 a 18h00. Sábados de 9h00 a 13h30", "lat": -1.257126, "lng": -78.630894}, {"nombre": "Ambato - Miguel Delibes", "tipo": "punto", "direccion": "Sector La Cantera, Calle Miguel Delibes y Manuela Sáenz. Local Vértice, frente a las bodegas del Paseo Shopping.", "horario": "Lunes a viernes de 9h00 a 19h00.", "lat": -1.2647, "lng": -78.638703}], "Babahoyo": [{"nombre": "Babahoyo", "tipo": "oficina", "direccion": "Av. Sucre 520 entre 5 de junio y García Moreno. Sector Clemente Baquerizo", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.799961, "lng": -79.532106}], "Cayambe": [{"nombre": "CAYAMBE", "tipo": "oficina", "direccion": "Calle Azcásubi S/N y 24 de mayo", "horario": "Lunes a viernes de 9h00 a 17h30", "lat": 0.045801, "lng": -78.142474}, {"nombre": "Cayambe", "tipo": "oficina", "direccion": "Calle Azcásubi N 4-70 y 24 de Mayo", "horario": "Lunes a viernes de 09:00 a 12:00 y 14:00 a 17:30", "lat": 0.045898, "lng": -78.142549}], "Chone": [{"nombre": "Chone", "tipo": "oficina", "direccion": "Calle Rocafuerte entre Atahualpa y Vargas Torres SN, Sector centro, diagonal a la Gasolinera Chimborazo", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.696973, "lng": -80.092838}], "Cuenca": [{"nombre": "Cuenca - Av. de los conquistadores", "tipo": "oficina", "direccion": "Av. de los Conquistadores S/N y Bartolomé Ruiz, diagonal al Centro Educativo NOVA, sector Don Bosco", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -2.915721, "lng": -79.026357}, {"nombre": "Cuenca - Sevilla", "tipo": "oficina", "direccion": "Sevilla 1-32 y. Av. Gil Ramírez Dávalos. Ref.: a cuadra y media del Terminal Terrestre", "horario": "Lunes a viernes de 8h30 a 17h30. Sábado de 9h00 a 12h30", "lat": -2.890556, "lng": -78.990315}, {"nombre": "Cuenca - Córdova", "tipo": "punto", "direccion": "Presidente Córdova 8-42 Y Luis Cordero Ref Bajos Del Hotel Rio Piedra. Local Giga Soluciones Informáticas", "horario": "Lunes a viernes de 09h00 a 18h00. Sábado de 09h30 a 13h00", "lat": -2.898801, "lng": -79.004737}], "Esmeraldas": [{"nombre": "Esmeraldas", "tipo": "oficina", "direccion": "Guayas 209 entre Olmedo y Colón", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": 0.970941, "lng": -79.654781}], "Guaranda": [{"nombre": "Guaranda", "tipo": "oficina", "direccion": "Jhonson City 203 entre Sucre y Convención. Sector Monturfar, frente al Edificio Radio Surcos", "horario": "Lunes a viernes de 7h30 a 08h30 en la mañana y tarde de 14h30 a 17h30", "lat": -1.596852, "lng": -79.000498}], "Guayaquil": [{"nombre": "Guayaquil - Matriz", "tipo": "oficina", "direccion": "Av. Juan Tanca Marengo Km 4 1/2 diagonal al parque vial Bodega Transinversa", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -2.141549, "lng": -79.918303}, {"nombre": "Guayaquil - Pascuales", "tipo": "oficina", "direccion": "Av. Manuel Gómez Lince y 3er Pasaje 38E, Centro Comercial La Muralla, LOCAL 7", "horario": "Lunes a viernes de 8h40 a 18h00. Sábado de 9h00 a 15h00", "lat": -2.089489, "lng": -79.931899}, {"nombre": "Guayaquil - Portete", "tipo": "oficina", "direccion": "Portete 2500 y Tungurahua - Lizardo García Referencia: A dos cuadras del Colegio San Francisco de Asís", "horario": "Lunes a viernes de 9h00 a 13h00 / 14h00 a 18h30.", "lat": -2.20558, "lng": -79.902059}, {"nombre": "Guayaquil - Zaldumbide", "tipo": "oficina", "direccion": "Cdla. Sagrada Familia, calle Gonzalo Zaldumbide Mz. 55 solar 09, y Av. Carlos Luis Plaza Dañín. Sector Kennedy Norte", "horario": "Lunes a viernes de 9h00 a 13h30 y de 14h30 a 18h00. Sábado de 10h00 a 16h00", "lat": -2.171582, "lng": -79.896349}, {"nombre": "Guayaquil - Aguirre", "tipo": "punto", "direccion": "Calle Aguirre No. 1501 y José de Antepara esq. Local R3PCNET I.T.", "horario": "Lunes a viernes de 8h30 a 17h00", "lat": -2.19124, "lng": -79.891527}, {"nombre": "Guayaquil - Garzocentro", "tipo": "punto", "direccion": "Cdla. La Garzota calle Agustín Freire Icaza 601 y Trigésima Segunda. Garzocentro Shopping Center. Local Luxus Importadora", "horario": "Lunes a sábado de 10h00 a 19h00. Domingo de 12h00 a 18h00", "lat": -2.143802, "lng": -79.892279}, {"nombre": "Guayaquil - Guasmo", "tipo": "punto", "direccion": "Guasmo Oeste, 9 de Octubre, Mz 0052, solar 16. Heladería Fruti Cremoso.", "horario": "Lunes a viernes de 10h00 a 19h00.", "lat": -2.261626, "lng": -79.89871}], "Ibarra": [{"nombre": "Ibarra", "tipo": "oficina", "direccion": "Av. Mariano Acosta 14-77 y Cristóbal de Troya, referencia, redondel de la Madre.", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": 0.347277, "lng": -78.132719}], "La Concordia": [{"nombre": "La Concordia", "tipo": "punto", "direccion": "Calle Primero de Mayo entre Av. Eloy Alfaro y 10 de Agosto. Local Click SD", "horario": "Lunes a viernes de 08:00 a 18:00. Sábado de 18:00 a 17:00", "lat": 0.005262, "lng": -79.398844}], "Lago agrio": [{"nombre": "LAGO AGRIO", "tipo": "oficina", "direccion": "Calle Manabí s/n y Calle La Ronda, diagonal a agencia Agripac", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": 0.085433, "lng": -76.88196}, {"nombre": "Lago agrio", "tipo": "oficina", "direccion": "Calle La Ronda s/n y Calle Manabí esquina, diagonal a Agripac", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": 0.085433, "lng": -76.88196}], "Latacunga": [{"nombre": "LATACUNGA", "tipo": "oficina", "direccion": "Unidad Nacional 61-52 y Euclides Salazar frente a Gasolinera El Fogón", "horario": "Lunes a viernes 09h00 a 17h30", "lat": -0.942768, "lng": -78.61161}, {"nombre": "Latacunga", "tipo": "oficina", "direccion": "Calle Eucalipto y Av. Unidad Nacional, sector EL NIAGARA referencia Diagonal a la fábrica PRODICEREAL", "horario": "Lunes a viernes 09h00 a 17h30", "lat": -0.95749, "lng": -78.611746}], "Libertad": [{"nombre": "Libertad", "tipo": "oficina", "direccion": "Barrio 10 de Agosto, Calle 10ma entre 4ta y 5ta Avenida, junto al Colegio Dr. Luis Celleri", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -2.221885, "lng": -80.918882}], "Loja": [{"nombre": "Loja", "tipo": "oficina", "direccion": "Juan el Bautista y Francisco de Miranda, detrás de Iglesia Daniel Alvarez", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -4.019436, "lng": -79.210682}], "Macas": [{"nombre": "Macas", "tipo": "oficina", "direccion": "Bolívar y 24 de Mayo frente al Consejo Provincial junto a Notaria Primera", "horario": "Lunes a viernes de 7h30 a 08h30 en la mañana y tarde de 14h30 a 17h30", "lat": -2.304352, "lng": -78.117956}, {"nombre": "Macas - Agente autorizado", "tipo": "punto", "direccion": "Calle 29 de Mayo y Amazonas. Local Internet El Rincón del Vago", "horario": "De lunes a viernes de 09h00 a 20h00", "lat": -2.307413, "lng": -78.120139}], "Machala": [{"nombre": "Machala", "tipo": "oficina", "direccion": "Páez entre 8va y 9na Norte", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -3.25568, "lng": -79.953393}, {"nombre": "Machala - Rocafuerte", "tipo": "oficina", "direccion": "Av. Rocafuerte 309 Entre 23 De Abril Y Napoleón Mera", "horario": "Lunes a Viernes de 10h00 a 17h00", "lat": -3.264084, "lng": -79.954086}], "Manta": [{"nombre": "MANTA", "tipo": "oficina", "direccion": "Av. 113 calle Oliva Miranda primera transversal Multibodegas Puerto Plaza Bodegas 2 junto a Bodegas Pinturas Unidas y Pegatanke. Sector sur, Parroquia los esteros, frente a la Urb. Villas del seguro.", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -0.96659, "lng": -80.701277}, {"nombre": "Manta", "tipo": "oficina", "direccion": "Av 113 calle Oliva Miranda primera transversal Multibodegas Puerto Plaza Bodegas 2 junto a Bodegas Pinturas Unidas y Pegatanke. Sector sur, Parroquia los esteros, frente a la Urb. Villas del seguro.", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -0.96659, "lng": -80.701277}], "Milagro": [{"nombre": "Milagro", "tipo": "oficina", "direccion": "Calle Ernesto Seminario Entre García Moreno y 10 de Agosto Edf Club Rotario junto a UTPL", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -2.127272, "lng": -79.595506}], "Orellana": [{"nombre": "ORELLANA", "tipo": "oficina", "direccion": "AV. QUITO ENTRE ENRIQUE CASTILLO Y JORGE RODRIGUEZ referencia diagonal a ITALCOMPU.", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.460786, "lng": -76.990749}, {"nombre": "Orellana", "tipo": "oficina", "direccion": "Av. quito entre enrique castillo y jorge rodriguez referencia diagonal a italcompu", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.468105, "lng": -76.987059}, {"nombre": "Orellana - Vicente Rocafuerte", "tipo": "oficina", "direccion": "Vicente Rocafuerte y Fray Alejo de Vidania", "horario": "Lunes a Viernes de 08h00 a 17h00", "lat": -0.470559, "lng": -76.982468}], "Otavalo": [{"nombre": "Otavalo - Vicente Ramón Roca", "tipo": "punto", "direccion": "Vicente Ramón Roca, entre Cristóbal Colón y Abdón Calderón. Local Super Geek", "horario": "Lunes a Viernes de 09h30 a 13h00 y de 14h30 a 17h00", "lat": 0.22669, "lng": -78.261956}], "Portoviejo": [{"nombre": "Portoviejo", "tipo": "oficina", "direccion": "Km 3 1/2 Vía a Manta, diagonal a PC Repuestos", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.071425, "lng": -80.488333}], "Puyo": [{"nombre": "PUYO", "tipo": "oficina", "direccion": "Francisco de Orellana y Av. Alberto Zambrano cerca al Cementerio", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -1.490369, "lng": -77.99323}, {"nombre": "Puyo", "tipo": "oficina", "direccion": "Francisco de Orellana y Av Alberto Zambrano cerca al Cementerio", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -1.490369, "lng": -77.99323}], "Quevedo": [{"nombre": "QUEVEDO", "tipo": "oficina", "direccion": "Km 1 Vía Valencia, Diagonal a Comisariato Devis", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.017145, "lng": -79.451141}, {"nombre": "Quevedo", "tipo": "oficina", "direccion": "KM 1 1/2 Vía a Valencia, Diagonal a Comisariato Devis", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.017145, "lng": -79.451141}], "Quito": [{"nombre": "Quito - Matriz", "tipo": "oficina", "direccion": "Av. de las Azucenas N44-131 y Av. de los Granados", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -0.161853, "lng": -78.463981}, {"nombre": "Quito - Carapungo", "tipo": "oficina", "direccion": "Carapungo Calle Capitán Giovanni Calles Oe4-249 y Calle Vicente Paredes", "horario": "Lunes a Sábado de 08h00 a 19h00 .", "lat": -0.093171, "lng": -78.435241}, {"nombre": "Quito - Centro Comercial San José", "tipo": "oficina", "direccion": "Juan Paz y Miño y Jaime Chiriboga. Centro Comercial San José, oficina 114A", "horario": "Lunes a sábado de 9h00 a 17h30.", "lat": -0.148461, "lng": -78.492182}, {"nombre": "Quito - Cotocollao", "tipo": "oficina", "direccion": "Calle Nazareth OE4-347 y Río Saraguro", "horario": "Lunes a viernes de 08h00 a 17h00", "lat": -0.121907, "lng": -78.492777}, {"nombre": "Quito - Cumbayá", "tipo": "oficina", "direccion": "Av. María Angélica Hidrobo 475 Y Francisco de Orellana", "horario": "Lunes a Viernes de 09h00 a 17h00", "lat": -0.198849, "lng": -78.435154}, {"nombre": "Quito - De las hiedras", "tipo": "oficina", "direccion": "De las Hiedras N44-29 y Río Coca", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -0.163099, "lng": -78.474328}, {"nombre": "Quito - Iñaquito", "tipo": "oficina", "direccion": "Av. 10 de agosto N35-105 e Ignacio San María.", "horario": "Lunes a viernes de 9h00 a 17h00.", "lat": -0.148461, "lng": -78.492182}, {"nombre": "Quito - Kennedy", "tipo": "oficina", "direccion": "Sector la Kennedy Calle Víctor Mideros N53-255 y De los Pinos", "horario": "Lunes a viernes de 9h00 a 18h00. Sábado de 10h00 a 17h00", "lat": -0.13843, "lng": -78.480223}, {"nombre": "Quito - La Gasca", "tipo": "oficina", "direccion": "Av. La Gasca OE3-329 y Mercadillo", "horario": "Lunes a Viernes de 8h30 a 17h00", "lat": -0.197288, "lng": -78.501099}, {"nombre": "Quito - La colón", "tipo": "oficina", "direccion": "Av. Colón y Diego de Almagro, Torres de Almagro Local 1", "horario": "Lunes a viernes de 09h00 a 18h00", "lat": -0.201533, "lng": -78.488326}, {"nombre": "Quito - Machala", "tipo": "oficina", "direccion": "Calle Machala 57-242 y General Vicente Anda Aguirre", "horario": "De Lunes a viernes de 8h30 a 18h00. Sábado de 09h00 a 14h00", "lat": -0.1313, "lng": -78.497846}, {"nombre": "Quito - Portugal", "tipo": "oficina", "direccion": "Av. 6 de Diciembre y Portugal Edif. Plaza Arts local 4 Megacellcom", "horario": "Lunes a viernes de 9h30 a 19h00. Sábado de 10h00 a 17h00", "lat": -0.181449, "lng": -78.478839}, {"nombre": "Quito - Quitumbe", "tipo": "oficina", "direccion": "Av. Quitumbe Ñan S35-100 Local 7. Diagonal a Municipio de Quitumbe", "horario": "Lunes a viernes de 09h00 a 13h00 y de 14h00 a 18h00.", "lat": -0.295278, "lng": -78.549056}, {"nombre": "Quito - San Rafael", "tipo": "oficina", "direccion": "San Rafael Av. General Enríquez S/N e Isla Rábida C.C. Capelo, piso2 local 19 J&G Distribuidores", "horario": "Lunes a viernes de 10h00 a 12h00 y de 14h00 a 17h00. Sábado de 09h00 a 12h00.", "lat": -0.3036, "lng": -78.457024}, {"nombre": "Quito - San antonio de pichincha", "tipo": "oficina", "direccion": "Calle 13 de Junio E3-302 y 21 de Marzo Esquina, junto a la Vidriería Mitad del Mundo", "horario": "Lunes a viernes de 9h00 a 13h00 / 14h30 a 20h00. Sábado de 9h00 a 14h00", "lat": -0.011214, "lng": -78.447366}, {"nombre": "Quito - Sur", "tipo": "oficina", "direccion": "Alamor E1-71 y Av. Maldonado", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -0.249077, "lng": -78.520482}, {"nombre": "Quito - Ulloa", "tipo": "oficina", "direccion": "Antonio Ulloa N29-09 y Fray Bartolomé de las Casas. Edf. Mijandri LC 5, diagonal a Banco del Pichincha", "horario": "Lunes a viernes de 9h30 a 18h00", "lat": -0.192019, "lng": -78.496674}, {"nombre": "Quito - 10 de agosto", "tipo": "punto", "direccion": "Av. 10 De Agosto N20-78 Y Jorge Washington. Sector La Mariscal. Local Pago Ágil", "horario": "Lunes a viernes de 08h30 a 17h30", "lat": -0.20479, "lng": -78.49856}, {"nombre": "Quito - América Centro", "tipo": "punto", "direccion": "AGENTE AUTORIZADO AMÉRICA CENTRO", "horario": "Lunes a sábado de 9h00 a 13h00 y de 14h00 a 18h00", "lat": -0.207081, "lng": -78.503046}, {"nombre": "Quito - Cardenal de la torre", "tipo": "punto", "direccion": "Cardenal de La Torre 0E 5-12 y Pasaje Ambuquí; Local DETALLITOS KEYLITA", "horario": "Lunes a viernes de 8h00 a 14:00 / 15:00 a 21h00. Sábado cerrado. Domingo de 8h00 a 14h00 / 15h00 a 21h00", "lat": -0.268018, "lng": -78.546312}, {"nombre": "Quito - Conocoto", "tipo": "punto", "direccion": "García Moreno S5-14 Y Acuña. Local IVAPROA - IMPORT", "horario": "Lunes a viernes de 10h00 a 13h00 y de 15h00 a 17h45", "lat": -0.296259, "lng": -78.479929}, {"nombre": "Quito - El inca", "tipo": "punto", "direccion": "Av. El Inca E7-112 Y El Morlán Local King Solutions", "horario": "Lunes, martes, jueves, viernes de 8h30 a 17h30. Miércoles de 10h00 a 15h30. Sábado de 9h30 a 14h00", "lat": -0.155321, "lng": -78.478161}, {"nombre": "Quito - San Rafael", "tipo": "punto", "direccion": "La Concordia, lote 9 e Isla Rábida. Local Pesolimpio", "horario": "Lunes a Viernes de 10h00 a 17h00", "lat": -0.304384, "lng": -78.457908}, {"nombre": "Quito - Sangolquí", "tipo": "punto", "direccion": "Calle Quiroga # 10 y calle Espejo Referencia: A cuatro cuadras del municipio EQ Mundo Express", "horario": "Lunes a viernes de 9h00 a 13h30 / 14h45 a 17h30", "lat": -0.332429, "lng": -78.447206}, {"nombre": "Quito - Unicornio", "tipo": "punto", "direccion": "Av. Amazonas N36-177 Av. Naciones Unidas Centro Comercial Unicornio. Local 324 Librería La Cabaña", "horario": "Lunes a sábado de 10h00 a 13h00 y de 14h00 a 19:00", "lat": -0.176879, "lng": -78.485968}, {"nombre": "Quito - Vaca de Castro", "tipo": "punto", "direccion": "AGENTE AUTORIZADO VACA DE CASTRO", "horario": "Lunes a sábado de 9h00 a 20h00. Domingo de 9h00 a 18h00", "lat": -0.129162, "lng": -78.499855}], "Riobamba": [{"nombre": "Riobamba", "tipo": "oficina", "direccion": "Pedro Vicente Maldonado y Manuel Albán a una cuadra de la Gasolinera La Politécnica", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -1.662295, "lng": -78.674046}, {"nombre": "Riobamba - La prensa", "tipo": "punto", "direccion": "Av. La Prensa 9 y Av.Canónigo Ramos. Local Importadora RM", "horario": "Lunes a viernes de 9h00 a 14h00 / 15:00 a 19:00. Sábado: 9h00 a 14h00 / 15h00 a 18h00", "lat": -1.661094, "lng": -78.663169}, {"nombre": "Riobamba - Santa Rosa", "tipo": "punto", "direccion": "Santa Rosa, Calle Colombia y Pichincha 2653 Local Duty Tactical", "horario": "Lunes a viernes de 8h00 a 13h00 / 14:00 a 18:30.", "lat": -1.673777, "lng": -78.654215}], "Santo Domingo": [{"nombre": "Santo Domingo", "tipo": "oficina", "direccion": "Sector Las Palmas Av. Santa Rosa y Padre Iturralde esquina", "horario": "Lunes a viernes de 09h00 a 17h30", "lat": -0.251407, "lng": -79.178326}], "Tena": [{"nombre": "Tena", "tipo": "oficina", "direccion": "Barrio La Playa calle Serafin Gutierrez y Rafaela Segala diagonal al restaurante La Fogata", "horario": "De 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": -0.996712, "lng": -77.813694}], "Tulcán": [{"nombre": "TULCAN", "tipo": "oficina", "direccion": "Sucre y 9 de Octubre, Centro Comercial Jardín del Norte ofic 112", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": 0.810411, "lng": -77.719985}, {"nombre": "Tulcán", "tipo": "oficina", "direccion": "Av. San Francisco y Av. Brasil a 50 metros de la Clínica Cesmed", "horario": "Lunes a viernes de 09h00 a 17h30, cierre a medio día de 12h00 a 14h00", "lat": 0.810411, "lng": -77.719985}]};  // ciudad -> puntos de retiro de Urbano Express
+      const CON_DOMICILIO = ["Quito"];  // ciudades donde entregamos en la puerta
 
       // --- Galería: cambiar entre fotos y videos ---
       const galeria = document.getElementById('galeria');
@@ -854,8 +863,8 @@
       const medidorRelleno = document.getElementById('shipMeterFill');
       const medidorPie = document.getElementById('shipMeterFoot');
       const campoDireccion = document.getElementById('campoDireccion');
-      const campoCiudad = document.getElementById('campoCiudad');
       const campoOficina = document.getElementById('campoOficina');
+      const bloqueModo = document.getElementById('bloqueModo');
       const selCiudad = document.getElementById('selCiudad');
       const selOficina = document.getElementById('selOficina');
       const datosOficina = document.getElementById('datosOficina');
@@ -985,40 +994,62 @@
         return elegido ? elegido.value : null;
       }
 
-      // A domicilio solo llegamos a Quito; el resto del país retira
-      // en la oficina de Urbano Express que elija. Cada caso pide un dato
-      // distinto, así que mostramos uno u otro en vez de pedir los dos siempre.
+      // Qué se puede hacer en la ciudad elegida. Donde hay domicilio caben las
+      // dos formas y hay que preguntar; donde no, el retiro es la única y no
+      // tiene sentido presentarlo como una elección.
+      function hayDomicilio() {
+        return CON_DOMICILIO.includes(selCiudad.value);
+      }
+
+      // El modo efectivo: lo que eligió, o el único que existe en su ciudad.
+      function modoEfectivo() {
+        if (!selCiudad.value) return null;
+        return hayDomicilio() ? modoEntrega() : 'oficina';
+      }
+
       function aplicarEntrega() {
-        const modo = modoEntrega();
-        const enOficina = modo === 'oficina';
+        const ciudad = selCiudad.value;
+        const conDomicilio = hayDomicilio();
+        const modo = modoEfectivo();
+
+        bloqueModo.hidden = !ciudad || !conDomicilio;
+        // Los radios solo son obligatorios cuando de verdad se muestran: si no,
+        // el formulario se negaría a avanzar por un campo que nadie ve.
+        form.querySelectorAll('input[name="entrega"]').forEach(r => {
+          r.required = !!ciudad && conDomicilio;
+          if (!conDomicilio) r.checked = false;
+        });
+
         campoDireccion.hidden = modo !== 'domicilio';
-        campoCiudad.hidden = !enOficina;
-        campoOficina.hidden = !enOficina || !selCiudad.value;
         campoDireccion.querySelector('input').required = modo === 'domicilio';
-        selCiudad.required = enOficina;
+
+        const enOficina = modo === 'oficina';
+        campoOficina.hidden = !enOficina;
         selOficina.required = enOficina;
-        if (modo === 'domicilio') {
-          notaEntrega.textContent = 'Solo entregamos a domicilio dentro de Quito. Salimos miércoles y viernes '
-            + 'desde San Antonio de Ibarra y llega en 24 horas; te confirmamos el día por WhatsApp.';
+        if (enOficina) pintarOficinas(); else pintarDatosOficina();
+
+        if (!ciudad) {
+          notaEntrega.textContent = 'Elige tu ciudad y te digo cómo llega.';
+        } else if (modo === 'domicilio') {
+          notaEntrega.textContent = `Te lo llevamos hasta la puerta en ${ciudad}. Salimos miércoles y viernes desde `
+            + 'San Antonio de Ibarra y llega en 24 horas; te confirmamos el día por WhatsApp.';
         } else if (enOficina) {
-          notaEntrega.textContent = 'Lo despachamos con Urbano Express a la oficina que elijas y te pasamos la guía '
-            + 'por WhatsApp para que lo retires. Salidas miércoles y viernes, 48 a 72 horas.';
+          notaEntrega.textContent = `Lo despachamos con Urbano Express a ${ciudad} y te pasamos la guía por `
+            + 'WhatsApp para que lo retires. Salidas miércoles y viernes, 48 a 72 horas.';
         } else {
-          notaEntrega.textContent = 'Los envíos salen miércoles y viernes, y tardan de 48 a 72h desde San Antonio '
-            + 'de Ibarra. Te confirmamos la fecha exacta por WhatsApp.';
+          notaEntrega.textContent = `En ${ciudad} puedes recibirlo en tu casa o pasar a retirarlo. Elige arriba.`;
         }
         pintarTotales();
       }
 
-      // Al elegir ciudad se cargan sus mostradores. Si solo hay uno, queda
+      // Al elegir ciudad se cargan sus puntos de retiro. Si solo hay uno, queda
       // elegido: no tiene sentido obligar a abrir un desplegable de una opción.
       function pintarOficinas() {
         const lista = OFICINAS[selCiudad.value] || [];
         selOficina.innerHTML = lista.length > 1
-          ? '<option value="">Elige la oficina…</option>' + lista.map((o, i) =>
+          ? '<option value="">Elige dónde…</option>' + lista.map((o, i) =>
               `<option value="${i}">${o.nombre}</option>`).join('')
           : lista.map((o, i) => `<option value="${i}">${o.nombre}</option>`).join('');
-        campoOficina.hidden = !selCiudad.value;
         pintarDatosOficina();
       }
 
@@ -1028,7 +1059,7 @@
       }
 
       function pintarDatosOficina() {
-        const o = modoEntrega() === 'oficina' ? oficinaElegida() : null;
+        const o = modoEfectivo() === 'oficina' ? oficinaElegida() : null;
         datosOficina.hidden = !o;
         // Vaciarlo, y no solo esconderlo: si no, al cambiar de ciudad queda
         // dentro la dirección de la anterior esperando a volver a asomar.
@@ -1041,10 +1072,11 @@
         document.getElementById('dgSubtotalLabel').textContent =
           pedido.length === 1 ? 'Subtotal (1 bonsái)' : `Subtotal (${pedido.length} bonsáis)`;
         document.getElementById('dgSubtotal').textContent = dinero(subtotal());
-        const modo = modoEntrega();
+        const modo = modoEfectivo();
+        const ciudad = selCiudad.value;
         document.getElementById('dgEnvioLabel').textContent =
-          modo === 'domicilio' ? 'Envío a domicilio en Quito'
-            : modo === 'oficina' ? `Envío a tu oficina${selCiudad.value ? ' en ' + selCiudad.value : ''}`
+          modo === 'domicilio' ? `Envío a domicilio en ${ciudad}`
+            : modo === 'oficina' ? `Envío a Urbano Express de ${ciudad}`
               : 'Envío a todo el Ecuador';
         document.getElementById('dgEnvio').innerHTML = envioGratis()
           ? `<span class="was">$${ENVIO.costo}</span><span class="free">Gratis</span>`
@@ -1132,8 +1164,10 @@
         overlay.addEventListener('animationend', alTerminarAnimacion);
       }
 
-      selCiudad.addEventListener('change', () => { pintarOficinas(); aplicarEntrega(); });
-      selOficina.addEventListener('change', pintarDatosOficina);
+      // Cambiar de ciudad rehace el paso entero: puede aparecer o desaparecer
+      // la pregunta del domicilio y cambia por completo la lista de retiro.
+      selCiudad.addEventListener('change', aplicarEntrega);
+      selOficina.addEventListener('change', () => { pintarDatosOficina(); pintarTotales(); });
 
       document.querySelectorAll('[data-open-checkout]').forEach(btn => {
         btn.addEventListener('click', abrirCheckout);
@@ -1205,8 +1239,12 @@
       });
 
       function validarDatos() {
-        if (!modoEntrega()) {
+        if (!selCiudad.value) return selCiudad.reportValidity();
+        if (!modoEfectivo()) {
           return form.querySelector('input[name="entrega"]').reportValidity();
+        }
+        if (modoEfectivo() === 'oficina' && !oficinaElegida()) {
+          return selOficina.reportValidity();
         }
         // Los campos del modo que no se eligió están ocultos: pedirlos sería
         // exigir un dato que ni siquiera se ve en pantalla.
@@ -1229,12 +1267,12 @@
         msg += `Total: ${dinero(total())}\n`;
         msg += `Nombre: ${datos.get('nombre')}\n`;
         msg += `WhatsApp: ${datos.get('telefono')}\n`;
-        if (modoEntrega() === 'domicilio') {
-          msg += `Entrega: a domicilio en Quito\nDirección: ${datos.get('direccion')}\n`;
+        if (modoEfectivo() === 'domicilio') {
+          msg += `Entrega: a domicilio en ${selCiudad.value}\nDirección: ${datos.get('direccion')}\n`;
         } else {
           const o = oficinaElegida();
-          msg += `Entrega: retiro en Urbano Express de ${selCiudad.value}\n`;
-          if (o) msg += `Oficina: ${o.nombre} — ${o.direccion}\n`;
+          msg += `Entrega: retiro en Urbano Express, ${selCiudad.value}\n`;
+          if (o) msg += `Punto: ${o.nombre} — ${o.direccion}\n`;
         }
         msg += `Método de pago: ${pago}`;
         if (pago === 'Transferencia bancaria' && banco) msg += ` (${banco})`;

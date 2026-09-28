@@ -82,12 +82,19 @@ oficinas   74 mostradores con dirección, horario y coordenadas
 **Quito es el único sitio con entrega a domicilio.** Desde Ibarra el paquete
 llega al día siguiente y sale a reparto esa misma tarde. En el resto del país el
 reparto a domicilio añade varios días, y un bonsái encajonado no aguanta esa
-espera: por eso va a oficina, donde el cliente elige el mostrador que le queda
-cerca y lo recoge cuando quiere.
+espera: por eso va a oficina, donde el cliente elige el punto que le queda cerca
+y lo recoge cuando quiere. En Quito caben las dos cosas.
 
-En la pasarela, quien elige retiro ve un desplegable de ciudades y otro de
-oficinas, con la dirección y el horario del mostrador que escogió. Esa dirección
-viaja también en el mensaje de WhatsApp del pedido.
+La pasarela **pregunta primero la ciudad**. Quien compra sabe dónde vive; lo que
+no tiene por qué saber es si en su ciudad hay entrega a domicilio. Con la ciudad
+puesta, cada quien ve solo lo que existe para él: en Quito, las dos opciones; en
+el resto, el retiro directamente, sin presentarlo como una elección que no es
+tal. La dirección y el horario del punto elegido salen en pantalla, y viajan
+también en el mensaje de WhatsApp del pedido.
+
+Para añadir una ciudad con entrega a domicilio, métela en `entrega.domicilio`
+dentro de `envios.json`: la pasarela, la home, las fichas y los términos se
+adaptan solos.
 
 ### Cuando Urbano abre o cierra una oficina
 
@@ -101,9 +108,21 @@ NO toca es `entrega` ni `ciudades`: esos son tuyos y se conservan.
 
 Revisa siempre lo que sale antes de publicar. Es la dirección a la que va a ir
 un cliente a recoger un árbol, y si Urbano la tiene mal en su web, la tendrás
-mal tú también. Hoy hay dos entradas en Quito cuya "dirección" es solo
-`AGENTE AUTORIZADO ...`; como en Quito entregas a domicilio, no salen en el
-selector, pero conviene saberlo.
+mal tú también.
+
+**`tipo` es una deducción, no un dato oficial.** Urbano mezcla en el mismo mapa
+sus oficinas y los negocios que operan como punto autorizado —una papelería, una
+heladería, un local de informática— sin marcar cuál es cuál. El script lo deduce
+de cómo está escrita la dirección: acierta en la mayoría y falla en los
+ambiguos, como una oficina dentro de un centro comercial. Solo se usa para
+ordenar la lista (las propias y la matriz arriba) y **no se le enseña al
+cliente**, porque una etiqueta equivocada es peor que ninguna. Lo que sí se le
+enseña es el horario, que es la diferencia que de verdad le afecta. Confírmalo
+con tu contacto de Urbano cuando puedas.
+
+Hay dos entradas en Quito cuya "dirección" es solo `AGENTE AUTORIZADO ...`. Si
+alguien las elige para retirar, no sabrá a dónde ir: pídele a Urbano la
+dirección real o quítalas.
 
 ### Cambiar a dónde envías
 
