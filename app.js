@@ -384,3 +384,90 @@ lightbox.addEventListener('click', cerrarLightbox);
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') cerrarLightbox();
 });
+// --- Carrusel en las fotos de las reseñas ---
+// Un recuadro de .proof-photos con más de una <img> se vuelve carrusel: para
+// una reseña con varias fotos basta con meterlas todas en el mismo .photo-slot
+// de index.html. Con una sola foto el recuadro queda tal cual.
+// Se desliza con el dedo (scroll-snap nativo) y con flechas y puntos.
+const flechaCarrusel = d =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const sinAnimacion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function montarCarrusel(slot) {
+  slot.querySelectorAll('.carrusel-nav, .carrusel-puntos').forEach(el => el.remove());
+  const fotos = [...slot.querySelectorAll('img')];
+  let pista = slot.querySelector('.carrusel-pista');
+
+  if (fotos.length < 2) {
+    // Si alguna foto no cargó (onerror la quita) y queda una, se desarma
+    if (pista) pista.replaceWith(...pista.childNodes);
+    slot.classList.remove('carrusel');
+    slot.removeAttribute('role');
+    slot.removeAttribute('aria-roledescription');
+    return;
+  }
+
+  if (!pista) {
+    pista = document.createElement('div');
+    pista.className = 'carrusel-pista';
+    slot.prepend(pista);
+    pista.addEventListener('scroll', () => marcarPunto(slot), { passive: true });
+  }
+  pista.append(...fotos);
+  slot.classList.add('carrusel');
+  slot.setAttribute('role', 'region');
+  slot.setAttribute('aria-roledescription', 'carrusel');
+
+  const irA = i => {
+    const total = pista.children.length;
+    const destino = (i + total) % total;
+    pista.scrollTo({ left: destino * pista.clientWidth, behavior: sinAnimacion.matches ? 'auto' : 'smooth' });
+  };
+  const actual = () => Math.round(pista.scrollLeft / pista.clientWidth);
+
+  const anterior = document.createElement('button');
+  anterior.type = 'button';
+  anterior.className = 'carrusel-nav prev';
+  anterior.setAttribute('aria-label', 'Foto anterior');
+  anterior.innerHTML = flechaCarrusel('m15 18-6-6 6-6');
+  anterior.addEventListener('click', () => irA(actual() - 1));
+
+  const siguiente = document.createElement('button');
+  siguiente.type = 'button';
+  siguiente.className = 'carrusel-nav next';
+  siguiente.setAttribute('aria-label', 'Foto siguiente');
+  siguiente.innerHTML = flechaCarrusel('m9 18 6-6-6-6');
+  siguiente.addEventListener('click', () => irA(actual() + 1));
+
+  const puntos = document.createElement('div');
+  puntos.className = 'carrusel-puntos';
+  fotos.forEach((_, i) => {
+    const punto = document.createElement('button');
+    punto.type = 'button';
+    punto.setAttribute('aria-label', `Foto ${i + 1} de ${fotos.length}`);
+    punto.addEventListener('click', () => irA(i));
+    puntos.appendChild(punto);
+  });
+
+  slot.append(anterior, siguiente, puntos);
+  marcarPunto(slot);
+}
+
+function marcarPunto(slot) {
+  const pista = slot.querySelector('.carrusel-pista');
+  if (!pista || !pista.clientWidth) return;
+  const i = Math.round(pista.scrollLeft / pista.clientWidth);
+  slot.querySelectorAll('.carrusel-puntos button').forEach((punto, n) => {
+    punto.classList.toggle('activo', n === i);
+    punto.setAttribute('aria-current', n === i ? 'true' : 'false');
+  });
+}
+
+document.querySelectorAll('.proof-photos .photo-slot').forEach(montarCarrusel);
+
+// Una foto que no carga se borra sola (onerror="this.remove()"); el carrusel
+// se rehace después para que no queden puntos de fotos que ya no existen.
+document.addEventListener('error', (event) => {
+  const slot = event.target instanceof HTMLImageElement && event.target.closest('.proof-photos .photo-slot');
+  if (slot) setTimeout(() => montarCarrusel(slot));
+}, true);

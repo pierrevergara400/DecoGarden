@@ -1010,6 +1010,96 @@
       display: block;
     }
 
+    /* Reseña con varias fotos: app.js mete las <img> en una pista con
+       scroll-snap y le añade flechas y puntos. */
+    .photo-slot.carrusel {
+      position: relative;
+    }
+
+    .carrusel-pista {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+
+    .carrusel-pista::-webkit-scrollbar {
+      display: none
+    }
+
+    .carrusel-pista img {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .carrusel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(15, 26, 20, .55);
+      color: var(--paper);
+      border: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+
+    .carrusel-nav:hover,
+    .carrusel-nav:focus-visible {
+      background: var(--pine)
+    }
+
+    .carrusel-nav.prev {
+      left: 10px
+    }
+
+    .carrusel-nav.next {
+      right: 10px
+    }
+
+    .carrusel-nav svg {
+      width: 18px;
+      height: 18px
+    }
+
+    .carrusel-puntos {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(15, 26, 20, .45);
+    }
+
+    .carrusel-puntos button {
+      width: 7px;
+      height: 7px;
+      border-radius: 4px;
+      border: 0;
+      padding: 0;
+      background: rgba(255, 255, 255, .55);
+      cursor: pointer;
+      transition: width .2s ease, background .2s ease;
+    }
+
+    .carrusel-puntos button.activo {
+      width: 18px;
+      background: #fff
+    }
+
     .faq {
       background: var(--paper-deep)
     }
