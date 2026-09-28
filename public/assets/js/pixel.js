@@ -97,15 +97,30 @@
     aviso.setAttribute('role', 'dialog');
     aviso.setAttribute('aria-label', 'Aviso de cookies');
     aviso.innerHTML =
-      '<p>Uso cookies de medición para saber qué contenido te sirve y llegar a más gente ' +
-      'como tú. Solo se activan si las aceptas. Puedes leer el detalle en la ' +
-      '<a href="/privacidad">política de privacidad</a>.</p>' +
+      // Dos versiones del texto: la larga en escritorio y una corta en móvil,
+      // donde el aviso es una franja pegada al borde y no puede ocupar media
+      // pantalla. Las dos dicen lo que importa: qué son y que solo con permiso.
+      '<p><span class="dg-cookies-largo">Uso cookies de medición para saber qué contenido te sirve ' +
+      'y llegar a más gente como tú. Solo se activan si las aceptas. Puedes leer el detalle en la ' +
+      '<a href="/privacidad">política de privacidad</a>.</span>' +
+      '<span class="dg-cookies-corto">Uso cookies de medición solo si las aceptas. ' +
+      '<a href="/privacidad">Más detalles</a></span></p>' +
       '<div class="dg-cookies-acciones">' +
       '<button type="button" class="dg-cookies-no">Rechazar</button>' +
       '<button type="button" class="dg-cookies-si">Aceptar</button>' +
       '</div>';
 
-    const cerrar = () => aviso.remove();
+    // En móvil el aviso tapa la esquina donde vive el botón de WhatsApp: le
+    // pasamos su alto al CSS para que el botón suba justo encima mientras dure.
+    const raiz = document.documentElement;
+    const medir = () => raiz.style.setProperty('--alto-cookies', aviso.offsetHeight + 'px');
+    const vigia = 'ResizeObserver' in window ? new ResizeObserver(medir) : null;
+
+    const cerrar = () => {
+      vigia?.disconnect();
+      raiz.style.removeProperty('--alto-cookies');
+      aviso.remove();
+    };
 
     aviso.querySelector('.dg-cookies-si').addEventListener('click', () => {
       guardar('granted');
@@ -119,6 +134,8 @@
     });
 
     document.body.appendChild(aviso);
+    medir();
+    vigia?.observe(aviso);
   }
 
   function alEstarListo(fn) {

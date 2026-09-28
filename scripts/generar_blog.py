@@ -182,8 +182,9 @@ def ruta_publica(archivo):
     return archivo[: -len(".html")] if archivo.endswith(".html") else archivo
 
 
-def tarjeta(post):
-    """La tarjeta de un artículo en el índice del blog."""
+def tarjeta(post, titulo="h2"):
+    """La tarjeta de un artículo. En /blog el título es un h2 (bajo el h1 de la
+    página); en la home, un h3, porque va dentro de una sección con su h2."""
     destino = "/" + ruta_publica(archivo_de(post))
     portada = post.get("portada")
     figura = (
@@ -202,7 +203,7 @@ def tarjeta(post):
         f'          <div class="post-card-meta">'
         f'<time datetime="{esc(post["fecha"])}">{esc(fecha_larga(post["fecha"]))}</time>'
         f"{etiquetas}</div>\n"
-        f"          <h2>{esc(post['titulo'])}</h2>\n"
+        f"          <{titulo}>{esc(post['titulo'])}</{titulo}>\n"
         f"          <p>{esc(post.get('resumen', ''))}</p>\n"
         f'          <span class="post-card-mas">Leer el artículo →</span>\n'
         f"        </div>\n"
@@ -343,6 +344,42 @@ def generar_indice(publicados, plantilla):
     return "blog.html", escribir_si_cambia(PUBLICO / "blog.html", salida)
 
 
+# Cuántos artículos enseña la home. Los demás, en /blog.
+EN_LA_HOME = 3
+HOME = PUBLICO / "index.html"
+MARCAS_HOME = re.compile(r"(<!-- BLOG-HOME:INICIO -->).*?(\n\s*<!-- BLOG-HOME:FIN -->)", re.S)
+SECCION_HOME = re.compile(r'<section class="blk blog-home"( hidden)? id="blog">')
+
+
+def generar_home(publicados):
+    """Los últimos artículos en la sección "Del blog" de la home.
+
+    index.html se escribe a mano; de él solo tocamos lo que hay entre las
+    marcas BLOG-HOME y el atributo hidden de la sección, que se pone cuando no
+    hay nada publicado para no enseñar un título sobre una sección vacía.
+    """
+    if not HOME.is_file():
+        return None
+    html_home = HOME.read_text(encoding="utf-8")
+    if not MARCAS_HOME.search(html_home):
+        print("  ! index.html no tiene las marcas BLOG-HOME: la home queda sin blog")
+        return None
+
+    ultimos = publicados[:EN_LA_HOME]
+    listado = (
+        '\n        <div class="post-grid">\n'
+        + "\n".join("  " + tarjeta(p, titulo="h3").replace("\n", "\n  ") for p in ultimos)
+        + "\n        </div>"
+        if ultimos else ""
+    )
+    salida = MARCAS_HOME.sub(lambda m: m.group(1) + listado + m.group(2), html_home)
+    salida = SECCION_HOME.sub(
+        '<section class="blk blog-home"' + ("" if ultimos else " hidden") + ' id="blog">',
+        salida,
+    )
+    return "index.html", escribir_si_cambia(HOME, salida)
+
+
 def main():
     for ruta in (PLANTILLA_POST, PLANTILLA_INDICE, BLOG):
         if not ruta.exists():
@@ -388,6 +425,11 @@ def main():
         publicados, PLANTILLA_INDICE.read_text(encoding="utf-8")
     )
     print(f"  {'ACT' if cambio else ' = '} {archivo}")
+
+    resultado = generar_home(publicados)
+    if resultado:
+        archivo, cambio = resultado
+        print(f"  {'ACT' if cambio else ' = '} {archivo} (sección del blog)")
 
     print("\nListo. Ahora corre scripts/generar_productos.py para sellar los assets "
           "y actualizar el sitemap.")

@@ -166,6 +166,11 @@ python scripts/generar_productos.py
 En la pestaña Blog del panel, "+ Artículo nuevo". Nace como borrador, así que
 puedes dejarlo a medias sin que se publique.
 
+Al publicarlo aparece en `/blog` y también en la sección "Del blog" de la home,
+que enseña los tres más recientes. Esa sección la escribe `generar_blog.py`
+entre las marcas `BLOG-HOME` de `public/index.html`; si no hay ningún artículo
+publicado, la oculta.
+
 El cuerpo es Markdown, con lo justo:
 
 ```
