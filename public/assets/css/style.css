@@ -972,23 +972,116 @@
     }
 
     /* Reseñas de la home: cada tarjeta lleva sus fotos arriba y el texto
-       debajo. Van en columnas (tipo mampostería) y no en rejilla: una reseña
-       con foto mide el doble que una sin ella, y en rejilla cada fila tomaba
-       la altura de la más alta y dejaba huecos. Así se pueden sumar las que
-       hagan falta sin que se descuadre. */
+       debajo. Sin JavaScript se ven todas en una rejilla de tres. Con él,
+       app.js decide:
+         - escritorio (3 a la vista) y tableta (2): si hay más de las que caben,
+           carrusel infinito que avanza una tarjeta cada 3 segundos;
+         - móvil: las tres primeras y un botón "Ver más reseñas". */
     .resenas {
-      columns: 3;
-      column-gap: 22px;
+      --visibles: 3;
+      --hueco: 22px;
+      display: grid;
+      grid-template-columns: repeat(var(--visibles), minmax(0, 1fr));
+      gap: var(--hueco);
+      align-items: start;
       margin-top: 52px
     }
 
-    .resenas>.resena {
-      break-inside: avoid;
-      margin-bottom: 22px;
-      /* Sin esto Safari parte la tarjeta entre dos columnas */
-      display: inline-block;
-      width: 100%;
-      vertical-align: top
+    /* Modo carrusel: la rejilla pasa a ser la ventana y una pista se desliza
+       dentro. Las tarjetas no se estiran: cada una mide lo que su contenido. */
+    .resenas.es-carrusel {
+      display: block;
+      overflow: hidden;
+    }
+
+    .resenas-pista {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--hueco);
+      transition: transform .9s cubic-bezier(.45, 0, .2, 1);
+    }
+
+    /* Aire arriba y abajo para que la tarjeta del centro pueda crecer sin
+       que la recorte la ventana del carrusel */
+    .resenas.es-carrusel:has(.con-centro) {
+      padding: 26px 0 52px;
+      margin-top: 26px
+    }
+
+    .resenas.es-carrusel:has(.con-centro)+.resenas-controles {
+      margin-top: 0
+    }
+
+    /* Escritorio: la del centro sobresale y las de los lados quedan en penumbra.
+       Mismo tiempo que el deslizamiento, para que el relevo se vea como uno solo. */
+    .resenas-pista.con-centro>.resena {
+      opacity: .45;
+      transform: scale(.93);
+      filter: saturate(.6);
+      transition: opacity .9s ease, transform .9s cubic-bezier(.45, 0, .2, 1), filter .9s ease, box-shadow .9s ease;
+    }
+
+    .resenas-pista.con-centro>.resena.es-centro {
+      opacity: 1;
+      transform: scale(1.04);
+      filter: none;
+      box-shadow: 0 18px 40px -18px rgba(25, 83, 43, .35)
+    }
+
+    /* El salto invisible del final al principio no debe animar nada: ni la
+       pista ni el paso de tarjeta destacada de la copia a la original */
+    .resenas-pista.sin-transicion,
+    .resenas-pista.sin-transicion>.resena {
+      transition: none
+    }
+
+    .resenas-pista>.resena {
+      flex: 0 0 calc((100% - (var(--visibles) - 1) * var(--hueco)) / var(--visibles));
+      min-width: 0;
+    }
+
+    .resenas-controles {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px
+    }
+
+    .resenas-controles button {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--sage);
+      background: transparent;
+      color: var(--pine);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+
+    .resenas-controles button:hover,
+    .resenas-controles button:focus-visible {
+      background: var(--pine);
+      border-color: var(--pine);
+      color: var(--paper)
+    }
+
+    .resenas-controles svg {
+      width: 18px;
+      height: 18px
+    }
+
+    /* Móvil: a partir de la cuarta, escondidas hasta pulsar "Ver más" */
+    .resena.resena-oculta {
+      display: none
+    }
+
+    /* El botón de "ver más" nació para el catálogo, que va sobre fondo oscuro */
+    .btn-more.claro {
+      color: var(--pine);
+      border-color: var(--sage)
     }
 
     /* La foto va a sangre hasta los bordes de la tarjeta, bajo el filete */
@@ -1393,7 +1486,7 @@
       }
 
       .resenas {
-        columns: 2
+        --visibles: 2
       }
     }
 
@@ -1403,7 +1496,17 @@
       }
 
       .resenas {
-        columns: 1
+        --visibles: 1;
+        --hueco: 28px;
+        margin-top: 40px
+      }
+
+      .resenas .card {
+        padding: 26px 24px
+      }
+
+      .resenas .resena-fotos {
+        margin: -26px -24px 22px
       }
 
       .wrap {

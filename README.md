@@ -200,9 +200,19 @@ y el texto debajo. Para sumar una, copia uno de esos bloques:
 - Con varias fotos: mételas todas en el mismo `<div class="resena-fotos">` y se
   convierten solas en un carrusel.
 
-Van en columnas, así que pueden ser tantas como quieras sin que se descuadre.
+Cómo se ven depende de cuántas haya:
+
+- **Escritorio:** tres a la vista. Si hay más, pasan solas en un carrusel sin
+  fin, una tarjeta cada 3 segundos, con flechas debajo. Se detiene con el ratón
+  encima y cuando no está en pantalla.
+- **Tableta:** lo mismo, con dos a la vista.
+- **Móvil:** las tres primeras y un botón "Ver más reseñas".
+
+El orden es el del HTML: la primera reseña es la primera que se ve.
+
 Si quieres que Google las vea como reseñas, añádelas también al bloque
-`"review"` de los datos estructurados, arriba en el mismo archivo.
+`"review"` de los datos estructurados, arriba en el mismo archivo, y sube
+`reviewCount` al total.
 
 ## Fotos de producto
 

@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  Rutas absolutas (/assets/..., /Media/...) a propósito, al revés que el resto
+  del sitio: esta página se sirve en cualquier URL que no exista, también en
+  /tienda/algo, y ahí una ruta relativa buscaría /tienda/assets/... y la página
+  saldría sin estilos.
+-->
 <html lang="es">
 
 <head>
@@ -6,8 +12,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#19532B">
   <title>Página no encontrada — DecoGarden</title>
-  <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="Icons/apple-touch-icon.png">
+  <link rel="icon" href="/Media/Decogarden 3.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/Icons/apple-touch-icon.png">
   <meta name="robots" content="noindex">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,8 +22,8 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500&family=Karla:wght@400;600;700&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="assets/css/tokens.css?v=024e730f">
-  <link rel="stylesheet" href="assets/css/style.css?v=76b8f199">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=024e730f">
+  <link rel="stylesheet" href="/assets/css/style.css?v=6273d2e8">
 
   <style>
     .nf {
@@ -66,13 +72,13 @@
   </style>
 
   <!-- Meta Pixel -->
-  <script src="assets/js/pixel.js?v=37455f7b"></script>
-  <script src="assets/js/origen.js?v=dc7e211b"></script>
+  <script src="/assets/js/pixel.js?v=37455f7b"></script>
+  <script src="/assets/js/origen.js?v=dc7e211b"></script>
 </head>
 
 <body>
   <main class="nf">
-    <img src="Media/Decogarden 3.svg" alt="" aria-hidden="true">
+    <img src="/Media/Decogarden 3.svg" alt="" aria-hidden="true">
     <span class="eyebrow">Error 404</span>
     <h1>Esta rama <em>no existe</em>.</h1>
     <p>La página que buscas se movió o nunca estuvo aquí. Pero el vivero sigue en pie:

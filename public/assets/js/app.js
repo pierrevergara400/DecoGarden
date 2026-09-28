@@ -414,8 +414,10 @@ function montarCarrusel(bloque) {
     pista = document.createElement('div');
     pista.className = 'carrusel-pista';
     bloque.prepend(pista);
-    pista.addEventListener('scroll', () => marcarPunto(bloque), { passive: true });
   }
+  // onscroll y no addEventListener: una reseña copiada por el carrusel de
+  // reseñas trae la pista hecha pero sin oyentes, y así se engancha igual.
+  pista.onscroll = () => marcarPunto(bloque);
   pista.append(...fotos);
   bloque.classList.add('carrusel');
   bloque.setAttribute('role', 'region');
@@ -466,7 +468,207 @@ function marcarPunto(bloque) {
   });
 }
 
-document.querySelectorAll('.resena-fotos').forEach(montarCarrusel);
+// --- Carrusel de reseñas ---
+// Escritorio muestra 3, con la del centro destacada y las de los lados en
+// penumbra; tableta muestra 2. La fila avanza una tarjeta cada 5 segundos, sin
+// fin: al final de la pista van copias de las
+// primeras, y al llegar a ellas se salta sin animación al principio real, que
+// se ve idéntico. En móvil no hay carrusel: las 3 primeras y "Ver más".
+//
+// Cuesta un temporizador y una transformación CSS. Se para con el ratón o el
+// foco encima (para poder leer), fuera de pantalla y con la pestaña oculta. Con
+// "reducir movimiento" activado no avanza solo: quedan las flechas.
+const resenas = document.querySelector('.resenas');
+const MOVIL = window.matchMedia('(max-width: 560px)');
+const TABLETA = window.matchMedia('(max-width: 900px)');
+// Cada cuánto avanza. El deslizamiento en sí dura lo que diga la transición de
+// .resenas-pista en style.css.
+const PASO_MS = 5000;
+const EN_MOVIL = 3;
+
+if (resenas) {
+  const originales = [...resenas.querySelectorAll(':scope > .resena')];
+  let pista = null, controles = null, masWrap = null;
+  let indice = 0, temporizador = null, conCentro = false;
+  let enPantalla = false, encima = false;
+
+  const puedeAvanzar = () =>
+    pista && enPantalla && !encima && !document.hidden && !sinAnimacion.matches;
+
+  const reprogramar = () => {
+    clearInterval(temporizador);
+    temporizador = puedeAvanzar() ? setInterval(() => mover(1), PASO_MS) : null;
+  };
+
+  const paso = () => {
+    const [a, b] = pista.children;
+    return b.offsetLeft - a.offsetLeft;
+  };
+
+  const colocar = (animar) => {
+    pista.classList.toggle('sin-transicion', !animar);
+    pista.style.transform = `translateX(${-indice * paso()}px)`;
+    // Con tres a la vista, la del medio es la que se lee: sobresale y las de
+    // los lados quedan atenuadas (lo pinta style.css con .es-centro).
+    if (conCentro) {
+      [...pista.children].forEach((r, i) => r.classList.toggle('es-centro', i === indice + 1));
+    }
+    if (!animar) void pista.offsetWidth; // aplica ya el salto antes de reanimar
+  };
+
+  function mover(direccion) {
+    // Si el navegador no llegó a avisar del final de la animación (pestaña
+    // oculta a medio camino), el índice pudo quedarse en las copias: a su sitio.
+    if (indice >= originales.length) {
+      indice -= originales.length;
+      colocar(false);
+    }
+    if (direccion < 0 && indice === 0) {
+      // Hacia atrás desde el principio: salto invisible a las copias del final
+      indice = originales.length;
+      colocar(false);
+    }
+    indice += direccion;
+    colocar(true);
+  }
+
+  const alTerminar = (event) => {
+    if (event.target !== pista || event.propertyName !== 'transform') return;
+    if (indice >= originales.length) {
+      indice -= originales.length;
+      colocar(false);
+    }
+  };
+
+  function desmontar() {
+    clearInterval(temporizador);
+    if (pista) {
+      pista.removeEventListener('transitionend', alTerminar);
+      resenas.append(...originales);
+      pista.remove();
+      pista = null;
+    }
+    controles?.remove();
+    masWrap?.remove();
+    controles = masWrap = null;
+    resenas.classList.remove('es-carrusel');
+    resenas.removeAttribute('role');
+    resenas.removeAttribute('aria-roledescription');
+    originales.forEach(r => r.classList.remove('resena-oculta'));
+  }
+
+  function montarCarruselResenas(visibles) {
+    conCentro = visibles === 3;
+    pista = document.createElement('div');
+    pista.className = 'resenas-pista' + (conCentro ? ' con-centro' : '');
+    pista.append(...originales);
+    // Copias de las primeras para que el final empalme con el principio. No
+    // son contenido nuevo: fuera del lector de pantalla y del tabulador.
+    originales.slice(0, visibles).forEach(r => {
+      const copia = r.cloneNode(true);
+      copia.setAttribute('aria-hidden', 'true');
+      copia.inert = true;
+      // Son las mismas fotos que ya bajaron las originales: sin lazy, para que
+      // la copia no aparezca con el recuadro vacío mientras entra en escena.
+      copia.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = 'eager'; });
+      pista.appendChild(copia);
+    });
+    resenas.appendChild(pista);
+    resenas.classList.add('es-carrusel');
+    resenas.setAttribute('role', 'region');
+    resenas.setAttribute('aria-roledescription', 'carrusel');
+    pista.addEventListener('transitionend', alTerminar);
+
+    controles = document.createElement('div');
+    controles.className = 'resenas-controles';
+    const boton = (etiqueta, d, direccion) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', etiqueta);
+      b.innerHTML = flechaCarrusel(d);
+      b.addEventListener('click', () => { mover(direccion); reprogramar(); });
+      return b;
+    };
+    controles.append(
+      boton('Reseña anterior', 'm15 18-6-6 6-6', -1),
+      boton('Reseña siguiente', 'm9 18 6-6-6-6', 1),
+    );
+    resenas.after(controles);
+
+    indice = 0;
+    colocar(false);
+    reprogramar();
+  }
+
+  function montarVerMas() {
+    const extra = originales.slice(EN_MOVIL);
+    extra.forEach(r => r.classList.add('resena-oculta'));
+    masWrap = document.createElement('div');
+    masWrap.className = 'more-wrap';
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'btn-more claro';
+    boton.textContent = `Ver más reseñas (${extra.length})`;
+    boton.setAttribute('aria-expanded', 'false');
+    boton.addEventListener('click', () => {
+      const abrir = boton.getAttribute('aria-expanded') === 'false';
+      extra.forEach(r => r.classList.toggle('resena-oculta', !abrir));
+      boton.setAttribute('aria-expanded', String(abrir));
+      boton.textContent = abrir ? 'Ver menos reseñas' : `Ver más reseñas (${extra.length})`;
+      // Al cerrar, la página encoge de golpe: volvemos al inicio de la sección
+      if (!abrir) resenas.scrollIntoView({ block: 'start', behavior: sinAnimacion.matches ? 'auto' : 'smooth' });
+    });
+    masWrap.appendChild(boton);
+    resenas.after(masWrap);
+  }
+
+  function organizar() {
+    desmontar();
+    const visibles = TABLETA.matches ? 2 : 3;
+    if (MOVIL.matches) {
+      if (originales.length > EN_MOVIL) montarVerMas();
+    } else if (originales.length > visibles || (visibles === 3 && originales.length === 3)) {
+      // Con justo tres en escritorio también gira: si no, no habría una "del
+      // centro" que destacar y la sección quedaría quieta.
+      montarCarruselResenas(visibles);
+    }
+    // Las fotos de cada reseña (y de sus copias) se montan después: una copia
+    // trae el HTML del carrusel de fotos pero no sus oyentes.
+    resenas.querySelectorAll('.resena-fotos').forEach(montarCarrusel);
+  }
+
+  organizar();
+  MOVIL.addEventListener('change', organizar);
+  TABLETA.addEventListener('change', organizar);
+  sinAnimacion.addEventListener('change', reprogramar);
+
+  // Al cambiar el ancho de la ventana cambia lo que mide cada paso
+  window.addEventListener('resize', () => { if (pista) colocar(false); }, { passive: true });
+
+  new IntersectionObserver(([entrada]) => {
+    enPantalla = entrada.isIntersecting;
+    reprogramar();
+  }).observe(resenas);
+
+  document.addEventListener('visibilitychange', reprogramar);
+  resenas.addEventListener('mouseenter', () => { encima = true; reprogramar(); });
+  resenas.addEventListener('mouseleave', () => { encima = false; reprogramar(); });
+  resenas.addEventListener('focusin', () => { encima = true; reprogramar(); });
+  resenas.addEventListener('focusout', () => { encima = false; reprogramar(); });
+
+  // Deslizar con el dedo en tableta. Si el gesto empieza sobre las fotos de
+  // una reseña, es para ese carrusel de fotos, no para el de reseñas.
+  let inicioX = null;
+  resenas.addEventListener('pointerdown', (e) => {
+    inicioX = pista && e.pointerType !== 'mouse' && !e.target.closest('.carrusel-pista') ? e.clientX : null;
+  });
+  resenas.addEventListener('pointerup', (e) => {
+    if (inicioX === null) return;
+    const dx = e.clientX - inicioX;
+    inicioX = null;
+    if (Math.abs(dx) > 40) { mover(dx < 0 ? 1 : -1); reprogramar(); }
+  });
+}
 
 // Una foto que no carga se borra sola (onerror="this.remove()"); el carrusel
 // se rehace después para que no queden puntos de fotos que ya no existen.
