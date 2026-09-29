@@ -21,6 +21,9 @@
       tres, se completa con lo más cercano, marcado como alternativa.
    5. Se devuelven hasta tres distintos. Si hay menos, se devuelven menos:
       nunca se rellena con algo que no cumpla el filtro de luz.
+   6. Aparte, como mucho una colección (varios árboles en un solo pedido),
+      con el mismo filtro de luz y los mismos puntos. No ocupa ninguno de los
+      tres puestos: se ofrece debajo, para quien quiera llevar más de uno.
    ========================================================================== */
 
 (function (raiz) {
@@ -55,9 +58,6 @@
     return /vendido|reservado|agotado/.test(texto);
   }
 
-  /* Junta cada producto del catálogo con su perfil del test y calcula lo que
-     se deduce (precio en número, tamaño). No filtra: eso lo hace recomendar(),
-     que así puede contar cuántos quedaron fuera y por qué. */
   /* Las luces que DecoGarden no acepta nunca (sombra, interior sin sol) se
      quitan del perfil aquí, antes de filtrar: aunque alguien las marque a
      mano en el JSON, ningún bonsái se recomienda para esas condiciones. */
@@ -68,6 +68,9 @@
     });
   }
 
+  /* Junta cada producto del catálogo con su perfil del test y calcula lo que
+     se deduce (precio en número, tamaño). No filtra: eso lo hace recomendar(),
+     que así puede contar cuántos quedaron fuera y por qué. */
   function prepararProductos(catalogo, config) {
     const perfiles = (config && config.perfiles) || {};
     const umbrales = config.tamanos || { pequeno: 22, mediano: 40 };
@@ -84,6 +87,42 @@
         tamano: (perfil && perfil.tamano) || tamanoDe(cm, umbrales),
         activo: item.activo !== false,
         agotado: agotado(item, perfil),
+      };
+    });
+  }
+
+  /* Las colecciones de test-bonsai.json, con la misma forma que un producto
+     para que el motor las puntúe igual. Una colección que nombra productos
+     del catálogo solo está disponible si lo están todos: no se ofrece un set
+     de cítricos si uno de los dos se vendió. */
+  function prepararColecciones(config, productos) {
+    const colecciones = (config && config.colecciones) || {};
+    const prohibidas = config.lucesProhibidas || [];
+    const porId = new Map((productos || []).map((p) => [p.id, p]));
+    return Object.keys(colecciones).filter((id) => !id.startsWith('_')).map((id) => {
+      const c = colecciones[id];
+      const ids = c.productos || [];
+      const piezas = ids.map((pid) => porId.get(pid)).filter(Boolean);
+      return {
+        id,
+        tipo: 'coleccion',
+        item: {
+          id,
+          nombre: c.nombre || id,
+          articulo: c.articulo || 'la',
+          precio: c.precio || '',
+          detallePrecio: c.detallePrecio || '',
+          imagen: c.imagen || '',
+          descripcion: c.descripcion || '',
+          incluye: c.incluye || [],
+        },
+        piezas,
+        perfil: sinLucesProhibidas(c.perfil || null, prohibidas),
+        precio: precioNumero(c.precio),
+        tamano: null,
+        activo: c.activo !== false && piezas.every((x) => x.activo),
+        agotado: (c.perfil && c.perfil.stock === 'agotado') || piezas.length < ids.length
+          || piezas.some((x) => x.agotado),
       };
     });
   }
@@ -111,8 +150,9 @@
      estable mientras la persona avanza. */
   function preguntasVisibles(config, respuestas) {
     const r = respuestas || {};
-    const lista = config.preguntas.filter((p) =>
-      (!p.mostrarSi || cumple(p.mostrarSi, r)) && inferida(p, r) === undefined);
+    // «desactivada» saca una pregunta del test sin borrarla de la configuración.
+    const lista = config.preguntas.filter((p) => !p.desactivada
+      && (!p.mostrarSi || cumple(p.mostrarSi, r)) && inferida(p, r) === undefined);
 
     const maximo = config.maxPreguntasPrincipales || Infinity;
     const principales = () => lista.filter((p) => !p.condicional).length;
@@ -163,8 +203,11 @@
     return (config.presupuestos || {})[respuesta] || null;
   }
 
+  /* Un precio sin número («Por definir») no entra en ningún rango: no se le
+     puede decir a nadie que algo cabe en su presupuesto sin saber cuánto vale. */
   function enRango(precio, rango) {
-    if (!rango || precio == null) return true;
+    if (!rango) return true;
+    if (precio == null) return false;
     if (rango.min != null && precio < rango.min) return false;
     if (rango.max != null && precio > rango.max) return false;
     return true;
@@ -173,7 +216,8 @@
   /* Cuánto se aleja un precio del rango: 0 dentro. Pasarse cuenta el doble
      que quedarse corto, porque quedarse corto no le duele a nadie. */
   function distanciaRango(precio, rango) {
-    if (!rango || precio == null) return 0;
+    if (!rango) return 0;
+    if (precio == null) return Infinity;
     if (rango.max != null && precio > rango.max) return (precio - rango.max) * 2;
     if (rango.min != null && precio < rango.min) return rango.min - precio;
     return 0;
@@ -230,7 +274,9 @@
     const rango = rangoDe(config, r.presupuesto);
     out.enPresupuesto = enRango(p.precio, rango);
     out.distancia = distanciaRango(p.precio, rango);
-    if (rango && out.enPresupuesto) {
+    if (p.precio == null) {
+      if (razones.precioPendiente) out.avisos.push(razones.precioPendiente);
+    } else if (rango && out.enPresupuesto) {
       suma(w.presupuesto, plantilla(razones.presupuesto, { rango: rango.texto }));
     } else if (rango && rango.max != null && p.precio > rango.max) {
       out.avisos.push(plantilla(razones.sobrePresupuesto, {
@@ -300,21 +346,38 @@
        resultados    hasta 3 × { producto, puntos, razones, avisos,
                                  alternativa, condicionLuz }
        luzAlternativa  la luz con la que funcionan, si estado es luz-alternativa
+       coleccion     { producto, puntos, razones, avisos, alternativa,
+                       condicionLuz } o null
        descartes     cuántos quedaron fuera y por qué
        revision      true si algún resultado tiene el perfil sin validar
+
+     opciones:
+       cuantos       cuántos productos (3)
+       colecciones   lo que devuelve prepararColecciones()
+       borradores    true = incluir apagados y sin validar. Solo para la vista
+                     previa local: lo agotado y la luz se siguen respetando.
   */
+  function disponible(p, config, borradores, descartes) {
+    if (!p.perfil) { if (descartes) descartes.sinPerfil++; return false; }
+    if (p.agotado) { if (descartes) descartes.agotado++; return false; }
+    if (borradores) return true;
+    if (!p.activo) { if (descartes) descartes.apagado++; return false; }
+    if (!p.perfil.validado && !config.modoRevision) { if (descartes) descartes.sinValidar++; return false; }
+    return true;
+  }
+
+  function esBorrador(p) {
+    return !p.activo || !p.perfil.validado;
+  }
+
   function recomendar(productos, respuestas, config, opciones) {
     const r = respuestas || {};
-    const max = (opciones && opciones.cuantos) || 3;
+    const o = opciones || {};
+    const max = o.cuantos || 3;
     const descartes = { sinPerfil: 0, apagado: 0, agotado: 0, sinValidar: 0, luz: 0 };
 
-    const base = productos.filter((p) => {
-      if (!p.perfil) { descartes.sinPerfil++; return false; }
-      if (!p.activo) { descartes.apagado++; return false; }
-      if (p.agotado) { descartes.agotado++; return false; }
-      if (!p.perfil.validado && !config.modoRevision) { descartes.sinValidar++; return false; }
-      return true;
-    });
+    // El agotado cuenta antes que el apagado: es el motivo que importa.
+    const base = productos.filter((p) => disponible(p, config, o.borradores, descartes));
 
     const luzConocida = r.luz && r.luz !== NO_SABE;
     let candidatos = luzConocida ? base.filter((p) => (p.perfil.luz || []).includes(r.luz)) : base;
@@ -330,7 +393,9 @@
     }
 
     if (!candidatos.length) {
-      return { estado: 'sin-compatibles', resultados: [], luzAlternativa: null, descartes, revision: false };
+      return {
+        estado: 'sin-compatibles', resultados: [], luzAlternativa: null, coleccion: null, descartes, revision: false,
+      };
     }
 
     // Con la luz alternativa, la razón de luz tiene que ser la de esa luz.
@@ -357,14 +422,18 @@
       }
     }
 
+    const condicion = luzAlternativa ? plantilla((config.razones || {}).condicionLuz, {
+      alternativa: textoOpcion(config, 'luz', luzAlternativa).toLowerCase(),
+    }) : null;
+
     elegidos.forEach((c) => {
       c.alternativa = !!c.alternativa;
-      if (luzAlternativa) {
-        c.condicionLuz = plantilla((config.razones || {}).condicionLuz, {
-          alternativa: textoOpcion(config, 'luz', luzAlternativa).toLowerCase(),
-        });
-      }
+      c.borrador = esBorrador(c.producto);
+      if (condicion) c.condicionLuz = condicion;
     });
+
+    const coleccion = elegirColeccion(o.colecciones || [], rPuntuar, config, o.borradores);
+    if (coleccion && condicion) coleccion.condicionLuz = condicion;
 
     let estado;
     const dentroCuenta = elegidos.filter((c) => !c.alternativa).length;
@@ -378,15 +447,51 @@
       estado,
       resultados: elegidos,
       luzAlternativa,
+      coleccion,
       descartes,
-      revision: elegidos.some((c) => !c.producto.perfil.validado),
+      revision: elegidos.concat(coleccion || []).some((c) => !c.producto.perfil.validado),
     };
+  }
+
+  /* La colección que se ofrece debajo de los tres, o ninguna.
+
+     Pasa el mismo filtro de luz que los productos (con la luz alternativa, si
+     la hubo). Por precio, entra si cabe en el presupuesto o si la persona
+     eligió uno de config.ajustesColecciones.presupuestosAbiertos: a quien dijo
+     «hasta $20» no se le enseña un set de $99. Y necesita un mínimo de puntos,
+     para no colgarle una colección a quien no le pega. */
+  function elegirColeccion(colecciones, r, config, borradores) {
+    const ajustes = config.ajustesColecciones || {};
+    const abiertos = ajustes.presupuestosAbiertos || [];
+    const minimo = ajustes.puntosMinimos || 0;
+    const luzConocida = r.luz && r.luz !== NO_SABE;
+    const rango = rangoDe(config, r.presupuesto);
+
+    const opciones = colecciones
+      .filter((c) => disponible(c, config, borradores))
+      .filter((c) => !luzConocida || (c.perfil.luz || []).includes(r.luz))
+      .map((c) => Object.assign({ producto: c }, puntuar(c, r, config)))
+      .filter((c) => !rango || c.enPresupuesto || abiertos.includes(r.presupuesto))
+      .filter((c) => c.puntos >= minimo)
+      .sort(ordenar);
+
+    const elegida = opciones[0];
+    if (!elegida) return null;
+    elegida.alternativa = !elegida.enPresupuesto;
+    elegida.borrador = esBorrador(elegida.producto);
+    return elegida;
   }
 
   /* --- WhatsApp --------------------------------------------------------- */
 
   function nombreCorto(p) {
     return String(p.item.nombre || p.id).replace(/^Bonsái\s+(de(l)?\s+)?/i, '');
+  }
+
+  /* «el Guayacán», «la Colección Cítricos», «el Set Consultorio». */
+  function conArticulo(p) {
+    const articulo = p.tipo === 'coleccion' ? (p.item.articulo || 'la') : 'el';
+    return `${articulo} ${nombreCorto(p)}`;
   }
 
   /* Lo que la persona contestó, en una línea legible para quien atiende el
@@ -410,9 +515,10 @@
     return items.slice(0, -1).join(', ') + ' y ' + items[items.length - 1];
   }
 
-  /* El mensaje que llega escrito a WhatsApp. Pregunta por disponibilidad,
-     precio y envío en vez de darlos por hechos: eso se confirma en el chat.
-     Sin seleccionado, es el mensaje de «ver los 3». */
+  /* El mensaje que llega escrito a WhatsApp. Pregunta por la disponibilidad y
+     el envío en vez de darlos por hechos: eso se confirma en el chat. No pide
+     «precio actualizado»: el precio ya se le enseñó, y ponerlo en duda invita
+     a regatear. Sin seleccionado, es el mensaje de «ver los 3». */
   function mensajeWhatsApp(config, resultado, respuestas, seleccionado) {
     const nombres = resultado.resultados.map((c) => nombreCorto(c.producto));
     const resumen = resumenRespuestas(config, respuestas);
@@ -423,12 +529,12 @@
     } else if (seleccionado) {
       const elegido = nombreCorto(seleccionado);
       const otros = nombres.filter((n) => n !== elegido);
-      lineas.push(`Hola, DecoGarden. Hice el test de bonsáis y me interesa el ${elegido}.`);
+      lineas.push(`Hola, DecoGarden. Hice el test de bonsáis y me interesa ${conArticulo(seleccionado)}.`);
       if (otros.length) lineas.push(`También me recomendaron: ${listaNatural(otros)}.`);
-      lineas.push('Me gustaría conocer su disponibilidad, precio actualizado y envío. ¿Me ayudan?');
+      lineas.push('¿Está disponible y cuánto sale el envío a mi ciudad?');
     } else {
       lineas.push(`Hola, DecoGarden. Hice el test de bonsáis y me recomendaron: ${listaNatural(nombres)}.`);
-      lineas.push('Me gustaría conocer su disponibilidad, precio actualizado y envío. ¿Me ayudan a elegir?');
+      lineas.push('¿Están disponibles y cuánto sale el envío a mi ciudad? ¿Me ayudan a elegir?');
     }
     if (resumen) lineas.push('', `Mis respuestas: ${resumen}.`);
     return lineas.join('\n');
@@ -444,6 +550,7 @@
     alturaCm,
     tamanoDe,
     prepararProductos,
+    prepararColecciones,
     preguntasVisibles,
     respuestasEfectivas,
     textoOpcion,

@@ -83,6 +83,19 @@ TOMAS_ESPERADAS = [
 ]
 
 IMAGENES = (".webp", ".jpg", ".jpeg", ".png", ".avif")
+
+# La foto provisional de los productos DEMO. Sirve para prepararlos en el
+# panel, pero nada que la use puede encenderse: saldría en la web sin foto.
+FOTO_PENDIENTE = "Images/pendiente.svg"
+
+
+def listo_para_publicar(nombre, precio, imagen):
+    """Lo mínimo para enseñar algo en la web: un precio con número y una foto."""
+    if not re.search(r"\d", str(precio or "")):
+        return f"'{nombre}' no tiene precio: complétalo antes de encenderlo"
+    if str(imagen or "").lstrip("/") == FOTO_PENDIENTE:
+        return f"'{nombre}' todavía tiene la foto provisional: sube la suya antes de encenderlo"
+    return None
 VIDEOS = (".mp4", ".webm", ".mov")
 
 
@@ -203,6 +216,10 @@ def validar_catalogo(datos):
                 return f"A '{pid}' le falta {campo}"
         if producto["categoria"] not in ("entrada", "coleccion"):
             return f"La categoría de '{pid}' tiene que ser 'entrada' o 'coleccion'"
+        if producto.get("activo") is not False:
+            error = listo_para_publicar(pid, producto["precio"], producto["imagen"])
+            if error:
+                return error
     return None
 
 
@@ -247,30 +264,65 @@ def validar_test(datos):
     perfiles = datos.get("perfiles")
     if not isinstance(perfiles, dict):
         return "Faltan los perfiles de los bonsáis"
-    listas = {
-        "luz": "luz", "lugares": "lugar", "estilos": "estilo", "usos": "para",
-        "ocasiones": "ocasion", "cuidado": "cuidado",
-    }
+    prohibidas = datos.get("lucesProhibidas", [])
     for pid, perfil in perfiles.items():
         if pid.startswith("_"):
             continue
-        if not isinstance(perfil, dict):
-            return f"El perfil de '{pid}' no es un objeto"
-        for campo, pregunta in listas.items():
-            valores = perfil.get(campo, [])
-            if not isinstance(valores, list):
-                return f"En '{pid}', {campo} tiene que ser una lista"
-            raros = [v for v in valores if v not in opciones.get(pregunta, set())]
-            if raros:
-                return f"En '{pid}', {campo} tiene valores que el test no conoce: {', '.join(map(str, raros))}"
-        prohibidas = [l for l in perfil.get("luz", []) if l in datos.get("lucesProhibidas", [])]
-        if prohibidas:
-            return (f"'{pid}' no puede marcarse para {', '.join(prohibidas)}: DecoGarden no "
-                    "recomienda bonsáis para sombra ni para interior sin sol directo")
-        if not perfil.get("luz"):
-            return f"'{pid}' no tiene ninguna luz marcada: el test no lo recomendaría nunca"
-        if perfil.get("dificultad") not in ("facil", "media", "avanzada"):
-            return f"La dificultad de '{pid}' tiene que ser facil, media o avanzada"
+        error = validar_perfil(pid, perfil, opciones, prohibidas)
+        if error:
+            return error
+
+    colecciones = datos.get("colecciones", {})
+    if not isinstance(colecciones, dict):
+        return "Las colecciones tienen que ser un objeto"
+    del_catalogo = {p.get("id") for p in leer_json(CATALOGO, []) if isinstance(p, dict)}
+    for cid, coleccion in colecciones.items():
+        if cid.startswith("_"):
+            continue
+        if not isinstance(coleccion, dict) or not str(coleccion.get("nombre", "")).strip():
+            return f"La colección '{cid}' no tiene nombre"
+        productos = coleccion.get("productos", [])
+        if not isinstance(productos, list):
+            return f"En la colección '{cid}', productos tiene que ser una lista"
+        faltan = [x for x in productos if x not in del_catalogo]
+        if faltan:
+            return f"La colección '{cid}' nombra productos que no están en el catálogo: {', '.join(map(str, faltan))}"
+        error = validar_perfil(cid, coleccion.get("perfil"), opciones, prohibidas)
+        if error:
+            return error
+        if coleccion.get("activo") is not False:
+            error = listo_para_publicar(coleccion["nombre"], coleccion.get("precio"), coleccion.get("imagen"))
+            if error:
+                return error
+    return None
+
+
+# Qué lista del perfil sale de qué pregunta del test.
+LISTAS_PERFIL = {
+    "luz": "luz", "lugares": "lugar", "estilos": "estilo", "usos": "para",
+    "ocasiones": "ocasion", "cuidado": "cuidado",
+}
+
+
+def validar_perfil(pid, perfil, opciones, prohibidas):
+    """El perfil de un bonsái o de una colección para el test."""
+    if not isinstance(perfil, dict):
+        return f"El perfil de '{pid}' no es un objeto"
+    for campo, pregunta in LISTAS_PERFIL.items():
+        valores = perfil.get(campo, [])
+        if not isinstance(valores, list):
+            return f"En '{pid}', {campo} tiene que ser una lista"
+        raros = [v for v in valores if v not in opciones.get(pregunta, set())]
+        if raros:
+            return f"En '{pid}', {campo} tiene valores que el test no conoce: {', '.join(map(str, raros))}"
+    vetadas = [l for l in perfil.get("luz", []) if l in prohibidas]
+    if vetadas:
+        return (f"'{pid}' no puede marcarse para {', '.join(vetadas)}: DecoGarden no "
+                "recomienda bonsáis para sombra ni para interior sin sol directo")
+    if not perfil.get("luz"):
+        return f"'{pid}' no tiene ninguna luz marcada: el test no lo recomendaría nunca"
+    if perfil.get("dificultad") not in ("facil", "media", "avanzada"):
+        return f"La dificultad de '{pid}' tiene que ser facil, media o avanzada"
     return None
 
 

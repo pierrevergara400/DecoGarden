@@ -12,6 +12,11 @@
    Medición: solo si la persona aceptó las cookies (la misma cookie dg_consent
    que usa pixel.js). Nunca se envían datos personales: el test no los pide.
    Con ?debug=1 los eventos se escriben en la consola, sin enviarse a nadie.
+
+   Vista previa de borradores: en tu máquina (localhost), con ?borradores=1,
+   el test incluye los productos y colecciones apagados o sin validar,
+   marcados «Borrador». Sirve para ver cómo quedará algo antes de encenderlo.
+   En la web publicada ese parámetro no hace nada.
    ========================================================================== */
 
 (function () {
@@ -20,11 +25,14 @@
   const M = window.DGMotor;
   const CLAVE_SESION = 'dg_test_v1';
   const DEBUG = /[?&]debug=1\b/.test(location.search);
+  const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  const BORRADORES = LOCAL && /[?&]borradores=1\b/.test(location.search);
   const $ = (sel, raiz) => (raiz || document).querySelector(sel);
 
   const estado = {
     config: null,
     productos: [],
+    colecciones: [],
     paginas: {},
     respuestas: {},
     resultado: null,
@@ -310,7 +318,10 @@
 
   function calcular() {
     const efectivas = M.respuestasEfectivas(estado.config, estado.respuestas);
-    estado.resultado = M.recomendar(estado.productos, efectivas, estado.config);
+    estado.resultado = M.recomendar(estado.productos, efectivas, estado.config, {
+      colecciones: estado.colecciones,
+      borradores: BORRADORES,
+    });
     estado.efectivas = efectivas;
     return estado.resultado;
   }
@@ -403,6 +414,7 @@
         <img src="${esc(p.item.imagen)}" alt="${esc(p.item.nombre)}" loading="${i === 0 ? 'eager' : 'lazy'}"
           width="600" height="600">
         ${etiqueta}
+        ${c.borrador ? '<span class="t-etiqueta t-etiqueta-borrador">Borrador</span>' : ''}
       </div>
       <div class="t-tarjeta-cuerpo">
         <h2 class="t-tarjeta-nombre">${esc(p.item.nombre)}</h2>
@@ -423,6 +435,43 @@
     </article>`;
   }
 
+  /* La colección va debajo de los tres, a lo ancho: es una propuesta aparte
+     para quien quiere llevar más de uno, no compite con ellos. */
+  function tarjetaColeccion(c) {
+    const p = c.producto;
+    const t = estado.config.textos;
+    const fotos = (p.piezas.length ? p.piezas.map((x) => x.item) : [p.item]).slice(0, 3)
+      .map((item) => `<img src="${esc(item.imagen)}" alt="${esc(item.nombre)}" loading="lazy" width="400" height="400">`)
+      .join('');
+    const incluye = (p.item.incluye || []).map((x) => `<li>${esc(x)}</li>`).join('');
+    const razones = c.razones.slice(0, 3).map((r) => `<li>${icono('check')}<span>${esc(r)}</span></li>`).join('');
+    const avisos = [c.condicionLuz].concat(c.avisos).filter(Boolean)
+      .map((a) => `<li>${icono('aviso')}<span>${esc(a)}</span></li>`).join('');
+    const piezas = Math.min(Math.max(p.piezas.length, 1), 3);
+
+    return `<section class="t-coleccion" aria-labelledby="tColeccionNombre">
+      <div class="t-coleccion-fotos t-coleccion-fotos-${piezas}">
+        ${fotos}
+        <span class="t-etiqueta">${esc(t.coleccionEtiqueta || 'Colección')}</span>
+        ${c.borrador ? '<span class="t-etiqueta t-etiqueta-borrador">Borrador</span>' : ''}
+      </div>
+      <div class="t-coleccion-cuerpo">
+        <p class="t-antetitulo">${esc(t.coleccionAntetitulo || '')}</p>
+        <h2 class="t-tarjeta-nombre" id="tColeccionNombre">${esc(p.item.nombre)}</h2>
+        <p class="t-tarjeta-meta"><strong>${esc(p.item.precio)}</strong><span>${esc(p.item.detallePrecio)}</span></p>
+        <p class="t-coleccion-desc">${esc(p.item.descripcion)}</p>
+        ${incluye ? `<ul class="t-incluye">${incluye}</ul>` : ''}
+        ${razones ? `<ul class="t-razones">${razones}</ul>` : ''}
+        ${avisos ? `<ul class="t-avisos">${avisos}</ul>` : ''}
+        <div class="t-tarjeta-acciones">
+          <button type="button" class="t-btn t-btn-secundario" data-detalle="${esc(p.id)}" data-pos="4">Ver detalles</button>
+          <a class="t-btn t-btn-wa" href="${esc(enlaceWa(p))}" target="_blank" rel="noopener"
+            data-wa="coleccion:${esc(p.id)}" data-pos="4">${WHATSAPP_SVG} Consultar por WhatsApp</a>
+        </div>
+      </div>
+    </section>`;
+  }
+
   function pintarResultados() {
     if (!estado.resultado) calcular();
     const res = estado.resultado;
@@ -439,7 +488,8 @@
             data-wa="ninguno">${WHATSAPP_SVG} Pedir ayuda por WhatsApp</a>
         </div>`;
     } else {
-      cuerpo = `<div class="t-tarjetas t-tarjetas-${n}">${res.resultados.map((c, i) => tarjeta(c, i, res)).join('')}</div>`;
+      cuerpo = `<div class="t-tarjetas t-tarjetas-${n}">${res.resultados.map((c, i) => tarjeta(c, i, res)).join('')}</div>`
+        + (res.coleccion ? tarjetaColeccion(res.coleccion) : '');
     }
 
     seccion.innerHTML = `
@@ -471,6 +521,7 @@
       estado: res.estado,
       cantidad: n,
       productos: res.resultados.map((c) => c.producto.id).join(','),
+      coleccion: res.coleccion ? res.coleccion.producto.id : '',
     });
 
     seccion.querySelectorAll('[data-accion="cambiar"]').forEach((b) =>
@@ -509,15 +560,18 @@
   /* --- Detalle ------------------------------------------------------------- */
 
   function abrirDetalle(id, posicion) {
-    const c = estado.resultado.resultados.find((x) => x.producto.id === id);
+    const res = estado.resultado;
+    const c = res.resultados.concat(res.coleccion || []).find((x) => x.producto.id === id);
     if (!c) return;
     const p = c.producto;
+    const esColeccion = p.tipo === 'coleccion';
     const perfil = p.perfil;
-    const ficha = estado.paginas[p.id];
+    const ficha = esColeccion ? null : estado.paginas[p.id];
     const dificultad = (estado.config.dificultades || {})[perfil.dificultad] || '';
     const filas = [
-      ['Precio de referencia', p.item.precio],
-      ['Tamaño', datoTamano(p)],
+      ['Precio', p.item.precio],
+      ['Incluye', esColeccion ? (p.item.incluye || []).join(' · ') : ''],
+      ['Tamaño', esColeccion ? '' : datoTamano(p)],
       ['Edad', p.item.edad],
       ['Especie', p.item.especie],
       ['Cuidado', dificultad],
@@ -525,6 +579,7 @@
       ['Riego', perfil.riego],
       ['Dónde ponerlo', perfil.ubicacionTexto],
     ].filter(([, v]) => v);
+    const idMedido = esColeccion ? `coleccion:${p.id}` : p.id;
 
     $('#tDetalleCaja').innerHTML = `
       <button type="button" class="t-detalle-cerrar" data-accion="cerrar" aria-label="Cerrar">${icono('cerrar')}</button>
@@ -543,7 +598,7 @@
 
     const dialogo = $('#tDetalle');
     dialogo.querySelector('[data-accion="cerrar"]').addEventListener('click', () => dialogo.close());
-    dialogo.querySelector('[data-wa-detalle]').addEventListener('click', () => clicWhatsApp(p.id, posicion));
+    dialogo.querySelector('[data-wa-detalle]').addEventListener('click', () => clicWhatsApp(idMedido, posicion));
     const enlaceFicha = dialogo.querySelector('[data-ficha]');
     if (enlaceFicha) {
       enlaceFicha.addEventListener('click', () =>
@@ -551,7 +606,7 @@
     }
     if (typeof dialogo.showModal === 'function') dialogo.showModal();
     else dialogo.setAttribute('open', '');
-    medir('test_producto_click', { producto: p.id, posicion, accion: 'detalles' });
+    medir('test_producto_click', { producto: idMedido, posicion, accion: 'detalles' });
   }
 
   // Tocar fuera de la caja cierra el detalle, como cualquier hoja en el móvil.
@@ -583,10 +638,13 @@
       ]).then(([config, catalogo, paginas]) => {
         estado.config = config;
         estado.productos = M.prepararProductos(catalogo, config);
+        estado.colecciones = M.prepararColecciones(config, estado.productos);
         estado.paginas = paginas || {};
         const aviso = $('#tRevision');
-        if (config.modoRevision && config.textos && config.textos.revision) {
-          aviso.textContent = config.textos.revision;
+        const textos = config.textos || {};
+        const texto = BORRADORES ? textos.borradores : config.modoRevision ? textos.revision : '';
+        if (texto) {
+          aviso.textContent = texto;
           aviso.hidden = false;
         }
       }).catch((e) => {

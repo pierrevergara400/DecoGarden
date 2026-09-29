@@ -76,14 +76,19 @@ dejé»). Se borran al cerrar la pestaña. No salen del teléfono.
 | ¿Dónde te gustaría colocarlo? | Siempre. En un regalo: «¿Dónde crees que lo pondrá?» |
 | ¿Cuánta luz recibe ese lugar? | Siempre, salvo en jardín o terraza (se deduce: exterior) |
 | ¿Cuánto tiempo puedes dedicarle? | No en un regalo (se asume «algo sencillo») |
-| ¿Qué estilo te gusta más? | Siempre (omitible) |
 | ¿Qué tamaño prefieres? | No en escritorio (se deduce: pequeño) |
 | ¿Cuál es tu presupuesto? | Siempre |
+| ~~¿Qué estilo te gusta más?~~ | **Desactivada**: la foto de cada resultado ya enseña el estilo |
 
-Nunca hay más de **6 preguntas principales** (`maxPreguntasPrincipales`). Si un
-camino tuviera 7 —por ejemplo, «para mí» en la sala—, se quita la omitible de
+Nunca hay más de **5 preguntas principales** (`maxPreguntasPrincipales`). Si un
+camino tuviera 6 —por ejemplo, «para mí» en la sala—, se quita la omitible de
 menor `prioridad`, que hoy es el tamaño. La ocasión no cuenta: es la extra del
 regalo.
+
+La pregunta de estilo sigue en `test-bonsai.json` con `"desactivada": true`: no
+se pregunta ni puntúa, y el panel esconde sus casillas, pero los estilos de cada
+perfil se conservan. Para volver a preguntarla, borra esa línea (y sube
+`maxPreguntasPrincipales` a 6 si no quieres perder la de tamaño).
 
 ## Cómo decide el motor
 
@@ -99,7 +104,7 @@ regalo.
    hay de esos, no recomienda nada y ofrece hablar por WhatsApp.
    Con «No estoy seguro» no filtra, pero cada tarjeta dice qué luz necesita.
 3. **Puntos** por cada coincidencia, con los pesos de `pesos`: presupuesto 4,
-   lugar 3, estilo 3, cuidado 3, tamaño 2 (1 si es el tamaño vecino), ocasión 2,
+   lugar 3, estilo 3 (hoy no, porque la pregunta está desactivada), cuidado 3, tamaño 2 (1 si es el tamaño vecino), ocasión 2,
    uso 1. Quien pidió «algo sencillo» resta 3 a los que no son fáciles, y la
    tarjeta lo avisa.
 4. **Presupuesto.** Primero los que entran en el rango. Si no llegan a tres, se
@@ -109,10 +114,80 @@ regalo.
    especie: tres juníperos casi iguales no son tres opciones.
 6. **Hasta tres, nunca inventados.** Si solo dos cumplen el filtro de luz,
    salen dos, con un texto que explica por qué.
+7. **Una colección, aparte.** Debajo de los tres puede salir una colección
+   (ver [Colecciones](#colecciones)). No ocupa ninguno de los tres puestos.
+
+Un precio sin número («Por definir») nunca cuenta como «entra en tu
+presupuesto»: la tarjeta dice «Precio por confirmar».
 
 Los títulos se adaptan: «Estos 3 bonsáis podrían enamorarte» cuando encajan, y
 «Lo más cercano a lo que buscas» cuando ninguno cumple la luz o el presupuesto.
 La primera tarjeta lleva «Tu mejor coincidencia» solo si cumple de verdad.
+
+## Colecciones
+
+Varios árboles en un solo pedido, para subir el ticket de quien compra más de
+uno: el Set Consultorio, una colección de cítricos… Viven en `colecciones` de
+`test-bonsai.json` y se editan en el panel, al final de la pestaña **Test de
+bonsái**.
+
+- El test ofrece **como mucho una**, en una tarjeta ancha debajo de los tres
+  bonsáis («Para llevar más de uno»), con su propio «Ver detalles» y
+  «Consultar por WhatsApp» («…me interesa el Set Consultorio. También me
+  recomendaron: …»).
+- Pasa **el mismo filtro de luz** que los productos, con la misma regla de
+  nunca sombra ni interior sin sol.
+- Por precio, sale si cabe en el presupuesto o si la persona eligió uno de
+  `ajustesColecciones.presupuestosAbiertos` (hoy: «Quiero conocer opciones»,
+  $40–$70 y más de $70); si se pasa, la tarjeta dice cuánto. A quien pidió
+  «Hasta $20» no se le ofrece un set de $99.
+- Necesita un mínimo de puntos (`puntosMinimos`, hoy 3): encajar al menos en el
+  lugar, o en el uso y algo más. Si no, no se ofrece.
+- Si nombra productos del catálogo (`productos`), se enseñan sus fotos y **solo
+  se ofrece si todos están publicados y sin vender**. Si las piezas se eligen
+  con el cliente, se deja vacío y se describen en «Qué incluye».
+- Igual que un producto: se enciende con el interruptor y necesita el perfil
+  validado.
+
+Hoy hay dos, **apagadas**:
+
+| Colección | Estado |
+| --- | --- |
+| Set Consultorio | Precio ($99) y contenido del bloque oculto de la home. Falta foto, confirmar stock y validar el perfil. |
+| Colección Cítricos | DEMO: Calamondín + Mandarina. Falta precio, foto, descripción y validar el perfil. |
+
+## Productos DEMO
+
+Para preparar lo que todavía no está en la web hay tres productos de
+demostración en `catalog.json`: **Gardenia, Calamondín y Mandarina**. Están
+marcados así:
+
+- `activo: false`: no salen en la home, ni en el sitemap, ni en el test.
+- Precio «Por definir», especie, altura y edad vacías.
+- Foto provisional `Images/pendiente.svg` («Foto pendiente»).
+- La descripción empieza por «DEMO —».
+- Su perfil del test es una propuesta sin validar (luz de sol y exterior, como
+  todo el catálogo; nunca sombra).
+
+Para publicar uno: panel → **Productos** → Editar → pon precio, foto (en
+`Images/productos/<id>/`), especie, altura, edad y descripción → enciéndelo.
+Luego **Test de bonsái** → revisa su perfil → Validado → Guardar → Publicar.
+
+El panel y el servidor **no dejan encender** un producto o una colección sin
+precio con número o con la foto provisional: sería enseñar un «Por definir» o un
+«Foto pendiente» en la web.
+
+### Vista previa de borradores
+
+Para ver cómo quedará algo antes de encenderlo, en tu máquina:
+
+```
+http://localhost:8435/encuentra-tu-bonsai?borradores=1
+```
+
+El test incluye entonces lo apagado y lo no validado, con una etiqueta amarilla
+«Borrador» y un aviso arriba. Lo vendido y la regla de luz se siguen
+respetando. En la web publicada el parámetro no hace nada.
 
 ## WhatsApp
 
@@ -122,16 +197,18 @@ Número: `whatsapp` en `test-bonsai.json` (hoy `593963136655`). Cada botón abre
 ```
 Hola, DecoGarden. Hice el test de bonsáis y me interesa el Guayacán.
 También me recomendaron: Árbol del Té o Mānuka y Junípero Cascada Mini.
-Me gustaría conocer su disponibilidad, precio actualizado y envío. ¿Me ayudan?
+¿Está disponible y cuánto sale el envío a mi ciudad?
 
 Mis respuestas: Para regalar (cumpleaños) · lugar: escritorio · luz: sol directo
 varias horas · presupuesto: $20 – $40.
 · web/test-bonsai-oct
 ```
 
-- Pregunta por disponibilidad, precio y envío; **no afirma** que haya stock ni
+- Pregunta por la disponibilidad y el envío; **no afirma** que haya stock ni
   que el envío sea gratis. Tampoco lo hace la página: debajo de los resultados
-  dice que todo eso se confirma por WhatsApp.
+  dice que eso se confirma por WhatsApp.
+- **No pide «precio actualizado»** ni habla de «precios de referencia»: el
+  precio ya se le enseñó, y ponerlo en duda abre la puerta a regatear.
 - «Mis respuestas» lleva solo lo que la persona contestó, no lo deducido.
 - La última línea (`· web/...`) la añade `origen.js` cuando la visita viene de
   una campaña: es lo que te dice en el chat de qué anuncio llegó.
@@ -162,9 +239,11 @@ envía ningún dato personal: el test no los pide.
 | `test_inicio` | Pulsa «Encontrar mi bonsái» o «Repetir test» | `repetido` |
 | `test_respuesta` | Cada respuesta u omisión | `pregunta`, `respuesta`, `paso` |
 | `test_completado` | Termina la última pregunta | `preguntas` |
-| `test_resultados` | Ve los resultados | `estado`, `cantidad`, `productos` |
+| `test_resultados` | Ve los resultados | `estado`, `cantidad`, `productos`, `coleccion` |
 | `test_producto_click` | «Ver detalles» o «Ver ficha completa» | `producto`, `posicion`, `accion` |
 | `test_whatsapp_click` | Cualquier botón de WhatsApp | `producto` (o `todos`/`ninguno`), `posicion`, `estado` |
+
+Una colección llega como `producto: "coleccion:<id>"` y `posicion: 4`.
 
 Salen a la vez a:
 
@@ -236,13 +315,19 @@ Pendiente, a tu decisión:
 
 ## Pruebas
 
-`/admin/pruebas-test` corre 33 comprobaciones sobre la configuración real y
+`/admin/pruebas-test` corre las comprobaciones sobre la configuración real y
 catálogos de laboratorio, entre ellas:
 
-- nunca más de 6 preguntas principales, en cualquier combinación
+- nunca más de 5 preguntas principales, en cualquier combinación
+- la pregunta de estilo no sale en ningún camino
 - la luz filtra: con «poca luz» no sale nada que necesite sol sin decirlo
 - nunca se recomienda para poca luz ni luz indirecta, aunque un perfil lo diga
-- todos los perfiles reales están validados y el test no está en revisión
+- los productos publicados tienen el perfil validado y el test no está en revisión
+- los DEMO están apagados y no salen en el test publicado
+- la colección va aparte, pasa el filtro de luz, respeta el presupuesto y no se
+  ofrece si le falta un producto
+- la vista previa de borradores nunca incluye vendidos ni luz incompatible
+- un precio «Por definir» nunca cuenta como dentro del presupuesto
 - sin ningún compatible, la lista queda vacía en vez de rellenarse
 - presupuesto sin coincidencias: alternativas marcadas y ordenadas por cercanía
 - «Hasta $20» con el catálogo real da los de $20 como coincidencia, no como alternativa

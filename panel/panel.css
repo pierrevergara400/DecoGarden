@@ -696,3 +696,23 @@ body {
 .ad-validar.ok {
   background: #EAF1E2;
 }
+
+.ad-subtitulo {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.7rem;
+  color: var(--pine-deep);
+  margin: 36px 0 8px;
+}
+
+.ad-grupo-productos {
+  margin-bottom: 16px;
+  columns: 2 240px;
+}
+
+.ad-grupo-productos .pista {
+  column-span: all;
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 2px 0 8px;
+}

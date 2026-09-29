@@ -74,13 +74,19 @@ async function correr() {
   const principales = (lista) => lista.filter((p) => !p.condicional).length;
   const ids = (lista) => lista.map((p) => p.id);
 
-  prueba('Nunca más de 6 preguntas principales, sea cual sea el camino', () => {
+  prueba(`Nunca más de ${config.maxPreguntasPrincipales} preguntas principales, sea cual sea el camino`, () => {
     const para = ['mi', 'regalo', 'hogar', 'negocio'];
     const lugar = ['sala', 'dormitorio', 'escritorio', 'oficina', 'jardin', 'nose'];
     para.forEach((a) => lugar.forEach((b) => {
       const n = principales(M.preguntasVisibles(config, { para: a, lugar: b }));
       ok(n <= config.maxPreguntasPrincipales, `${a}/${b}: ${n} principales`);
     }));
+  });
+
+  prueba('La pregunta de estilo está desactivada: no sale en ningún camino', () => {
+    ['mi', 'regalo', 'hogar', 'negocio'].forEach((para) =>
+      ok(!ids(M.preguntasVisibles(config, { para, lugar: 'sala' })).includes('estilo'), para));
+    ok(!('estilo' in M.respuestasEfectivas(config, { para: 'mi', estilo: 'elegante' })), 'una respuesta vieja de estilo sigue contando');
   });
 
   prueba('La ocasión solo se pregunta si es regalo', () => {
@@ -152,10 +158,25 @@ async function correr() {
     });
   });
 
-  prueba('Todos los perfiles reales están validados y el test no está en revisión', () => {
-    Object.entries(config.perfiles).filter(([k]) => !k.startsWith('_')).forEach(([k, p]) =>
-      ok(p.validado, `${k} sin validar`));
+  prueba('Los productos publicados tienen el perfil validado y el test no está en revisión', () => {
+    const publicados = new Set(catalogo.filter((p) => p.activo !== false).map((p) => p.id));
+    Object.entries(config.perfiles).filter(([k]) => publicados.has(k)).forEach(([k, p]) =>
+      ok(p.validado, `${k} está publicado y sin validar`));
     igual(config.modoRevision, false);
+  });
+
+  prueba('Los productos DEMO están apagados y no salen en el test publicado', () => {
+    const demos = catalogo.filter((p) => /^DEMO/.test(p.descripcion || ''));
+    ok(demos.length, 'no hay productos DEMO');
+    demos.forEach((p) => ok(p.activo === false, `${p.id} es DEMO y está encendido`));
+    const productos = M.prepararProductos(catalogo, config);
+    const colecciones = M.prepararColecciones(config, productos);
+    ['sol', 'exterior', 'nose'].forEach((luz) => {
+      const res = M.recomendar(productos, { para: 'regalo', luz, presupuesto: 'abierto' }, config, { colecciones });
+      const ids = res.resultados.map((c) => c.producto.id);
+      demos.forEach((d) => ok(!ids.includes(d.id), `${d.id} aparece con luz ${luz}`));
+      ok(!res.coleccion || res.coleccion.producto.activo, 'ofrece una colección apagada');
+    });
   });
 
   prueba('Sin ninguno compatible y sin alternativa: lista vacía, no se rellena', () => {
@@ -320,6 +341,127 @@ async function correr() {
 
   /* --- WhatsApp ---------------------------------------------------------- */
 
+  /* --- Colecciones ------------------------------------------------------- */
+
+  /* Una configuración de laboratorio con colecciones. */
+  function conColecciones(perfiles, colecciones, extra) {
+    return conPerfiles(config, perfiles, Object.assign({
+      colecciones,
+      ajustesColecciones: { presupuestosAbiertos: ['abierto', 'mas-70'], puntosMinimos: 3 },
+    }, extra || {}));
+  }
+
+  function coleccion(extra) {
+    return Object.assign({
+      activo: true, nombre: 'Set', articulo: 'el', precio: '$99', imagen: 'x.webp',
+      incluye: [], productos: [], perfil: perfil({ lugares: ['oficina'], usos: ['negocio'] }),
+    }, extra || {});
+  }
+
+  function correrConColecciones(cfg, catalogoLab, respuestas) {
+    const productos = M.prepararProductos(catalogoLab, cfg);
+    return M.recomendar(productos, respuestas, cfg, { colecciones: M.prepararColecciones(cfg, productos) });
+  }
+
+  prueba('La colección se ofrece aparte: nunca ocupa uno de los tres puestos', () => {
+    const cfg = conColecciones({ a: perfil(), b: perfil(), c: perfil() }, { set: coleccion() });
+    const res = correrConColecciones(cfg, [item('a', 30, 30), item('b', 30, 30), item('c', 30, 30)],
+      { para: 'negocio', lugar: 'oficina', luz: 'sol', presupuesto: 'abierto' });
+    igual(res.resultados.length, 3);
+    ok(res.resultados.every((c) => c.producto.tipo !== 'coleccion'));
+    igual(res.coleccion && res.coleccion.producto.id, 'set');
+  });
+
+  prueba('La colección pasa el mismo filtro de luz', () => {
+    const cfg = conColecciones({ a: perfil({ luz: ['exterior'] }) },
+      { set: coleccion({ perfil: perfil({ luz: ['sol'], lugares: ['jardin'], usos: ['mi'] }) }) });
+    const res = correrConColecciones(cfg, [item('a', 30, 30)], { para: 'mi', lugar: 'jardin', luz: 'exterior' });
+    igual(res.coleccion, null);
+  });
+
+  prueba('A quien pide hasta $20 no se le ofrece un set de $99; con presupuesto abierto sí', () => {
+    const cfg = conColecciones({ a: perfil() }, { set: coleccion() });
+    const catalogoLab = [item('a', 20, 20)];
+    const r = { para: 'negocio', lugar: 'oficina', luz: 'sol' };
+    igual(correrConColecciones(cfg, catalogoLab, Object.assign({ presupuesto: 'hasta-20' }, r)).coleccion, null);
+    ok(correrConColecciones(cfg, catalogoLab, Object.assign({ presupuesto: 'abierto' }, r)).coleccion);
+    const conAviso = correrConColecciones(cfg, catalogoLab, Object.assign({ presupuesto: 'mas-70' }, r)).coleccion;
+    ok(conAviso && !conAviso.alternativa, 'un set de $99 entra en «más de $70»');
+  });
+
+  prueba('Sin encajar en nada (menos de los puntos mínimos), no se ofrece', () => {
+    const cfg = conColecciones({ a: perfil() },
+      { set: coleccion({ perfil: perfil({ lugares: ['jardin'], usos: [], cuidado: [] }) }) });
+    const res = correrConColecciones(cfg, [item('a', 20, 20)], { para: 'mi', lugar: 'sala', luz: 'sol', presupuesto: 'abierto' });
+    igual(res.coleccion, null);
+  });
+
+  prueba('Una colección con un producto vendido, apagado o inexistente no se ofrece', () => {
+    const base = { a: perfil(), b: perfil() };
+    const r = { para: 'negocio', lugar: 'oficina', luz: 'sol', presupuesto: 'abierto' };
+    [
+      [item('a', 30, 30), item('b', 30, 30, { badgeTexto: 'Vendido' })],
+      [item('a', 30, 30), item('b', 30, 30, { activo: false })],
+      [item('a', 30, 30)],
+    ].forEach((catalogoLab, i) => {
+      const cfg = conColecciones(base, { set: coleccion({ productos: ['a', 'b'] }) });
+      igual(correrConColecciones(cfg, catalogoLab, r).coleccion, null, `caso ${i + 1}`);
+    });
+    const cfg = conColecciones(base, { set: coleccion({ productos: ['a', 'b'] }) });
+    ok(correrConColecciones(cfg, [item('a', 30, 30), item('b', 30, 30)], r).coleccion, 'con los dos disponibles sí');
+  });
+
+  prueba('Colección apagada o sin validar: fuera, salvo en la vista previa de borradores', () => {
+    const r = { para: 'negocio', lugar: 'oficina', luz: 'sol', presupuesto: 'abierto' };
+    [coleccion({ activo: false }), coleccion({ perfil: perfil({ validado: false, lugares: ['oficina'], usos: ['negocio'] }) })]
+      .forEach((col) => {
+        const cfg = conColecciones({ a: perfil() }, { set: col });
+        const productos = M.prepararProductos([item('a', 30, 30)], cfg);
+        const colecciones = M.prepararColecciones(cfg, productos);
+        igual(M.recomendar(productos, r, cfg, { colecciones }).coleccion, null);
+        const previa = M.recomendar(productos, r, cfg, { colecciones, borradores: true }).coleccion;
+        ok(previa && previa.borrador, 'en borradores sale marcada');
+      });
+  });
+
+  prueba('Borradores: incluye apagados y sin validar, pero nunca vendidos ni luz incompatible', () => {
+    const cfg = conPerfiles(config, {
+      apagado: perfil(), sinValidar: perfil({ validado: false }), vendido: perfil(), sombra: perfil({ luz: ['exterior'] }),
+    });
+    const productos = M.prepararProductos([
+      item('apagado', 30, 30, { activo: false }), item('sinValidar', 30, 30),
+      item('vendido', 30, 30, { badgeTexto: 'Vendido' }), item('sombra', 30, 30),
+    ], cfg);
+    const res = M.recomendar(productos, { luz: 'sol' }, cfg, { borradores: true });
+    igual(res.resultados.map((c) => c.producto.id).sort(), ['apagado', 'sinValidar']);
+    ok(res.resultados.every((c) => c.borrador));
+  });
+
+  prueba('Un precio «Por definir» nunca entra en el presupuesto y se avisa', () => {
+    const cfg = conPerfiles(config, { a: perfil(), b: perfil() });
+    const productos = M.prepararProductos([item('a', 30, 30, { precio: 'Por definir' }), item('b', 30, 30)], cfg);
+    const res = M.recomendar(productos, { luz: 'sol', presupuesto: '20-40' }, cfg, { borradores: true });
+    igual(res.resultados[0].producto.id, 'b');
+    const a = res.resultados.find((c) => c.producto.id === 'a');
+    ok(a.alternativa, 'sin precio debería ir como alternativa');
+    ok(a.avisos.includes(config.razones.precioPendiente), a.avisos.join(' | '));
+  });
+
+  prueba('Mensaje de una colección: «me interesa el Set…» y los tres productos', () => {
+    const cfg = conColecciones({ a: perfil(), b: perfil(), c: perfil() }, { set: coleccion({ nombre: 'Set Consultorio' }) });
+    const res = correrConColecciones(cfg, [item('a', 30, 30), item('b', 30, 30), item('c', 30, 30)],
+      { para: 'negocio', lugar: 'oficina', luz: 'sol', presupuesto: 'abierto' });
+    const texto = M.mensajeWhatsApp(cfg, res, {}, res.coleccion.producto);
+    ok(texto.includes('me interesa el Set Consultorio'), texto);
+    res.resultados.forEach((c) => ok(texto.includes(M.nombreCorto(c.producto))));
+  });
+
+  prueba('Las colecciones reales nombran productos que existen', () => {
+    const idsCatalogo = new Set(catalogo.map((p) => p.id));
+    Object.entries(config.colecciones || {}).filter(([k]) => !k.startsWith('_')).forEach(([k, c]) =>
+      (c.productos || []).forEach((pid) => ok(idsCatalogo.has(pid), `${k} nombra ${pid}`)));
+  });
+
   const cfgWa = conPerfiles(config, { a: perfil(), b: perfil(), c: perfil() });
   const resWa = M.recomendar(M.prepararProductos(
     [item('a', 30, 30, { nombre: 'Bonsái Guayacán' }), item('b', 30, 30, { nombre: 'Bonsái Azalea' }),
@@ -331,10 +473,12 @@ async function correr() {
       resWa.resultados[1].producto);
     ok(texto.startsWith('Hola, DecoGarden. Hice el test de bonsáis'));
     ok(texto.includes(`me interesa el ${M.nombreCorto(resWa.resultados[1].producto)}`));
-    ok(/disponibilidad, precio actualizado y envío/.test(texto));
+    ok(texto.includes('¿Está disponible y cuánto sale el envío a mi ciudad?'), texto);
+    ok(!/precio actualizado/i.test(texto), 'pone el precio en duda');
     ok(/presupuesto: \$20 – \$40/.test(texto), texto);
     ok(/cumpleaños/.test(texto));
-    ok(!/gratis|está disponible|en stock/i.test(texto), 'promete algo');
+    // Preguntar «¿Está disponible…?» vale; afirmarlo, no.
+    ok(!/gratis|en stock|(?<!¿)está disponible/i.test(texto), 'promete algo');
   });
 
   prueba('Mensaje de «ver los 3»: los tres nombres', () => {

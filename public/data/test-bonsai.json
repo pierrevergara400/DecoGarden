@@ -3,7 +3,7 @@
   "modoRevision": false,
   "_modoRevision": "Mientras sea true, el test recomienda también los perfiles con validado:false y enseña un aviso de «vista de revisión». Ponlo en false al publicar: desde ese momento solo se recomiendan los bonsáis cuyo perfil hayas validado.",
   "whatsapp": "593963136655",
-  "maxPreguntasPrincipales": 6,
+  "maxPreguntasPrincipales": 5,
   "analitica": {
     "ga4Id": "",
     "_ga4Id": "ID de medición de GA4 (G-XXXXXXX). Vacío = no se carga GA4. Igual que el píxel de Meta, solo se carga si la persona aceptó las cookies."
@@ -60,6 +60,15 @@
     "indirecta"
   ],
   "_lucesProhibidas": "Regla de DecoGarden: ningún bonsái se recomienda para sombra ni para interior sin sol directo. Aunque un perfil marque estas luces, el motor las ignora y el servidor no deja guardarlas. A quien contesta una de ellas se le ofrece la luzAlternativa, con la condición escrita.",
+  "ajustesColecciones": {
+    "_comentario": "Una colección se ofrece DEBAJO de los tres productos, como mucho una. Pasa el mismo filtro de luz. Por precio entra si cabe en el presupuesto o si la persona eligió uno de presupuestosAbiertos (entonces la tarjeta dice cuánto se pasa). puntosMinimos evita ofrecerla a quien no le encaja en nada.",
+    "presupuestosAbiertos": [
+      "abierto",
+      "40-70",
+      "mas-70"
+    ],
+    "puntosMinimos": 3
+  },
   "preguntas": [
     {
       "id": "para",
@@ -254,6 +263,8 @@
     },
     {
       "id": "estilo",
+      "desactivada": true,
+      "_desactivada": "No se pregunta: la foto de cada resultado ya enseña el estilo. Los estilos de los perfiles se conservan; para volver a preguntarla, borra «desactivada».",
       "titulo": "¿Qué estilo te gusta más?",
       "omitible": true,
       "prioridad": 3,
@@ -329,7 +340,7 @@
     {
       "id": "presupuesto",
       "titulo": "¿Cuál es tu presupuesto?",
-      "ayuda": "Precios de referencia. El precio actualizado y el envío te los confirmamos por WhatsApp.",
+      "ayuda": "Te mostramos lo que entra en tu presupuesto. El envío a tu ciudad te lo confirmamos por WhatsApp.",
       "prioridad": 9,
       "opciones": [
         {
@@ -366,15 +377,18 @@
     "titulo1": "Este bonsái podría enamorarte",
     "tituloAlternativas": "Lo más cercano a lo que buscas",
     "etiquetaPrimero": "Tu mejor coincidencia",
-    "notaPrecios": "Precios de referencia. Te confirmamos por WhatsApp la disponibilidad, el precio actualizado y el costo de envío a tu ciudad.",
-    "exacto": "Los elegimos según tu espacio, tu estilo y tu presupuesto.",
+    "notaPrecios": "Te confirmamos por WhatsApp la disponibilidad y el costo de envío a tu ciudad.",
+    "exacto": "Los elegimos según tu espacio, su luz y tu presupuesto.",
     "parcial": "No encontramos tres que cumplan todo, así que completamos con alternativas cercanas. Te explicamos en cada una qué cambia.",
     "pocos": "Son los únicos de nuestro catálogo que encajan con las condiciones de tu espacio. No te vamos a rellenar la lista con uno que no vaya a vivir bien.",
     "fueraPresupuesto": "Ahora mismo no tenemos bonsáis en ese rango. Estos son los más cercanos a tu presupuesto.",
     "luzAlternativa": "Ninguno de nuestros bonsáis vive bien a largo plazo con {luz}. Si puedes darle {alternativa}, estos sí funcionarían:",
     "luzDudosa": "Como no estás seguro de la luz, te indicamos en cada uno lo que necesita. Revísalo antes de decidir o pregúntanos por WhatsApp.",
     "sinCompatibles": "Con esas condiciones no tenemos un bonsái que pueda vivir bien, y preferimos decírtelo antes que venderte uno que no va a durar. Escríbenos y buscamos juntos una alternativa.",
-    "revision": "Vista de revisión: los perfiles de luz y cuidado de algunos bonsáis todavía no están validados por DecoGarden."
+    "revision": "Vista de revisión: los perfiles de luz y cuidado de algunos bonsáis todavía no están validados por DecoGarden.",
+    "coleccionAntetitulo": "Para llevar más de uno",
+    "coleccionEtiqueta": "Colección",
+    "borradores": "Vista previa local: incluye productos apagados y perfiles sin validar (marcados «Borrador»). En la web publicada no aparecen."
   },
   "razones": {
     "lugar": {
@@ -423,7 +437,8 @@
     "bajoPresupuesto": "Cuesta menos de lo que pensabas invertir",
     "cuidadoExigente": "Pide algo más de atención de la que buscas",
     "condicionLuz": "Solo si puedes darle {alternativa}",
-    "luzDudosa": "Necesita: {luzTexto}"
+    "luzDudosa": "Necesita: {luzTexto}",
+    "precioPendiente": "Precio por confirmar"
   },
   "dificultades": {
     "facil": "Fácil",
@@ -861,6 +876,227 @@
       "luzTexto": "sol directo varias horas al día",
       "ubicacionTexto": "Junto a una ventana soleada o en el balcón.",
       "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "gardenia": {
+      "validado": false,
+      "fuente": "DEMO: perfil propuesto sin validar. Completa la ficha en el catálogo, revisa este perfil y márcalo como validado.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "oficina",
+        "sala",
+        "escritorio"
+      ],
+      "estilos": [
+        "elegante",
+        "exotico"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "aniversario",
+        "agradecimiento",
+        "inauguracion",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "aprender"
+      ],
+      "dificultad": "media",
+      "luzTexto": "por completar",
+      "ubicacionTexto": "Por completar.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "calamondin": {
+      "validado": false,
+      "fuente": "DEMO: perfil propuesto sin validar. Completa la ficha en el catálogo, revisa este perfil y márcalo como validado.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "sala",
+        "jardin",
+        "oficina"
+      ],
+      "estilos": [
+        "exotico",
+        "frondoso"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "inauguracion",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender"
+      ],
+      "dificultad": "media",
+      "luzTexto": "por completar",
+      "ubicacionTexto": "Por completar.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "mandarina": {
+      "validado": false,
+      "fuente": "DEMO: perfil propuesto sin validar. Completa la ficha en el catálogo, revisa este perfil y márcalo como validado.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "sala",
+        "jardin",
+        "oficina"
+      ],
+      "estilos": [
+        "exotico",
+        "frondoso"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "inauguracion",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender"
+      ],
+      "dificultad": "media",
+      "luzTexto": "por completar",
+      "ubicacionTexto": "Por completar.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    }
+  },
+  "colecciones": {
+    "_comentario": "Varios árboles en un solo pedido. Mismo perfil que un producto (luz, lugares, estilos...) dentro de «perfil». «productos» son ids de catalog.json: si alguno está apagado o vendido, la colección no se ofrece. Sin «productos», las piezas se describen en «incluye» y se eligen con el cliente. Se editan en /admin, pestaña «Test de bonsái».",
+    "set-consultorio": {
+      "activo": false,
+      "nombre": "Set Consultorio",
+      "articulo": "el",
+      "precio": "$99",
+      "detallePrecio": "tres bonsáis · envío gratis",
+      "imagen": "Images/pendiente.svg",
+      "descripcion": "Uno para el consultorio, uno para la sala de espera y uno para la casa, sin tener que pedir tres veces. Las tres especies se eligen contigo por WhatsApp.",
+      "incluye": [
+        "Un bonsái de la línea grande y dos clásicos de $25",
+        "Envío gratis: el set pasa el umbral de $60",
+        "Ficha de cuidado por especie y garantía de 30 días en cada pieza"
+      ],
+      "productos": [],
+      "perfil": {
+        "validado": false,
+        "fuente": "Precio y contenido del bloque «Set Consultorio» de la home, que está oculto por falta de stock. Confirma precio y stock antes de encenderlo. Foto pendiente.",
+        "luz": [
+          "sol",
+          "exterior"
+        ],
+        "lugares": [
+          "oficina",
+          "sala"
+        ],
+        "estilos": [
+          "elegante",
+          "frondoso"
+        ],
+        "usos": [
+          "negocio",
+          "hogar",
+          "regalo"
+        ],
+        "ocasiones": [
+          "inauguracion",
+          "agradecimiento"
+        ],
+        "cuidado": [
+          "diario",
+          "semanal",
+          "aprender",
+          "sencillo"
+        ],
+        "dificultad": "facil",
+        "luzTexto": "sol directo varias horas al día",
+        "ubicacionTexto": "Cada pieza junto a la ventana con más sol de su espacio.",
+        "riego": "Cada especie llega con su ficha de cuidado."
+      }
+    },
+    "coleccion-citricos": {
+      "activo": false,
+      "nombre": "Colección Cítricos",
+      "articulo": "la",
+      "precio": "Por definir",
+      "detallePrecio": "Calamondín + Mandarina",
+      "imagen": "Images/pendiente.svg",
+      "descripcion": "DEMO — Colección por completar: precio, foto y descripción. Se enciende sola en el test cuando la actives y el Calamondín y la Mandarina estén publicados.",
+      "incluye": [
+        "Bonsái Calamondín",
+        "Bonsái Mandarina"
+      ],
+      "productos": [
+        "calamondin",
+        "mandarina"
+      ],
+      "perfil": {
+        "validado": false,
+        "fuente": "DEMO: perfil propuesto sin validar. Completa la ficha en el catálogo, revisa este perfil y márcalo como validado.",
+        "luz": [
+          "sol",
+          "exterior"
+        ],
+        "lugares": [
+          "sala",
+          "jardin",
+          "oficina"
+        ],
+        "estilos": [
+          "exotico",
+          "frondoso"
+        ],
+        "usos": [
+          "mi",
+          "regalo",
+          "hogar",
+          "negocio"
+        ],
+        "ocasiones": [
+          "cumpleanos",
+          "agradecimiento",
+          "inauguracion",
+          "otra"
+        ],
+        "cuidado": [
+          "diario",
+          "semanal",
+          "aprender"
+        ],
+        "dificultad": "media",
+        "luzTexto": "por completar",
+        "ubicacionTexto": "Por completar.",
+        "riego": "Pídenos la ficha de cuidado de estas especies."
+      }
     }
   }
 }

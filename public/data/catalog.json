@@ -87,7 +87,8 @@
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-pino-estrella.webp",
-    "whatsappMsg": "Hola DecoGarden, me encanto el Bonsai de Pino Estrella. Esta disponible?"
+    "whatsappMsg": "Hola DecoGarden, me encanto el Bonsai de Pino Estrella. Esta disponible?",
+    "activo": false
   },
   {
     "id": "bequia-imperial",
@@ -178,5 +179,53 @@
     "badgeTexto": "Última pieza",
     "imagen": "Images/bonsai-flor-arana.webp",
     "whatsappMsg": "Hola DecoGarden, me interesa la Flor de Araña. Esta disponible?"
+  },
+  {
+    "id": "gardenia",
+    "nombre": "Bonsái Gardenia",
+    "especie": "",
+    "altura": "",
+    "edad": "",
+    "categoria": "entrada",
+    "descripcion": "DEMO — Ficha por completar: foto, precio, especie, altura, edad y esta descripción. Está apagado: no sale en la web ni en el test hasta que lo completes y lo enciendas.",
+    "precio": "Por definir",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "ok",
+    "badgeTexto": "Disponible",
+    "imagen": "Images/pendiente.svg",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Bonsai de Gardenia. Esta disponible?",
+    "activo": false
+  },
+  {
+    "id": "calamondin",
+    "nombre": "Bonsái Calamondín",
+    "especie": "",
+    "altura": "",
+    "edad": "",
+    "categoria": "entrada",
+    "descripcion": "DEMO — Ficha por completar: foto, precio, especie, altura, edad y esta descripción. Está apagado: no sale en la web ni en el test hasta que lo completes y lo enciendas.",
+    "precio": "Por definir",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "ok",
+    "badgeTexto": "Disponible",
+    "imagen": "Images/pendiente.svg",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Bonsai de Calamondin. Esta disponible?",
+    "activo": false
+  },
+  {
+    "id": "mandarina",
+    "nombre": "Bonsái Mandarina",
+    "especie": "",
+    "altura": "",
+    "edad": "",
+    "categoria": "entrada",
+    "descripcion": "DEMO — Ficha por completar: foto, precio, especie, altura, edad y esta descripción. Está apagado: no sale en la web ni en el test hasta que lo completes y lo enciendas.",
+    "precio": "Por definir",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "ok",
+    "badgeTexto": "Disponible",
+    "imagen": "Images/pendiente.svg",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Bonsai de Mandarina. Esta disponible?",
+    "activo": false
   }
 ]

@@ -25,6 +25,17 @@ const BADGES = [
   ['soft', 'Vendido'],
 ];
 
+const FOTO_PENDIENTE = 'Images/pendiente.svg';
+
+/* Lo mismo que comprueba servidor.py: sin precio con número o con la foto
+   provisional, algo no se puede encender. Aquí se avisa en el momento, en
+   vez de dejar que falle al guardar. */
+function faltaParaPublicar(precio, imagen) {
+  if (!/\d/.test(String(precio || ''))) return 'le falta el precio';
+  if (String(imagen || '').replace(/^\//, '') === FOTO_PENDIENTE) return 'todavía tiene la foto provisional';
+  return '';
+}
+
 let catalogo = [];
 let posts = [];
 let test = null; // test-bonsai.json entero; null si todavía no existe
@@ -197,10 +208,17 @@ function pintarProductos() {
     const p = catalogo.find((x) => x.id === tarjeta.dataset.id);
 
     tarjeta.querySelector('[data-accion="activo"]').addEventListener('change', (e) => {
+      const falta = e.target.checked ? faltaParaPublicar(p.precio, p.imagen) : '';
+      if (falta) {
+        e.target.checked = false;
+        aviso(`No se puede encender «${p.nombre}»: ${falta}.`, true);
+        return;
+      }
       p.activo = e.target.checked;
       marcarSucio();
       pintarProductos();
       pintarTest();
+      pintarColecciones();
     });
 
     tarjeta.querySelector('[data-accion="abrir"]').addEventListener('click', () => {
@@ -421,6 +439,11 @@ const GRUPOS_PERFIL = [
 
 const DIFICULTADES = [['facil', 'Fácil'], ['media', 'Intermedio'], ['avanzada', 'Avanzado']];
 
+function preguntaActiva(preguntaId) {
+  const pregunta = (test?.preguntas || []).find((p) => p.id === preguntaId);
+  return !!pregunta && !pregunta.desactivada;
+}
+
 function opcionesDe(preguntaId) {
   const pregunta = (test?.preguntas || []).find((p) => p.id === preguntaId);
   return (pregunta?.opciones || []).filter((o) => o.id !== 'nose' && o.id !== 'sorpresa');
@@ -458,18 +481,21 @@ function grupoCasillas(perfil, clave, preguntaId, titulo, clase = '') {
   return `<fieldset class="ad-grupo ${clase}"><legend>${esc(titulo)}</legend>${casillas}</fieldset>`;
 }
 
-function detallePerfil(p, perfil) {
-  return `<div class="ad-detalle">
-    <div class="ad-grupos">
-      ${GRUPOS_PERFIL.map(([clave, pregunta, titulo, clase]) => grupoCasillas(perfil, clave, pregunta, titulo, clase)).join('')}
+/* Casillas, textos y «validado»: lo mismo para un bonsái que para una
+   colección. Una colección no tiene tamaño propio. */
+function bloquePerfil(p, perfil, esColeccion = false) {
+  // Una pregunta desactivada no se enseña, pero sus datos se conservan.
+  return `<div class="ad-grupos">
+      ${GRUPOS_PERFIL.filter(([, pregunta]) => preguntaActiva(pregunta))
+        .map(([clave, pregunta, titulo, clase]) => grupoCasillas(perfil, clave, pregunta, titulo, clase)).join('')}
     </div>
-    <div class="ad-campos">
+    <div class="ad-campos ad-campos-perfil">
       ${campo(perfil, 'dificultad', 'Nivel de cuidado', { lista: DIFICULTADES })}
-      ${campo(perfil, 'tamano', 'Tamaño', {
+      ${esColeccion ? '' : campo(perfil, 'tamano', 'Tamaño', {
         lista: [['', `Según la altura (${p.altura || 'sin altura'})`], ['pequeno', 'Pequeño'], ['mediano', 'Mediano'], ['grande', 'Grande']],
       })}
       ${campo(perfil, 'stock', 'Disponibilidad en el test', {
-        lista: [['', 'Según la etiqueta del catálogo'], ['agotado', 'Agotado: no recomendar']],
+        lista: [['', esColeccion ? 'Según sus productos' : 'Según la etiqueta del catálogo'], ['agotado', 'Agotado: no recomendar']],
       })}
       ${campo(perfil, 'luzTexto', 'Luz, en palabras del cliente', { ancho: true, pista: 'sale tras «Necesita:» y en el detalle' })}
       ${campo(perfil, 'ubicacionTexto', 'Dónde ponerlo', { ancho: true })}
@@ -478,13 +504,55 @@ function detallePerfil(p, perfil) {
     </div>
     <label class="ad-validar${perfil.validado ? ' ok' : ''}">
       <input type="checkbox" data-validado${perfil.validado ? ' checked' : ''}>
-      <span><strong>Validado por DecoGarden.</strong> Confirmo la luz, el cuidado y la ubicación de este bonsái.
-        Con el modo revisión apagado, solo se recomiendan los validados.</span>
-    </label>
+      <span><strong>Validado por DecoGarden.</strong> Confirmo la luz, el cuidado y la ubicación de
+        ${esColeccion ? 'esta colección' : 'este bonsái'}. Con el modo revisión apagado, solo se recomiendan los validados.</span>
+    </label>`;
+}
+
+function detallePerfil(p, perfil) {
+  return `<div class="ad-detalle">
+    ${bloquePerfil(p, perfil)}
     <div class="ad-pie-detalle">
       <button type="button" class="ad-btn ad-btn-peligro" data-accion="quitar">Sacar del test</button>
     </div>
   </div>`;
+}
+
+/* Casillas de luz, «validado» y campos de texto del perfil, enlazados al dato. */
+function enlazarPerfil(detalle, perfil, repintar) {
+  detalle.querySelectorAll('[data-lista]').forEach((casilla) => {
+    casilla.addEventListener('change', () => {
+      const lista = casilla.dataset.lista;
+      perfil[lista] = [...detalle.querySelectorAll(`[data-lista="${lista}"]:checked`)].map((c) => c.value);
+      // Cambiar la luz deshace la validación: alguien tiene que volver a
+      // confirmarla, no heredar un «validado» que se dio con otros datos.
+      if (lista === 'luz' && perfil.validado) {
+        perfil.validado = false;
+        detalle.querySelector('[data-validado]').checked = false;
+        detalle.querySelector('.ad-validar').classList.remove('ok');
+      }
+      marcarSucio();
+    });
+  });
+
+  detalle.querySelector('[data-validado]').addEventListener('change', (e) => {
+    if (e.target.checked && !(perfil.luz || []).length) {
+      e.target.checked = false;
+      aviso('Marca al menos una luz antes de validar', true);
+      return;
+    }
+    perfil.validado = e.target.checked;
+    marcarSucio();
+    repintar();
+  });
+
+  enlazar(detalle.querySelector('.ad-campos-perfil'), perfil, (control) => {
+    // Un select vacío es «automático»: se borra la clave en vez de guardar
+    // una cadena vacía que el motor tomaría por un valor.
+    if (control.value === '' && (control.dataset.clave === 'tamano' || control.dataset.clave === 'stock')) {
+      delete perfil[control.dataset.clave];
+    }
+  });
 }
 
 function pintarAjustesTest() {
@@ -572,40 +640,7 @@ function pintarTest() {
     const detalle = tarjeta.querySelector('.ad-detalle');
     if (!detalle) return;
     const perfil = test.perfiles[p.id];
-
-    detalle.querySelectorAll('[data-lista]').forEach((casilla) => {
-      casilla.addEventListener('change', () => {
-        const lista = casilla.dataset.lista;
-        perfil[lista] = [...detalle.querySelectorAll(`[data-lista="${lista}"]:checked`)].map((c) => c.value);
-        // Cambiar la luz deshace la validación: alguien tiene que volver a
-        // confirmarla, no heredar un «validado» que se dio con otros datos.
-        if (lista === 'luz' && perfil.validado) {
-          perfil.validado = false;
-          detalle.querySelector('[data-validado]').checked = false;
-          detalle.querySelector('.ad-validar').classList.remove('ok');
-        }
-        marcarSucio();
-      });
-    });
-
-    detalle.querySelector('[data-validado]').addEventListener('change', (e) => {
-      if (e.target.checked && !(perfil.luz || []).length) {
-        e.target.checked = false;
-        aviso('Marca al menos una luz antes de validar', true);
-        return;
-      }
-      perfil.validado = e.target.checked;
-      marcarSucio();
-      pintarTest();
-    });
-
-    enlazar(detalle.querySelector('.ad-campos'), perfil, (control) => {
-      // Un select vacío es «automático»: se borra la clave en vez de guardar
-      // una cadena vacía que el motor tomaría por un valor.
-      if (control.value === '' && (control.dataset.clave === 'tamano' || control.dataset.clave === 'stock')) {
-        delete perfil[control.dataset.clave];
-      }
-    });
+    enlazarPerfil(detalle, perfil, pintarTest);
 
     detalle.querySelector('[data-accion="quitar"]').addEventListener('click', () => {
       if (!confirm(`¿Sacar «${p.nombre}» del test?\n\nNo se borra del catálogo: solo deja de recomendarse.`)) return;
@@ -613,6 +648,143 @@ function pintarTest() {
       abiertos.delete(clave);
       marcarSucio();
       pintarTest();
+    });
+  });
+}
+
+/* --- Colecciones del test ------------------------------------------------ */
+
+function coleccionVacia(nombre) {
+  return {
+    activo: false, nombre, articulo: 'la', precio: '', detallePrecio: '', imagen: FOTO_PENDIENTE,
+    descripcion: '', incluye: [], productos: [], perfil: perfilVacio(),
+  };
+}
+
+/* Por qué el test no la ofrecería ahora mismo, en palabras del panel. */
+function estadoColeccion(c) {
+  const faltan = (c.productos || []).filter((pid) => {
+    const p = catalogo.find((x) => x.id === pid);
+    return !p || !p.activo || /vendido|reservado|agotado/i.test(p.badgeTexto || '');
+  });
+  const marcas = [];
+  if (!c.activo) marcas.push(['ad-marca-neutra', 'Apagada']);
+  if (faltan.length) marcas.push(['ad-marca-alerta', `No disponibles: ${faltan.join(', ')}`]);
+  if (!c.perfil?.validado) marcas.push(['ad-marca-alerta', 'Por validar']);
+  if (!marcas.length) marcas.push(['ad-marca-ok', 'Se ofrece en el test']);
+  return marcas;
+}
+
+function detalleColeccion(c) {
+  const casillas = catalogo.map((p) => `<label class="ad-check">
+      <input type="checkbox" data-producto value="${esc(p.id)}"${(c.productos || []).includes(p.id) ? ' checked' : ''}>
+      ${esc(p.nombre)}${p.activo ? '' : ' <span class="pista">(apagado)</span>'}
+    </label>`).join('');
+  return `<div class="ad-detalle">
+    <div class="ad-campos ad-campos-coleccion">
+      ${campo(c, 'nombre', 'Nombre', { pista: 'ej. Colección Cítricos' })}
+      ${campo(c, 'articulo', 'Artículo', { lista: [['la', 'la (la Colección…)'], ['el', 'el (el Set…)']], pista: 'para el mensaje de WhatsApp' })}
+      ${campo(c, 'precio', 'Precio', { pista: 'con el $' })}
+      ${campo(c, 'detallePrecio', 'Bajo el precio', { pista: 'ej. tres bonsáis · envío gratis' })}
+      ${campo(c, 'imagen', 'Foto', { ancho: true, pista: 'si nombra productos, se usan sus fotos' })}
+      ${campo(c, 'descripcion', 'Descripción', { ancho: true, filas: 3 })}
+      <div class="ad-campo ancho">
+        <label>Qué incluye <span class="pista">una línea por punto</span></label>
+        <textarea data-incluye rows="3">${esc((c.incluye || []).join('\n'))}</textarea>
+      </div>
+    </div>
+    <fieldset class="ad-grupo ad-grupo-productos">
+      <legend>Productos del catálogo que incluye</legend>
+      <p class="pista">Si alguno está apagado o vendido, el test no ofrece la colección. Déjalo vacío si las piezas se
+        eligen con el cliente.</p>
+      ${casillas}
+    </fieldset>
+    ${bloquePerfil(c, c.perfil, true)}
+    <div class="ad-pie-detalle">
+      <button type="button" class="ad-btn ad-btn-peligro" data-accion="borrar">Eliminar colección</button>
+    </div>
+  </div>`;
+}
+
+function pintarColecciones() {
+  const contenedor = $('#adColecciones');
+  if (!contenedor) return;
+  if (!test) { contenedor.innerHTML = ''; return; }
+  test.colecciones = test.colecciones || {};
+  const ids = Object.keys(test.colecciones).filter((k) => !k.startsWith('_'));
+
+  if (!ids.length) {
+    contenedor.innerHTML = '<p class="ad-vacio">Todavía no hay colecciones. Empieza con «Colección nueva».</p>';
+    return;
+  }
+
+  contenedor.innerHTML = ids.map((id) => {
+    const c = test.colecciones[id];
+    c.perfil = c.perfil || perfilVacio();
+    const abierto = abiertos.has('col:' + id);
+    const marcas = estadoColeccion(c).map(([clase, texto]) =>
+      `<span class="ad-marca-estado ${clase}">${esc(texto)}</span>`).join('');
+    return `<article class="ad-item${c.activo ? '' : ' apagado'}" data-coleccion="${esc(id)}">
+      <div class="ad-item-cabecera">
+        <label class="ad-switch" title="${c.activo ? 'Apagar' : 'Encender'}">
+          <input type="checkbox" data-accion="activo" aria-label="Encender ${esc(c.nombre)}"${c.activo ? ' checked' : ''}>
+          <span class="ad-switch-pista"></span>
+        </label>
+        <img class="ad-item-mini" src="${esc(c.imagen || FOTO_PENDIENTE)}" alt="" loading="lazy">
+        <div class="ad-item-texto">
+          <span class="ad-item-nombre">${esc(c.nombre)} · ${esc(c.precio || 'sin precio')}</span>
+          <div class="ad-item-sub"><span class="ad-id">${esc(id)}</span>${marcas}</div>
+        </div>
+        <button type="button" class="ad-desplegar" data-accion="abrir">${abierto ? 'Cerrar' : 'Editar'}</button>
+      </div>
+      ${abierto ? detalleColeccion(c) : ''}
+    </article>`;
+  }).join('');
+
+  contenedor.querySelectorAll('.ad-item').forEach((tarjeta) => {
+    const id = tarjeta.dataset.coleccion;
+    const c = test.colecciones[id];
+
+    tarjeta.querySelector('[data-accion="activo"]').addEventListener('change', (e) => {
+      const falta = e.target.checked ? faltaParaPublicar(c.precio, c.imagen) : '';
+      if (falta) {
+        e.target.checked = false;
+        aviso(`No se puede encender «${c.nombre}»: ${falta}.`, true);
+        return;
+      }
+      c.activo = e.target.checked;
+      marcarSucio();
+      pintarColecciones();
+    });
+
+    tarjeta.querySelector('[data-accion="abrir"]').addEventListener('click', () => {
+      const clave = 'col:' + id;
+      if (abiertos.has(clave)) abiertos.delete(clave); else abiertos.add(clave);
+      pintarColecciones();
+    });
+
+    const detalle = tarjeta.querySelector('.ad-detalle');
+    if (!detalle) return;
+
+    enlazar(detalle.querySelector('.ad-campos-coleccion'), c);
+    detalle.querySelector('[data-incluye]').addEventListener('input', (e) => {
+      c.incluye = e.target.value.split('\n').map((x) => x.trim()).filter(Boolean);
+      marcarSucio();
+    });
+    detalle.querySelectorAll('[data-producto]').forEach((casilla) => {
+      casilla.addEventListener('change', () => {
+        c.productos = [...detalle.querySelectorAll('[data-producto]:checked')].map((x) => x.value);
+        marcarSucio();
+      });
+    });
+    enlazarPerfil(detalle, c.perfil, pintarColecciones);
+
+    detalle.querySelector('[data-accion="borrar"]').addEventListener('click', () => {
+      if (!confirm(`¿Eliminar «${c.nombre}»?\n\nSe borra de test-bonsai.json al guardar. Si solo quieres que no se ofrezca, apágala.`)) return;
+      delete test.colecciones[id];
+      abiertos.delete('col:' + id);
+      marcarSucio();
+      pintarColecciones();
     });
   });
 }
@@ -681,6 +853,7 @@ async function cargar() {
     pintarBlog();
     pintarAjustesTest();
     pintarTest();
+    pintarColecciones();
     aviso('Al día');
   } catch (e) {
     $('#adSinBackend').hidden = false;
@@ -693,6 +866,22 @@ async function cargar() {
 $('#adBuscar').addEventListener('input', pintarProductos);
 $('#adSoloProblemas').addEventListener('change', pintarProductos);
 $('#adSoloSinValidar').addEventListener('change', pintarTest);
+
+$('#adNuevaColeccion').addEventListener('click', () => {
+  if (!test) return;
+  const nombre = prompt('Nombre de la colección (ej. Colección Cítricos)');
+  if (!nombre || !nombre.trim()) return;
+  test.colecciones = test.colecciones || {};
+  const base = aSlug(nombre);
+  let id = base;
+  let n = 2;
+  while (test.colecciones[id]) id = `${base}-${n++}`;
+  // Nace apagada y sin validar: se enciende cuando tenga precio, foto y perfil.
+  test.colecciones[id] = coleccionVacia(nombre.trim());
+  abiertos.add('col:' + id);
+  marcarSucio();
+  pintarColecciones();
+});
 $('#adGuardar').addEventListener('click', guardar);
 $('#adPublicar').addEventListener('click', publicar);
 
