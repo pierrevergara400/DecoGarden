@@ -502,7 +502,8 @@
     const t = (id) => textoOpcion(config, id, r[id]);
     if (r.para) partes.push(t('para') + (r.ocasion ? ` (${t('ocasion').toLowerCase()})` : ''));
     if (r.lugar) partes.push(`lugar: ${t('lugar').toLowerCase()}`);
-    if (r.luz) partes.push(`luz: ${t('luz').toLowerCase()}`);
+    // «luz: indirecta abundante», no «luz: luz indirecta abundante».
+    if (r.luz) partes.push(`luz: ${t('luz').toLowerCase().replace(/^luz\s+/, '')}`);
     if (r.cuidado) partes.push(`tiempo: ${t('cuidado').toLowerCase()}`);
     if (r.estilo) partes.push(`estilo: ${t('estilo').toLowerCase()}`);
     if (r.tamano) partes.push(`tamaño: ${t('tamano').toLowerCase()}`);
@@ -527,10 +528,10 @@
     if (!nombres.length) {
       lineas.push('Hola, DecoGarden. Hice el test de bonsáis y no encontré uno para mi espacio. ¿Me ayudan a buscar una opción?');
     } else if (seleccionado) {
-      const elegido = nombreCorto(seleccionado);
-      const otros = nombres.filter((n) => n !== elegido);
+      // Solo el elegido: quien pregunta por uno ya decidió, y nombrarle los
+      // otros en su propio mensaje lo devuelve a dudar. Si ese está vendido,
+      // «Mis respuestas» basta para recomendarle otro en el chat.
       lineas.push(`Hola, DecoGarden. Hice el test de bonsáis y me interesa ${conArticulo(seleccionado)}.`);
-      if (otros.length) lineas.push(`También me recomendaron: ${listaNatural(otros)}.`);
       lineas.push('¿Está disponible y cuánto sale el envío a mi ciudad?');
     } else {
       lineas.push(`Hola, DecoGarden. Hice el test de bonsáis y me recomendaron: ${listaNatural(nombres)}.`);

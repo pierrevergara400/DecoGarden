@@ -447,13 +447,15 @@ async function correr() {
     ok(a.avisos.includes(config.razones.precioPendiente), a.avisos.join(' | '));
   });
 
-  prueba('Mensaje de una colección: «me interesa el Set…» y los tres productos', () => {
+  prueba('Mensaje de una colección: «me interesa el Set…» y nada más', () => {
     const cfg = conColecciones({ a: perfil(), b: perfil(), c: perfil() }, { set: coleccion({ nombre: 'Set Consultorio' }) });
-    const res = correrConColecciones(cfg, [item('a', 30, 30), item('b', 30, 30), item('c', 30, 30)],
-      { para: 'negocio', lugar: 'oficina', luz: 'sol', presupuesto: 'abierto' });
+    const res = correrConColecciones(cfg, [
+      item('a', 30, 30, { nombre: 'Bonsái Guayacán' }), item('b', 30, 30, { nombre: 'Bonsái Azalea' }),
+      item('c', 30, 30, { nombre: 'Bonsái Flor de Araña' }),
+    ], { para: 'negocio', lugar: 'oficina', luz: 'sol', presupuesto: 'abierto' });
     const texto = M.mensajeWhatsApp(cfg, res, {}, res.coleccion.producto);
     ok(texto.includes('me interesa el Set Consultorio'), texto);
-    res.resultados.forEach((c) => ok(texto.includes(M.nombreCorto(c.producto))));
+    res.resultados.forEach((c) => ok(!texto.includes(M.nombreCorto(c.producto)), `nombra ${M.nombreCorto(c.producto)}`));
   });
 
   prueba('Las colecciones reales nombran productos que existen', () => {
@@ -468,11 +470,14 @@ async function correr() {
       item('c', 30, 30, { nombre: 'Bonsái del Árbol del Té' })], cfgWa),
   { para: 'regalo', ocasion: 'cumpleanos', luz: 'sol', presupuesto: '20-40' }, cfgWa);
 
-  prueba('Mensaje de un producto: lo nombra, cita a los otros y pregunta, no afirma', () => {
+  prueba('Mensaje de un producto: solo ese, sin los otros, y pregunta en vez de afirmar', () => {
     const texto = M.mensajeWhatsApp(cfgWa, resWa, { para: 'regalo', ocasion: 'cumpleanos', presupuesto: '20-40' },
       resWa.resultados[1].producto);
     ok(texto.startsWith('Hola, DecoGarden. Hice el test de bonsáis'));
     ok(texto.includes(`me interesa el ${M.nombreCorto(resWa.resultados[1].producto)}`));
+    [0, 2].forEach((i) => ok(!texto.includes(M.nombreCorto(resWa.resultados[i].producto)),
+      `nombra también ${M.nombreCorto(resWa.resultados[i].producto)}`));
+    ok(!/También me recomendaron/.test(texto), texto);
     ok(texto.includes('¿Está disponible y cuánto sale el envío a mi ciudad?'), texto);
     ok(!/precio actualizado/i.test(texto), 'pone el precio en duda');
     ok(/presupuesto: \$20 – \$40/.test(texto), texto);

@@ -133,8 +133,7 @@ bonsái**.
 
 - El test ofrece **como mucho una**, en una tarjeta ancha debajo de los tres
   bonsáis («Para llevar más de uno»), con su propio «Ver detalles» y
-  «Consultar por WhatsApp» («…me interesa el Set Consultorio. También me
-  recomendaron: …»).
+  «Consultar por WhatsApp» («…me interesa el Set Consultorio»).
 - Pasa **el mismo filtro de luz** que los productos, con la misma regla de
   nunca sombra ni interior sin sol.
 - Por precio, sale si cabe en el presupuesto o si la persona eligió uno de
@@ -196,7 +195,6 @@ Número: `whatsapp` en `test-bonsai.json` (hoy `593963136655`). Cada botón abre
 
 ```
 Hola, DecoGarden. Hice el test de bonsáis y me interesa el Guayacán.
-También me recomendaron: Árbol del Té o Mānuka y Junípero Cascada Mini.
 ¿Está disponible y cuánto sale el envío a mi ciudad?
 
 Mis respuestas: Para regalar (cumpleaños) · lugar: escritorio · luz: sol directo
@@ -209,6 +207,10 @@ varias horas · presupuesto: $20 – $40.
   dice que eso se confirma por WhatsApp.
 - **No pide «precio actualizado»** ni habla de «precios de referencia»: el
   precio ya se le enseñó, y ponerlo en duda abre la puerta a regatear.
+- **Solo el que eligió.** Quien pregunta por uno ya decidió: su mensaje no
+  nombra los otros recomendados. Si ese está vendido, «Mis respuestas» basta
+  para ofrecerle otro en el chat. Los tres juntos van solo en el botón «Ver los
+  3 por WhatsApp».
 - «Mis respuestas» lleva solo lo que la persona contestó, no lo deducido.
 - La última línea (`· web/...`) la añade `origen.js` cuando la visita viene de
   una campaña: es lo que te dice en el chat de qué anuncio llegó.
