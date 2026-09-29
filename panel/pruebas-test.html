@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--
+  Pruebas del motor del test «Encuentra tu bonsái ideal».
+  Solo en local: http://localhost:8435/admin/pruebas-test
+  El código de las pruebas está en pruebas-test.js.
+-->
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pruebas del test</title>
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <style>
+    body {
+      font-family: var(--body);
+      background: var(--paper);
+      color: var(--ink);
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: 34px;
+      color: var(--pine-deep);
+    }
+
+    #resumen {
+      font-weight: 700;
+      font-size: 18px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin: 16px 0 4px;
+    }
+
+    #resumen.ok {
+      background: #EAF1E2;
+      color: var(--pine);
+    }
+
+    #resumen.mal {
+      background: #FBE4E0;
+      color: #8A2A1B;
+    }
+
+    #modo {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(25, 83, 43, .12);
+    }
+
+    li span {
+      display: inline-block;
+      width: 20px;
+      font-weight: 700;
+    }
+
+    li.ok span {
+      color: var(--pine);
+    }
+
+    li.mal {
+      color: #8A2A1B;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      font-size: 13px;
+      background: #fff;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin: 6px 0 0 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Pruebas del motor del test</h1>
+  <p id="resumen">Corriendo…</p>
+  <p id="modo"></p>
+  <ul id="lista"></ul>
+  <script src="/assets/js/test-motor.js"></script>
+  <script src="/admin/pruebas-test.js"></script>
+</body>
+
+</html>

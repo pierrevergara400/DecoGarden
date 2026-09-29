@@ -40,7 +40,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
-from rutas import BLOG, CATALOGO, IMAGENES_PRODUCTOS, PANEL, PRODUCTOS, PUBLICO, RAIZ, SCRIPTS
+from rutas import (
+    BLOG, CATALOGO, IMAGENES_PRODUCTOS, PANEL, PRODUCTOS, PUBLICO, RAIZ, SCRIPTS, TEST_BONSAI,
+)
 
 _args = [a for a in sys.argv[1:] if a != "--red"]
 PUERTO = int(_args[0]) if _args else 8435
@@ -160,6 +162,7 @@ def estado_del_sitio():
     catalogo = leer_json(CATALOGO, [])
     productos = leer_json(PRODUCTOS, {})
     blog = leer_json(BLOG, {"posts": []})
+    test = leer_json(TEST_BONSAI, None)
 
     fichas = {k for k in productos if not k.startswith("_")}
 
@@ -177,6 +180,7 @@ def estado_del_sitio():
         "productos": items,
         "blog": blog.get("posts", []) if isinstance(blog, dict) else blog,
         "tomasEsperadas": [etiqueta for _, etiqueta in TOMAS_ESPERADAS],
+        "test": test,
     }
 
 
@@ -215,6 +219,58 @@ def validar_blog(datos):
         if post["slug"] in vistos:
             return f"Hay dos artículos con el slug '{post['slug']}'"
         vistos.add(post["slug"])
+    return None
+
+
+def validar_test(datos):
+    """test-bonsai.json decide qué se le recomienda a quien hace el test.
+
+    Lo que más importa comprobar es la luz: es el filtro de seguridad del
+    motor, y una luz mal escrita ("Sol" en vez de "sol") haría que ese bonsái
+    no coincidiera nunca, o peor, que el perfil pareciera válido sin serlo.
+    """
+    if not isinstance(datos, dict):
+        return "La configuración del test tiene que ser un objeto"
+    preguntas = datos.get("preguntas")
+    if not isinstance(preguntas, list) or not preguntas:
+        return "Faltan las preguntas del test"
+    opciones = {}
+    for p in preguntas:
+        if not isinstance(p, dict) or not p.get("id") or not isinstance(p.get("opciones"), list):
+            return "Hay una pregunta sin id u opciones"
+        opciones[p["id"]] = {o.get("id") for o in p["opciones"] if isinstance(o, dict)}
+    if not re.fullmatch(r"\d{8,15}", str(datos.get("whatsapp", ""))):
+        return "El número de WhatsApp tiene que ir solo con dígitos y el código de país (593...)"
+    ga4 = datos.get("analitica", {}).get("ga4Id", "")
+    if ga4 and not re.fullmatch(r"G-[A-Z0-9]+", ga4):
+        return "El ID de GA4 tiene la forma G-XXXXXXX"
+    perfiles = datos.get("perfiles")
+    if not isinstance(perfiles, dict):
+        return "Faltan los perfiles de los bonsáis"
+    listas = {
+        "luz": "luz", "lugares": "lugar", "estilos": "estilo", "usos": "para",
+        "ocasiones": "ocasion", "cuidado": "cuidado",
+    }
+    for pid, perfil in perfiles.items():
+        if pid.startswith("_"):
+            continue
+        if not isinstance(perfil, dict):
+            return f"El perfil de '{pid}' no es un objeto"
+        for campo, pregunta in listas.items():
+            valores = perfil.get(campo, [])
+            if not isinstance(valores, list):
+                return f"En '{pid}', {campo} tiene que ser una lista"
+            raros = [v for v in valores if v not in opciones.get(pregunta, set())]
+            if raros:
+                return f"En '{pid}', {campo} tiene valores que el test no conoce: {', '.join(map(str, raros))}"
+        prohibidas = [l for l in perfil.get("luz", []) if l in datos.get("lucesProhibidas", [])]
+        if prohibidas:
+            return (f"'{pid}' no puede marcarse para {', '.join(prohibidas)}: DecoGarden no "
+                    "recomienda bonsáis para sombra ni para interior sin sol directo")
+        if not perfil.get("luz"):
+            return f"'{pid}' no tiene ninguna luz marcada: el test no lo recomendaría nunca"
+        if perfil.get("dificultad") not in ("facil", "media", "avanzada"):
+            return f"La dificultad de '{pid}' tiene que ser facil, media o avanzada"
     return None
 
 
@@ -315,6 +371,14 @@ class ManejadorPages(SimpleHTTPRequestHandler):
                         datos = {**anterior, **datos}
                     guardar_json(BLOG, datos)
                     self._json(200, {"ok": True, "guardados": len(datos["posts"])})
+            elif self.command == "PUT" and ruta == "/api/test":
+                datos = self._cuerpo_json()
+                error = validar_test(datos)
+                if error:
+                    self._json(400, {"error": error})
+                else:
+                    guardar_json(TEST_BONSAI, datos)
+                    self._json(200, {"ok": True})
             elif self.command == "POST" and ruta == "/api/publicar":
                 ok, registro = publicar()
                 self._json(200 if ok else 500, {"ok": ok, "registro": registro})
@@ -401,6 +465,9 @@ class ManejadorPages(SimpleHTTPRequestHandler):
         if camino == "/admin" or camino.startswith("/admin/"):
             resto = camino[len("/admin"):].lstrip("/") or "index.html"
             destino = (PANEL / resto).resolve()
+            # Igual que en el sitio, /admin/pruebas-test sirve pruebas-test.html
+            if not destino.exists() and destino.with_name(destino.name + ".html").is_file():
+                destino = destino.with_name(destino.name + ".html")
             # Nada de salirse de panel/ con ../
             return str(destino if destino.is_relative_to(PANEL) else PANEL / "no-existe")
         ruta = super().translate_path(path)

@@ -46,7 +46,7 @@
       <img src="Media/Decogarden 3.svg" alt="" width="30" height="24">
       <div>
         <strong>Panel de DecoGarden</strong>
-        <span id="adRuta">catalog.json · blog.json</span>
+        <span id="adRuta">catalog.json · blog.json · test-bonsai.json</span>
       </div>
     </div>
 
@@ -72,6 +72,9 @@
     </button>
     <button type="button" class="ad-pestana" role="tab" data-panel="blog" aria-selected="false">
       Blog <span class="ad-cuenta" id="adCuentaBlog"></span>
+    </button>
+    <button type="button" class="ad-pestana" role="tab" data-panel="test" aria-selected="false">
+      Test de bonsái <span class="ad-cuenta ad-cuenta-alerta" id="adCuentaTest"></span>
     </button>
   </nav>
 
@@ -115,6 +118,25 @@
         <button type="button" class="ad-btn ad-btn-fantasma" id="adNuevoPost">+ Artículo nuevo</button>
       </div>
       <div id="adBlog" class="ad-lista"></div>
+    </section>
+
+    <!-- ---------------------------------------------------------------- -->
+    <section class="ad-panel" id="panel-test" role="tabpanel">
+      <p class="ad-intro">
+        El perfil de cada bonsái para el test <a href="/encuentra-tu-bonsai" target="_blank" rel="noopener">«Encuentra tu
+          bonsái ideal»</a>. Nombre, precio, foto y disponibilidad salen del catálogo; aquí solo va lo que el test
+        necesita para recomendar. <strong>La luz es un filtro:</strong> marca solo las luces con las que ese árbol vive
+        bien de verdad. Un bonsái vendido, reservado o apagado no se recomienda nunca.
+        <a href="/admin/pruebas-test" target="_blank" rel="noopener">Pruebas del motor</a>
+      </p>
+      <div class="ad-test-ajustes" id="adTestAjustes"></div>
+      <div class="ad-filtros">
+        <label class="ad-check">
+          <input type="checkbox" id="adSoloSinValidar">
+          Solo los que faltan por validar
+        </label>
+      </div>
+      <div id="adTest" class="ad-lista"></div>
     </section>
 
   </main>

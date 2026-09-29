@@ -27,6 +27,8 @@ SCRIPTS = RAIZ / "scripts"
 # viven dentro de public/. El resto de los datos no sale nunca de esta máquina.
 CATALOGO = PUBLICO / "data" / "catalog.json"
 PAGINAS = PUBLICO / "data" / "paginas.json"
+# El test «Encuentra tu bonsái ideal» también lo lee el navegador.
+TEST_BONSAI = PUBLICO / "data" / "test-bonsai.json"
 PRODUCTOS = DATOS / "productos.json"
 BLOG = DATOS / "blog.json"
 ENVIOS = DATOS / "envios.json"

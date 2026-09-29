@@ -73,6 +73,7 @@ Cloudflare reconstruye solo en cuanto llega el push.
 | `datos/blog.json` | Los artículos, con el cuerpo en Markdown |
 | `datos/envios.json` | Transportista, ciudades y oficinas |
 | `public/data/paginas.json` | Generado. Mapa id → URL que usa la home para enlazar las tarjetas |
+| `public/data/test-bonsai.json` | El test «Encuentra tu bonsái ideal»: preguntas, pesos y perfil de cada bonsái |
 
 Y los tres generadores:
 
@@ -194,6 +195,14 @@ Un párrafo con **negrita**, *cursiva* y [un enlace](/blog).
 
 El titular de la página se parte en dos: la segunda mitad sale en cursiva, igual
 que en las fichas de producto. Si lo dejas vacío se usa el título.
+
+## Test «Encuentra tu bonsái ideal»
+
+`/encuentra-tu-bonsai`: unas preguntas y tres recomendaciones con botón a
+WhatsApp. Los perfiles se editan en la pestaña **Test de bonsái** del panel y el
+motor se prueba en `/admin/pruebas-test`. Todo —cómo decide, cómo medirlo, las
+UTM y qué falta validar antes de lanzarlo— en
+[docs/test-bonsai.md](docs/test-bonsai.md).
 
 ## Reseñas de la home
 

@@ -1,0 +1,866 @@
+{
+  "_comentario": "Configuración del test «Encuentra tu bonsái ideal» (/encuentra-tu-bonsai). Las preguntas, los pesos del motor, los textos y el perfil de cada bonsái para el test viven aquí. Nombre, precio, foto, especie, altura y disponibilidad NO se repiten: se leen de catalog.json. Se edita desde el panel (/admin, pestaña «Test») o a mano. Ver docs/test-bonsai.md.",
+  "modoRevision": false,
+  "_modoRevision": "Mientras sea true, el test recomienda también los perfiles con validado:false y enseña un aviso de «vista de revisión». Ponlo en false al publicar: desde ese momento solo se recomiendan los bonsáis cuyo perfil hayas validado.",
+  "whatsapp": "593963136655",
+  "maxPreguntasPrincipales": 6,
+  "analitica": {
+    "ga4Id": "",
+    "_ga4Id": "ID de medición de GA4 (G-XXXXXXX). Vacío = no se carga GA4. Igual que el píxel de Meta, solo se carga si la persona aceptó las cookies."
+  },
+  "tamanos": {
+    "_comentario": "Se deducen de la altura del catálogo: hasta 'pequeno' cm es pequeño, hasta 'mediano' cm es mediano, más es grande. Un perfil puede fijar su tamaño a mano con \"tamano\".",
+    "pequeno": 22,
+    "mediano": 40
+  },
+  "pesos": {
+    "_comentario": "Puntos que suma cada coincidencia. La luz no está aquí a propósito: no puntúa, filtra.",
+    "presupuesto": 4,
+    "lugar": 3,
+    "estilo": 3,
+    "cuidado": 3,
+    "tamano": 2,
+    "tamanoVecino": 1,
+    "ocasion": 2,
+    "uso": 1,
+    "cuidadoExigente": -3,
+    "mismaEspecie": -1.5
+  },
+  "presupuestos": {
+    "hasta-20": {
+      "min": 0,
+      "max": 20,
+      "texto": "hasta $20"
+    },
+    "20-40": {
+      "min": 20,
+      "max": 40,
+      "texto": "$20–$40"
+    },
+    "40-70": {
+      "min": 40,
+      "max": 70,
+      "texto": "$40–$70"
+    },
+    "mas-70": {
+      "min": 70.01,
+      "max": null,
+      "texto": "más de $70"
+    }
+  },
+  "luzAlternativa": {
+    "_comentario": "Si NINGÚN bonsái tolera la luz que contestó la persona, se le enseñan los que funcionarían con esta otra luz, dejando claro que es con esa condición. Vacío = no se sugiere nada.",
+    "poca": "sol",
+    "indirecta": "sol",
+    "sol": "exterior",
+    "exterior": "sol"
+  },
+  "lucesProhibidas": [
+    "poca",
+    "indirecta"
+  ],
+  "_lucesProhibidas": "Regla de DecoGarden: ningún bonsái se recomienda para sombra ni para interior sin sol directo. Aunque un perfil marque estas luces, el motor las ignora y el servidor no deja guardarlas. A quien contesta una de ellas se le ofrece la luzAlternativa, con la condición escrita.",
+  "preguntas": [
+    {
+      "id": "para",
+      "titulo": "¿Para quién es tu bonsái?",
+      "prioridad": 10,
+      "opciones": [
+        {
+          "id": "mi",
+          "texto": "Para mí",
+          "icono": "persona"
+        },
+        {
+          "id": "regalo",
+          "texto": "Para regalar",
+          "icono": "regalo"
+        },
+        {
+          "id": "hogar",
+          "texto": "Para decorar mi hogar",
+          "icono": "casa"
+        },
+        {
+          "id": "negocio",
+          "texto": "Para mi oficina o negocio",
+          "icono": "maletin"
+        }
+      ]
+    },
+    {
+      "id": "ocasion",
+      "titulo": "¿Qué ocasión celebras?",
+      "ayuda": "Así afinamos la recomendación y te ayudamos con el regalo.",
+      "condicional": true,
+      "omitible": true,
+      "prioridad": 5,
+      "mostrarSi": {
+        "para": [
+          "regalo"
+        ]
+      },
+      "opciones": [
+        {
+          "id": "cumpleanos",
+          "texto": "Cumpleaños",
+          "icono": "pastel"
+        },
+        {
+          "id": "aniversario",
+          "texto": "Aniversario",
+          "icono": "corazon"
+        },
+        {
+          "id": "agradecimiento",
+          "texto": "Agradecimiento",
+          "icono": "manos"
+        },
+        {
+          "id": "inauguracion",
+          "texto": "Inauguración de casa o negocio",
+          "icono": "llave"
+        },
+        {
+          "id": "otra",
+          "texto": "Otra ocasión",
+          "icono": "estrella"
+        }
+      ]
+    },
+    {
+      "id": "lugar",
+      "titulo": "¿Dónde te gustaría colocarlo?",
+      "tituloRegalo": "¿Dónde crees que lo pondrá?",
+      "prioridad": 9,
+      "opciones": [
+        {
+          "id": "sala",
+          "texto": "Sala",
+          "icono": "sofa"
+        },
+        {
+          "id": "dormitorio",
+          "texto": "Dormitorio",
+          "icono": "cama"
+        },
+        {
+          "id": "escritorio",
+          "texto": "Escritorio",
+          "icono": "escritorio"
+        },
+        {
+          "id": "oficina",
+          "texto": "Oficina o recepción",
+          "icono": "edificio"
+        },
+        {
+          "id": "jardin",
+          "texto": "Jardín o terraza",
+          "icono": "arbol"
+        },
+        {
+          "id": "nose",
+          "texto": "Todavía no lo sé",
+          "icono": "duda"
+        }
+      ]
+    },
+    {
+      "id": "luz",
+      "titulo": "¿Cuánta luz recibe ese lugar?",
+      "ayuda": "Un truco: a mediodía pon la mano sobre el sitio. Sombra nítida = sol directo. Sombra suave = luz indirecta. Casi sin sombra = poca luz.",
+      "prioridad": 10,
+      "inferir": [
+        {
+          "si": {
+            "lugar": [
+              "jardin"
+            ]
+          },
+          "valor": "exterior"
+        }
+      ],
+      "opciones": [
+        {
+          "id": "sol",
+          "texto": "Sol directo varias horas",
+          "detalle": "El sol toca la planta al menos 3 o 4 horas: ventana soleada, balcón.",
+          "icono": "sol"
+        },
+        {
+          "id": "indirecta",
+          "texto": "Luz indirecta abundante",
+          "detalle": "Cerca de una ventana muy clara, pero el sol no le da directo.",
+          "icono": "solNube"
+        },
+        {
+          "id": "poca",
+          "texto": "Poca luz",
+          "detalle": "Lejos de ventanas, o hace falta encender la luz de día.",
+          "icono": "luna"
+        },
+        {
+          "id": "exterior",
+          "texto": "Exterior con luz natural",
+          "detalle": "Patio, terraza o balcón abierto.",
+          "icono": "arbol"
+        },
+        {
+          "id": "nose",
+          "texto": "No estoy seguro",
+          "detalle": "Te mostramos opciones y te decimos qué luz necesita cada una.",
+          "icono": "duda"
+        }
+      ]
+    },
+    {
+      "id": "cuidado",
+      "titulo": "¿Cuánto tiempo puedes dedicarle?",
+      "omitible": true,
+      "prioridad": 4,
+      "inferir": [
+        {
+          "si": {
+            "para": [
+              "regalo"
+            ]
+          },
+          "valor": "sencillo"
+        }
+      ],
+      "opciones": [
+        {
+          "id": "diario",
+          "texto": "Unos minutos al día",
+          "icono": "reloj"
+        },
+        {
+          "id": "semanal",
+          "texto": "Varias veces por semana",
+          "icono": "calendario"
+        },
+        {
+          "id": "aprender",
+          "texto": "Me gusta cuidar plantas y aprender",
+          "icono": "brote"
+        },
+        {
+          "id": "sencillo",
+          "texto": "Prefiero algo sencillo",
+          "icono": "pluma"
+        }
+      ]
+    },
+    {
+      "id": "estilo",
+      "titulo": "¿Qué estilo te gusta más?",
+      "omitible": true,
+      "prioridad": 3,
+      "opciones": [
+        {
+          "id": "elegante",
+          "texto": "Elegante y minimalista",
+          "imagen": "Images/bonsai-junipero-shakan.webp"
+        },
+        {
+          "id": "frondoso",
+          "texto": "Natural y frondoso",
+          "imagen": "Images/bonsai-bosque-guayacanes.webp"
+        },
+        {
+          "id": "exotico",
+          "texto": "Exótico y llamativo",
+          "imagen": "Images/bonsai-junipero-dorado.webp"
+        },
+        {
+          "id": "delicado",
+          "texto": "Pequeño y delicado",
+          "imagen": "Images/bonsai-arbol-del-te.webp"
+        },
+        {
+          "id": "sorpresa",
+          "texto": "Sorpréndeme",
+          "icono": "chispas"
+        }
+      ]
+    },
+    {
+      "id": "tamano",
+      "titulo": "¿Qué tamaño prefieres?",
+      "omitible": true,
+      "prioridad": 2,
+      "inferir": [
+        {
+          "si": {
+            "lugar": [
+              "escritorio"
+            ]
+          },
+          "valor": "pequeno"
+        }
+      ],
+      "opciones": [
+        {
+          "id": "pequeno",
+          "texto": "Pequeño, para escritorio",
+          "detalle": "Hasta unos 22 cm",
+          "icono": "tamanoS"
+        },
+        {
+          "id": "mediano",
+          "texto": "Mediano, para mesa o repisa",
+          "detalle": "Entre 23 y 40 cm",
+          "icono": "tamanoM"
+        },
+        {
+          "id": "grande",
+          "texto": "Grande, como protagonista",
+          "detalle": "Más de 40 cm",
+          "icono": "tamanoL"
+        },
+        {
+          "id": "indiferente",
+          "texto": "No tengo preferencia",
+          "icono": "duda"
+        }
+      ]
+    },
+    {
+      "id": "presupuesto",
+      "titulo": "¿Cuál es tu presupuesto?",
+      "ayuda": "Precios de referencia. El precio actualizado y el envío te los confirmamos por WhatsApp.",
+      "prioridad": 9,
+      "opciones": [
+        {
+          "id": "hasta-20",
+          "texto": "Hasta $20",
+          "icono": "moneda"
+        },
+        {
+          "id": "20-40",
+          "texto": "$20 – $40",
+          "icono": "moneda"
+        },
+        {
+          "id": "40-70",
+          "texto": "$40 – $70",
+          "icono": "moneda"
+        },
+        {
+          "id": "mas-70",
+          "texto": "Más de $70",
+          "icono": "moneda"
+        },
+        {
+          "id": "abierto",
+          "texto": "Quiero conocer opciones",
+          "icono": "lupa"
+        }
+      ]
+    }
+  ],
+  "textos": {
+    "titulo3": "Estos 3 bonsáis podrían enamorarte",
+    "titulo2": "Estos 2 bonsáis podrían enamorarte",
+    "titulo1": "Este bonsái podría enamorarte",
+    "tituloAlternativas": "Lo más cercano a lo que buscas",
+    "etiquetaPrimero": "Tu mejor coincidencia",
+    "notaPrecios": "Precios de referencia. Te confirmamos por WhatsApp la disponibilidad, el precio actualizado y el costo de envío a tu ciudad.",
+    "exacto": "Los elegimos según tu espacio, tu estilo y tu presupuesto.",
+    "parcial": "No encontramos tres que cumplan todo, así que completamos con alternativas cercanas. Te explicamos en cada una qué cambia.",
+    "pocos": "Son los únicos de nuestro catálogo que encajan con las condiciones de tu espacio. No te vamos a rellenar la lista con uno que no vaya a vivir bien.",
+    "fueraPresupuesto": "Ahora mismo no tenemos bonsáis en ese rango. Estos son los más cercanos a tu presupuesto.",
+    "luzAlternativa": "Ninguno de nuestros bonsáis vive bien a largo plazo con {luz}. Si puedes darle {alternativa}, estos sí funcionarían:",
+    "luzDudosa": "Como no estás seguro de la luz, te indicamos en cada uno lo que necesita. Revísalo antes de decidir o pregúntanos por WhatsApp.",
+    "sinCompatibles": "Con esas condiciones no tenemos un bonsái que pueda vivir bien, y preferimos decírtelo antes que venderte uno que no va a durar. Escríbenos y buscamos juntos una alternativa.",
+    "revision": "Vista de revisión: los perfiles de luz y cuidado de algunos bonsáis todavía no están validados por DecoGarden."
+  },
+  "razones": {
+    "lugar": {
+      "sala": "Tiene presencia para una sala",
+      "dormitorio": "Encaja en un dormitorio",
+      "escritorio": "Cabe bien en un escritorio",
+      "oficina": "Luce en una oficina o recepción",
+      "jardin": "Vive a gusto al aire libre"
+    },
+    "estilo": {
+      "elegante": "Tiene la línea elegante y sobria que buscas",
+      "frondoso": "Follaje abundante y natural, como te gusta",
+      "exotico": "Tiene ese toque llamativo que buscas",
+      "delicado": "Pequeño y de detalle fino"
+    },
+    "luz": {
+      "sol": "Aprovecha el sol directo de tu espacio",
+      "exterior": "Hecho para vivir con luz natural de exterior",
+      "indirecta": "Se adapta a luz indirecta abundante",
+      "poca": "Tolera poca luz"
+    },
+    "cuidado": {
+      "diario": "Con unos minutos al día le basta",
+      "semanal": "Se lleva bien con cuidados varias veces por semana",
+      "aprender": "Te da con qué aprender y practicar",
+      "sencillo": "De los más fáciles de mantener"
+    },
+    "tamano": {
+      "pequeno": "Tamaño compacto, como pediste",
+      "mediano": "Tamaño mediano, ideal para mesa o repisa",
+      "grande": "Grande, para que sea protagonista"
+    },
+    "ocasion": {
+      "cumpleanos": "Un regalo de cumpleaños que sigue creciendo",
+      "aniversario": "Tiene el simbolismo que pide un aniversario",
+      "agradecimiento": "Un detalle de agradecimiento que se recuerda",
+      "inauguracion": "Ideal para estrenar casa o negocio",
+      "otra": "Funciona muy bien como regalo"
+    },
+    "uso": {
+      "regalo": "Buena opción para regalar",
+      "negocio": "Da buena imagen en un espacio de trabajo"
+    },
+    "presupuesto": "Entra en tu presupuesto ({rango})",
+    "sobrePresupuesto": "Se pasa ${diferencia} de tu presupuesto",
+    "bajoPresupuesto": "Cuesta menos de lo que pensabas invertir",
+    "cuidadoExigente": "Pide algo más de atención de la que buscas",
+    "condicionLuz": "Solo si puedes darle {alternativa}",
+    "luzDudosa": "Necesita: {luzTexto}"
+  },
+  "dificultades": {
+    "facil": "Fácil",
+    "media": "Intermedio",
+    "avanzada": "Avanzado"
+  },
+  "perfiles": {
+    "_comentario": "Un perfil por id de catalog.json. Sin perfil, el bonsái no entra en el test. 'luz' es el FILTRO de seguridad: las luces con las que puede vivir. Las demás listas suman puntos. 'validado' lo pone DecoGarden cuando confirma los datos.",
+    "juniperus-shakan": {
+      "validado": true,
+      "fuente": "Luz, nivel y ubicación tomados de su ficha publicada (FAQ). Riego: texto de la ficha del Junípero Cascada. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "sala",
+        "jardin",
+        "oficina"
+      ],
+      "estilos": [
+        "elegante",
+        "frondoso"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "inauguracion",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Junto a una ventana soleada o en el balcón.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "guayacan": {
+      "validado": true,
+      "fuente": "Nivel principiante según su ficha. Luz y ubicación: propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "sala",
+        "jardin",
+        "oficina"
+      ],
+      "estilos": [
+        "frondoso"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "inauguracion",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Terraza, patio o junto a la ventana con más sol.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "arbol-del-te": {
+      "validado": true,
+      "fuente": "Nivel principiante y uso en escritorio según su ficha. Luz: propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "escritorio",
+        "sala",
+        "dormitorio",
+        "jardin"
+      ],
+      "estilos": [
+        "delicado",
+        "exotico"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "aniversario",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Escritorio o repisa junto a una ventana soleada.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "bonsai-mini-juniperus-horizontalis": {
+      "validado": true,
+      "fuente": "Luz, ubicación y riego tomados de su ficha publicada (FAQ y bloque de cuidados). Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "jardin"
+      ],
+      "estilos": [
+        "delicado",
+        "exotico"
+      ],
+      "usos": [
+        "mi",
+        "regalo"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo buena parte del día; es de exterior",
+      "ubicacionTexto": "Balcón, patio o el alféizar de una ventana muy iluminada. Encerrado y sin sol se apaga.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "azalea": {
+      "validado": true,
+      "fuente": "Sin ficha propia. Todo el perfil es una propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "exterior"
+      ],
+      "lugares": [
+        "jardin"
+      ],
+      "estilos": [
+        "exotico"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "aniversario",
+        "agradecimiento",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "aprender"
+      ],
+      "dificultad": "media",
+      "luzTexto": "exterior con luz abundante, protegida del sol fuerte del mediodía",
+      "ubicacionTexto": "Terraza o patio con luz de mañana.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "pino-estrella": {
+      "validado": true,
+      "fuente": "Sin ficha propia. Todo el perfil es una propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "jardin",
+        "sala"
+      ],
+      "estilos": [
+        "elegante"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "aniversario",
+        "agradecimiento",
+        "inauguracion",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender"
+      ],
+      "dificultad": "media",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Exterior o junto a la ventana con más sol.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "bequia-imperial": {
+      "validado": true,
+      "fuente": "Tamaño, ocasiones y nivel según su ficha publicada. Luz: propuesta conservadora pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "exterior"
+      ],
+      "lugares": [
+        "sala",
+        "jardin",
+        "oficina"
+      ],
+      "estilos": [
+        "elegante",
+        "frondoso"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "hogar",
+        "negocio"
+      ],
+      "ocasiones": [
+        "aniversario",
+        "inauguracion",
+        "agradecimiento"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "luz natural abundante",
+      "ubicacionTexto": "Un lugar protagonista con buena luz natural.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "bosque-guayacanes": {
+      "validado": true,
+      "fuente": "Sin ficha propia. Todo el perfil es una propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "jardin",
+        "sala",
+        "oficina"
+      ],
+      "estilos": [
+        "frondoso"
+      ],
+      "usos": [
+        "hogar",
+        "negocio",
+        "regalo",
+        "mi"
+      ],
+      "ocasiones": [
+        "inauguracion",
+        "aniversario"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender"
+      ],
+      "dificultad": "media",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Terraza o un rincón amplio con mucho sol.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "bequia-pequena": {
+      "validado": true,
+      "fuente": "Tamaño y uso como regalo según su ficha publicada. Luz: propuesta conservadora pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "exterior"
+      ],
+      "lugares": [
+        "escritorio",
+        "sala",
+        "jardin"
+      ],
+      "estilos": [
+        "delicado",
+        "elegante"
+      ],
+      "usos": [
+        "mi",
+        "regalo"
+      ],
+      "ocasiones": [
+        "aniversario",
+        "cumpleanos",
+        "agradecimiento",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "luz natural abundante",
+      "ubicacionTexto": "Escritorio o repisa con buena luz natural.",
+      "riego": "Pídenos la ficha de cuidado de esta especie."
+    },
+    "junipero-dorado": {
+      "validado": true,
+      "fuente": "Sin ficha propia. Todo el perfil es una propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "jardin",
+        "escritorio",
+        "sala"
+      ],
+      "estilos": [
+        "exotico",
+        "delicado"
+      ],
+      "usos": [
+        "mi",
+        "regalo"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "agradecimiento",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Junto a una ventana soleada o en el balcón.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "junipero-shakan-mayor": {
+      "validado": true,
+      "fuente": "Sin ficha propia. Todo el perfil es una propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "escritorio",
+        "sala",
+        "jardin",
+        "oficina"
+      ],
+      "estilos": [
+        "elegante",
+        "exotico"
+      ],
+      "usos": [
+        "mi",
+        "regalo",
+        "negocio"
+      ],
+      "ocasiones": [
+        "aniversario",
+        "agradecimiento",
+        "inauguracion"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Junto a una ventana soleada o en el balcón.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    },
+    "flor-arana": {
+      "validado": true,
+      "fuente": "Sin ficha propia. Todo el perfil es una propuesta pendiente de confirmar. Validado por DecoGarden el 2026-09-29.",
+      "luz": [
+        "sol",
+        "exterior"
+      ],
+      "lugares": [
+        "jardin",
+        "escritorio"
+      ],
+      "estilos": [
+        "exotico"
+      ],
+      "usos": [
+        "mi",
+        "regalo"
+      ],
+      "ocasiones": [
+        "cumpleanos",
+        "otra"
+      ],
+      "cuidado": [
+        "diario",
+        "semanal",
+        "aprender",
+        "sencillo"
+      ],
+      "dificultad": "facil",
+      "luzTexto": "sol directo varias horas al día",
+      "ubicacionTexto": "Junto a una ventana soleada o en el balcón.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
+    }
+  }
+}

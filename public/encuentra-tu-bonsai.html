@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--
+  Test «Encuentra tu bonsái ideal».
+
+  Esta página es solo el esqueleto: la pantalla de inicio va escrita aquí para
+  que se pinte al instante desde un enlace de WhatsApp o de un anuncio, y el
+  resto (preguntas, resultados, detalle) lo dibuja assets/js/test.js.
+
+  Las piezas, separadas a propósito:
+    data/test-bonsai.json      preguntas, pesos, textos y perfil de cada bonsái
+    data/catalog.json          nombre, precio, foto y disponibilidad (el de la home)
+    assets/js/test-motor.js    el motor: decide qué preguntar y qué recomendar
+    assets/js/test.js          la interfaz, la sesión, WhatsApp y la medición
+    assets/css/test.css        el diseño
+
+  La página no se indexa (ver el meta robots de abajo): quita esa línea si
+  quieres que salga en Google. Detalle en docs/test-bonsai.md.
+-->
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F8F4E7">
+  <meta name="robots" content="noindex, follow">
+  <title>Encuentra tu bonsái ideal — DecoGarden</title>
+  <meta name="description"
+    content="Responde unas preguntas y descubre 3 bonsáis que combinan con tu espacio, tu estilo y tu presupuesto. Solo toma 1 minuto.">
+  <link rel="canonical" href="https://decogarden.pages.dev/encuentra-tu-bonsai">
+  <link rel="icon" href="Media/Decogarden 3.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="Icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Lo que se ve al compartir el enlace por WhatsApp, Instagram o Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://decogarden.pages.dev/encuentra-tu-bonsai">
+  <meta property="og:title" content="¿Qué bonsái es para ti? Descúbrelo en 1 minuto">
+  <meta property="og:description"
+    content="Responde unas preguntas y te recomendamos 3 bonsáis que combinan con tu espacio, tu estilo y tu presupuesto.">
+  <meta property="og:image" content="https://decogarden.pages.dev/Images/og-preview.jpg">
+  <meta property="og:image:width" content="1254">
+  <meta property="og:image:height" content="1254">
+  <meta property="og:image:alt" content="Bonsái de DecoGarden en su maceta">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
+  </noscript>
+
+  <link rel="stylesheet" href="assets/css/tokens.css?v=024e730f">
+  <link rel="stylesheet" href="assets/css/test.css?v=f337de5c">
+  <link rel="preload" as="image" href="Images/bonsai-junipero-shakan.webp" fetchpriority="high">
+  <link rel="preload" as="fetch" href="data/test-bonsai.json" crossorigin>
+  <link rel="preload" as="fetch" href="data/catalog.json" crossorigin>
+
+  <script src="assets/js/pixel.js?v=976cea85"></script>
+  <script src="assets/js/origen.js?v=dc7e211b"></script>
+</head>
+
+<body>
+  <a class="t-saltar" href="#t-app">Saltar al contenido</a>
+
+  <header class="t-barra">
+    <a class="t-logo" href="/" aria-label="DecoGarden, ir a la página principal">
+      <img src="Media/Decogarden 2.svg" width="132" height="22" alt="DecoGarden">
+    </a>
+    <div class="t-progreso" id="tProgreso" hidden>
+      <span class="t-progreso-texto" id="tProgresoTexto"></span>
+      <div class="t-progreso-riel" role="progressbar" aria-label="Progreso del test" aria-valuemin="0"
+        aria-valuemax="100" aria-valuenow="0" id="tProgresoRiel">
+        <span class="t-progreso-relleno" id="tProgresoRelleno"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="t-revision" id="tRevision" role="note" hidden></div>
+
+  <main class="t-app" id="t-app" tabindex="-1">
+
+    <!-- Inicio: escrito aquí para que pinte sin esperar al JavaScript -->
+    <section class="t-pantalla t-inicio activa" id="tInicio" aria-labelledby="tInicioTitulo">
+      <div class="t-inicio-foto">
+        <img src="Images/bonsai-junipero-shakan.webp" width="1024" height="1024"
+          alt="Bonsái Juniperus sobre una mesa de madera, junto a una ventana" fetchpriority="high">
+      </div>
+      <div class="t-inicio-texto">
+        <p class="t-antetitulo">Test de bonsáis · DecoGarden</p>
+        <h1 id="tInicioTitulo">Encuentra el bonsái <em>perfecto para ti</em></h1>
+        <p class="t-sub">Responde unas preguntas y descubre 3 bonsáis que combinan con tu espacio, estilo y presupuesto.
+        </p>
+
+        <div class="t-reanudar" id="tReanudar" hidden>
+          <span>Tienes un test a medias.</span>
+          <button type="button" class="t-enlace" id="tContinuar">Continuar donde lo dejé</button>
+        </div>
+
+        <button type="button" class="t-btn t-btn-principal t-btn-grande" id="tEmpezar">
+          Encontrar mi bonsái
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+        <p class="t-nota-inicio">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+          Solo toma 1 minuto
+        </p>
+
+        <ul class="t-confianza">
+          <li>Sin registrarte ni dejar tus datos</li>
+          <li>Solo te recomendamos bonsáis que pueden vivir en tu espacio</li>
+          <li>Cultivados en San Antonio de Ibarra</li>
+        </ul>
+      </div>
+      <noscript>
+        <p class="t-noscript">El test necesita JavaScript. También puedes
+          <a href="https://wa.me/593963136655?text=Hola%2C%20DecoGarden.%20Quiero%20que%20me%20ayuden%20a%20elegir%20un%20bons%C3%A1i.">escribirnos
+            por WhatsApp</a> y te ayudamos a elegir.</p>
+      </noscript>
+    </section>
+
+    <!-- Una pregunta por pantalla -->
+    <section class="t-pantalla t-pregunta" id="tPregunta" aria-live="polite" hidden></section>
+
+    <!-- Mientras se calcula -->
+    <section class="t-pantalla t-cargando" id="tCargando" hidden>
+      <div class="t-brote" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><path d="M24 42V22" /><path d="M24 26c0-8-6-12-14-12 0 8 6 12 14 12Z" /><path d="M24 22c0-7 5-11 12-11 0 7-5 11-12 11Z" /></svg>
+      </div>
+      <p role="status">Buscando los bonsáis que mejor van contigo…</p>
+    </section>
+
+    <!-- Resultados -->
+    <section class="t-pantalla t-resultados" id="tResultados" hidden></section>
+
+    <!-- Error de carga -->
+    <section class="t-pantalla t-error" id="tError" hidden>
+      <h2>No pudimos cargar el test</h2>
+      <p>Puede ser la conexión. Prueba otra vez o escríbenos y te ayudamos a elegir por WhatsApp.</p>
+      <div class="t-acciones">
+        <button type="button" class="t-btn t-btn-principal" id="tReintentar">Intentar de nuevo</button>
+        <a class="t-btn t-btn-wa" id="tErrorWa" target="_blank" rel="noopener"
+          href="https://wa.me/593963136655?text=Hola%2C%20DecoGarden.%20Quiero%20que%20me%20ayuden%20a%20elegir%20un%20bons%C3%A1i.">Escribir
+          por WhatsApp</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Detalle de un bonsái -->
+  <dialog class="t-detalle" id="tDetalle" aria-labelledby="tDetalleNombre">
+    <div class="t-detalle-caja" id="tDetalleCaja"></div>
+  </dialog>
+
+  <footer class="t-pie">
+    <p>DecoGarden · Vivero de bonsáis en San Antonio de Ibarra, Imbabura — Ecuador</p>
+    <nav aria-label="Enlaces legales">
+      <a href="/">Inicio</a>
+      <a href="/privacidad">Privacidad</a>
+      <a href="/terminos">Términos</a>
+      <a href="#" data-abrir-cookies>Cookies</a>
+    </nav>
+  </footer>
+
+  <script src="assets/js/test-motor.js?v=15198a6b" defer></script>
+  <script src="assets/js/test.js?v=4169d2e7" defer></script>
+</body>
+
+</html>

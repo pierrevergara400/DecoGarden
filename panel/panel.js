@@ -27,6 +27,7 @@ const BADGES = [
 
 let catalogo = [];
 let posts = [];
+let test = null; // test-bonsai.json entero; null si todavía no existe
 let tomasEsperadas = [];
 let abiertos = new Set();
 let sucio = false;
@@ -199,6 +200,7 @@ function pintarProductos() {
       p.activo = e.target.checked;
       marcarSucio();
       pintarProductos();
+      pintarTest();
     });
 
     tarjeta.querySelector('[data-accion="abrir"]').addEventListener('click', () => {
@@ -403,6 +405,218 @@ function pintarBlog() {
   });
 }
 
+/* --- Test de bonsái ------------------------------------------------------ */
+
+/* Qué listas del perfil se marcan con casillas, y de qué pregunta del test
+   salen sus opciones. Así los textos del panel son los mismos que ve el
+   cliente, y no hay forma de escribir una luz que el test no conozca. */
+const GRUPOS_PERFIL = [
+  ['luz', 'luz', 'Luz con la que vive bien (filtro)', 'filtro'],
+  ['lugares', 'lugar', 'Dónde encaja'],
+  ['estilos', 'estilo', 'Estilos'],
+  ['usos', 'para', 'Para quién'],
+  ['ocasiones', 'ocasion', 'Ocasiones (regalo)'],
+  ['cuidado', 'cuidado', 'Tiempo de cuidado que acepta'],
+];
+
+const DIFICULTADES = [['facil', 'Fácil'], ['media', 'Intermedio'], ['avanzada', 'Avanzado']];
+
+function opcionesDe(preguntaId) {
+  const pregunta = (test?.preguntas || []).find((p) => p.id === preguntaId);
+  return (pregunta?.opciones || []).filter((o) => o.id !== 'nose' && o.id !== 'sorpresa');
+}
+
+function perfilVacio() {
+  return {
+    validado: false, fuente: '', luz: [], lugares: [], estilos: [], usos: [],
+    ocasiones: [], cuidado: [], dificultad: 'facil', luzTexto: '', ubicacionTexto: '', riego: '',
+  };
+}
+
+function estadoPerfil(p) {
+  const perfil = test?.perfiles?.[p.id];
+  if (!perfil) return ['ad-marca-neutra', 'Fuera del test'];
+  if (/vendido|reservado|agotado/i.test(p.badgeTexto || '') || perfil.stock === 'agotado') {
+    return ['ad-marca-neutra', 'Agotado: no se recomienda'];
+  }
+  if (!perfil.validado) return ['ad-marca-alerta', 'Por validar'];
+  return ['ad-marca-ok', 'Validado'];
+}
+
+function grupoCasillas(perfil, clave, preguntaId, titulo, clase = '') {
+  const valores = perfil[clave] || [];
+  // Sombra e interior sin sol no se ofrecen nunca: la casilla está, pero apagada.
+  const prohibidas = clave === 'luz' ? (test?.lucesProhibidas || []) : [];
+  const casillas = opcionesDe(preguntaId).map((o) => {
+    const vetada = prohibidas.includes(o.id);
+    return `<label class="ad-check"${vetada ? ' title="DecoGarden no recomienda bonsáis para esta luz"' : ''}>
+      <input type="checkbox" data-lista="${esc(clave)}" value="${esc(o.id)}"${
+        valores.includes(o.id) && !vetada ? ' checked' : ''}${vetada ? ' disabled' : ''}>
+      ${esc(o.texto)}${vetada ? ' <span class="pista">(nunca)</span>' : ''}
+    </label>`;
+  }).join('');
+  return `<fieldset class="ad-grupo ${clase}"><legend>${esc(titulo)}</legend>${casillas}</fieldset>`;
+}
+
+function detallePerfil(p, perfil) {
+  return `<div class="ad-detalle">
+    <div class="ad-grupos">
+      ${GRUPOS_PERFIL.map(([clave, pregunta, titulo, clase]) => grupoCasillas(perfil, clave, pregunta, titulo, clase)).join('')}
+    </div>
+    <div class="ad-campos">
+      ${campo(perfil, 'dificultad', 'Nivel de cuidado', { lista: DIFICULTADES })}
+      ${campo(perfil, 'tamano', 'Tamaño', {
+        lista: [['', `Según la altura (${p.altura || 'sin altura'})`], ['pequeno', 'Pequeño'], ['mediano', 'Mediano'], ['grande', 'Grande']],
+      })}
+      ${campo(perfil, 'stock', 'Disponibilidad en el test', {
+        lista: [['', 'Según la etiqueta del catálogo'], ['agotado', 'Agotado: no recomendar']],
+      })}
+      ${campo(perfil, 'luzTexto', 'Luz, en palabras del cliente', { ancho: true, pista: 'sale tras «Necesita:» y en el detalle' })}
+      ${campo(perfil, 'ubicacionTexto', 'Dónde ponerlo', { ancho: true })}
+      ${campo(perfil, 'riego', 'Riego', { ancho: true })}
+      ${campo(perfil, 'fuente', 'De dónde salen estos datos', { ancho: true, filas: 2, pista: 'nota interna, no sale en pantalla' })}
+    </div>
+    <label class="ad-validar${perfil.validado ? ' ok' : ''}">
+      <input type="checkbox" data-validado${perfil.validado ? ' checked' : ''}>
+      <span><strong>Validado por DecoGarden.</strong> Confirmo la luz, el cuidado y la ubicación de este bonsái.
+        Con el modo revisión apagado, solo se recomiendan los validados.</span>
+    </label>
+    <div class="ad-pie-detalle">
+      <button type="button" class="ad-btn ad-btn-peligro" data-accion="quitar">Sacar del test</button>
+    </div>
+  </div>`;
+}
+
+function pintarAjustesTest() {
+  const caja = $('#adTestAjustes');
+  if (!test) {
+    caja.innerHTML = '<p class="ad-vacio">No se encontró public/data/test-bonsai.json.</p>';
+    return;
+  }
+  test.analitica = test.analitica || {};
+  caja.innerHTML = `
+    <label class="ad-check">
+      <input type="checkbox" id="adModoRevision"${test.modoRevision ? ' checked' : ''}>
+      Modo revisión
+    </label>
+    <div class="ad-campo">
+      <label for="adTestWa">WhatsApp <span class="pista">con 593, sin +</span></label>
+      <input id="adTestWa" value="${esc(test.whatsapp || '')}" inputmode="numeric">
+    </div>
+    <div class="ad-campo">
+      <label for="adTestGa4">GA4 <span class="pista">G-XXXXXXX, opcional</span></label>
+      <input id="adTestGa4" value="${esc(test.analitica.ga4Id || '')}">
+    </div>
+    <p class="pista">Con el modo revisión encendido el test recomienda también los perfiles sin validar y lo avisa en
+      pantalla. Apágalo al lanzar el test: desde ahí solo salen los validados.</p>`;
+
+  $('#adModoRevision').addEventListener('change', (e) => { test.modoRevision = e.target.checked; marcarSucio(); });
+  $('#adTestWa').addEventListener('input', (e) => { test.whatsapp = e.target.value.replace(/\D/g, ''); marcarSucio(); });
+  $('#adTestGa4').addEventListener('input', (e) => { test.analitica.ga4Id = e.target.value.trim(); marcarSucio(); });
+}
+
+function pintarTest() {
+  const contenedor = $('#adTest');
+  if (!test) { contenedor.innerHTML = ''; return; }
+  test.perfiles = test.perfiles || {};
+  const soloPendientes = $('#adSoloSinValidar').checked;
+  const pendientes = catalogo.filter((p) => test.perfiles[p.id] && !test.perfiles[p.id].validado);
+  $('#adCuentaTest').textContent = pendientes.length || '';
+
+  const visibles = catalogo.filter((p) => !soloPendientes || pendientes.includes(p));
+  if (!visibles.length) {
+    contenedor.innerHTML = '<p class="ad-vacio">Todos los perfiles están validados.</p>';
+    return;
+  }
+
+  contenedor.innerHTML = visibles.map((p) => {
+    const perfil = test.perfiles[p.id];
+    const abierto = abiertos.has('test:' + p.id);
+    const [clase, texto] = estadoPerfil(p);
+    const boton = perfil
+      ? `<button type="button" class="ad-desplegar" data-accion="abrir">${abierto ? 'Cerrar' : 'Editar'}</button>`
+      : '<button type="button" class="ad-desplegar" data-accion="crear">Añadir al test</button>';
+    return `<article class="ad-item${perfil && p.activo ? '' : ' apagado'}" data-id="${esc(p.id)}">
+      <div class="ad-item-cabecera">
+        <img class="ad-item-mini" src="${esc(p.imagen)}" alt="" loading="lazy">
+        <div class="ad-item-texto">
+          <span class="ad-item-nombre">${esc(p.nombre)} · ${esc(p.precio)}</span>
+          <div class="ad-item-sub">
+            <span class="ad-id">luz: ${esc((perfil?.luz || []).join(', ') || '—')}</span>
+            <span class="ad-marca-estado ${clase}">${esc(texto)}</span>
+            ${p.activo ? '' : '<span class="ad-marca-estado ad-marca-neutra">Apagado en el catálogo</span>'}
+          </div>
+        </div>
+        ${boton}
+      </div>
+      ${perfil && abierto ? detallePerfil(p, perfil) : ''}
+    </article>`;
+  }).join('');
+
+  contenedor.querySelectorAll('.ad-item').forEach((tarjeta) => {
+    const p = catalogo.find((x) => x.id === tarjeta.dataset.id);
+    const clave = 'test:' + p.id;
+
+    tarjeta.querySelector('[data-accion="crear"]')?.addEventListener('click', () => {
+      test.perfiles[p.id] = perfilVacio();
+      abiertos.add(clave);
+      marcarSucio();
+      pintarTest();
+    });
+
+    tarjeta.querySelector('[data-accion="abrir"]')?.addEventListener('click', () => {
+      if (abiertos.has(clave)) abiertos.delete(clave); else abiertos.add(clave);
+      pintarTest();
+    });
+
+    const detalle = tarjeta.querySelector('.ad-detalle');
+    if (!detalle) return;
+    const perfil = test.perfiles[p.id];
+
+    detalle.querySelectorAll('[data-lista]').forEach((casilla) => {
+      casilla.addEventListener('change', () => {
+        const lista = casilla.dataset.lista;
+        perfil[lista] = [...detalle.querySelectorAll(`[data-lista="${lista}"]:checked`)].map((c) => c.value);
+        // Cambiar la luz deshace la validación: alguien tiene que volver a
+        // confirmarla, no heredar un «validado» que se dio con otros datos.
+        if (lista === 'luz' && perfil.validado) {
+          perfil.validado = false;
+          detalle.querySelector('[data-validado]').checked = false;
+          detalle.querySelector('.ad-validar').classList.remove('ok');
+        }
+        marcarSucio();
+      });
+    });
+
+    detalle.querySelector('[data-validado]').addEventListener('change', (e) => {
+      if (e.target.checked && !(perfil.luz || []).length) {
+        e.target.checked = false;
+        aviso('Marca al menos una luz antes de validar', true);
+        return;
+      }
+      perfil.validado = e.target.checked;
+      marcarSucio();
+      pintarTest();
+    });
+
+    enlazar(detalle.querySelector('.ad-campos'), perfil, (control) => {
+      // Un select vacío es «automático»: se borra la clave en vez de guardar
+      // una cadena vacía que el motor tomaría por un valor.
+      if (control.value === '' && (control.dataset.clave === 'tamano' || control.dataset.clave === 'stock')) {
+        delete perfil[control.dataset.clave];
+      }
+    });
+
+    detalle.querySelector('[data-accion="quitar"]').addEventListener('click', () => {
+      if (!confirm(`¿Sacar «${p.nombre}» del test?\n\nNo se borra del catálogo: solo deja de recomendarse.`)) return;
+      delete test.perfiles[p.id];
+      abiertos.delete(clave);
+      marcarSucio();
+      pintarTest();
+    });
+  });
+}
+
 /* --- Guardar y publicar -------------------------------------------------- */
 
 /* El catálogo se guarda como estaba, sin los campos que solo existen para
@@ -419,8 +633,9 @@ async function guardar() {
   try {
     await api('PUT', '/api/catalogo', catalogoParaGuardar());
     await api('PUT', '/api/blog', { posts });
+    if (test) await api('PUT', '/api/test', test);
     sucio = false;
-    aviso('Guardado en catalog.json y blog.json');
+    aviso('Guardado en catalog.json, blog.json y test-bonsai.json');
     return true;
   } catch (e) {
     $('#adGuardar').disabled = false;
@@ -458,11 +673,14 @@ async function cargar() {
     catalogo = datos.productos;
     posts = datos.blog;
     tomasEsperadas = datos.tomasEsperadas;
+    test = datos.test;
     sucio = false;
     $('#adGuardar').disabled = true;
     pintarProductos();
     pintarFotos();
     pintarBlog();
+    pintarAjustesTest();
+    pintarTest();
     aviso('Al día');
   } catch (e) {
     $('#adSinBackend').hidden = false;
@@ -474,6 +692,7 @@ async function cargar() {
 
 $('#adBuscar').addEventListener('input', pintarProductos);
 $('#adSoloProblemas').addEventListener('change', pintarProductos);
+$('#adSoloSinValidar').addEventListener('change', pintarTest);
 $('#adGuardar').addEventListener('click', guardar);
 $('#adPublicar').addEventListener('click', publicar);
 
