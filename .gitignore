@@ -40,7 +40,7 @@ scratchpad*
 # ==========================================================================
 # OJO: lo que generan los scripts SÍ se versiona:
 #
-#   public/producto-*.html   public/blog*.html
+#   public/bonsais/*.html    public/blog.html   public/blog/*.html
 #   public/data/paginas.json public/sitemap.xml
 #
 # Cloudflare Pages publica la carpeta public/ tal cual, sin ejecutar nada. Si

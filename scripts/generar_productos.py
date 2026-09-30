@@ -8,8 +8,11 @@ Genera las páginas de producto a partir de:
 Uso:
     python scripts/generar_productos.py
 
-Crea/actualiza un archivo producto-<slug>.html por cada producto de productos.json.
-No edites esos archivos a mano: se sobrescriben en cada ejecución.
+Crea/actualiza bonsais/<slug>.html (la URL /bonsais/<slug>) por cada producto de
+productos.json. No edites esos archivos a mano: se sobrescriben en cada ejecución.
+
+También escribe el sitemap, paginas.json y las redirecciones de las URLs
+antiguas (/producto-x y /blog-x) en _redirects.
 """
 
 import html
@@ -25,10 +28,11 @@ except ImportError:  # sin Pillow se sigue publicando, con la imagen genérica
     Image = None
 
 from rutas import (
-    BLOG, CATALOGO, ENVIOS as RUTA_ENVIOS, IMAGENES_PRODUCTOS, PAGINAS,
-    PLANTILLAS, PRODUCTOS, PUBLICO, SITEMAP, SITIO,
+    BLOG, CARPETA_BLOG, CARPETA_BONSAIS, CATALOGO, ENVIOS as RUTA_ENVIOS,
+    IMAGENES_PRODUCTOS, PAGINAS, PLANTILLAS, PRODUCTOS, PUBLICO, REDIRECCIONES,
+    SITEMAP, SITIO,
 )
-from sellado import sellar_assets
+from sellado import rutas_absolutas, sellar_assets
 
 PLANTILLA = PLANTILLAS / "producto.html"
 
@@ -99,14 +103,14 @@ def esc(texto):
 def ruta_publica(archivo):
     """La URL con la que se anuncia un archivo, que no es su nombre en disco.
 
-    Cloudflare Pages sirve producto-x.html en /producto-x y redirige la versión
+    Cloudflare Pages sirve bonsais/x.html en /bonsais/x y redirige la versión
     con extensión con un 308. Si declaramos las URLs con .html —en el canonical,
     el sitemap o los enlaces internos— estamos anunciando rutas que redirigen.
     Esta es la única función que traduce archivo -> URL: en disco los archivos
     siguen llamándose igual.
 
-        producto-guayacan.html -> producto-guayacan
-        index.html             -> ''   (para que SITIO + ruta dé la home)
+        bonsais/guayacan.html -> bonsais/guayacan
+        index.html            -> ''   (para que SITIO + ruta dé la home)
     """
     if archivo == "index.html":
         return ""
@@ -778,7 +782,8 @@ def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
     for marca, valor in reemplazos.items():
         salida = salida.replace(marca, valor)
 
-    salida = sellar_assets(salida)
+    # La ficha vive en /bonsais/: sin esto, cada Images/... buscaría /bonsais/Images/...
+    salida = sellar_assets(rutas_absolutas(salida))
 
     pendientes = re.findall(r"\{\{[A-Z_]+\}\}", salida)
     if pendientes:
@@ -789,6 +794,7 @@ def generar(pid, datos, catalogo, con_pagina, cortos, plantilla):
     anterior = destino.read_text(encoding="utf-8") if destino.exists() else None
     cambio = anterior != salida
     if cambio:
+        destino.parent.mkdir(parents=True, exist_ok=True)
         destino.write_text(salida, encoding="utf-8")
     return archivo, cambio
 
@@ -804,10 +810,9 @@ def sellar_paginas_a_mano():
     alimenta el lastmod del sitemap y no queremos falsearla en cada ejecución.
     """
     tocadas = []
+    # Solo la raíz: las fichas (bonsais/) y los artículos (blog/) ya salen
+    # sellados de su generador.
     for ruta in sorted(PUBLICO.glob("*.html")):
-        # Las fichas ya pasaron por sellar_assets al generarse
-        if ruta.name.startswith("producto-"):
-            continue
         antes = ruta.read_text(encoding="utf-8")
         despues = sellar_assets(antes)
         if despues != antes:
@@ -833,7 +838,7 @@ def main():
 
     # Mapa id -> archivo, para que los "relacionados" enlacen a su página si existe.
     con_pagina = {
-        pid: f"producto-{datos.get('slug', pid)}.html" for pid, datos in paginas.items()
+        pid: f"{CARPETA_BONSAIS}/{datos.get('slug', pid)}.html" for pid, datos in paginas.items()
     }
 
     print(f"Generando {len(paginas) - len(ocultos)} página(s) de producto"
@@ -854,6 +859,12 @@ def main():
         if ficha.exists():
             ficha.unlink()
             print(f"  DEL {ficha.name} (oculto en catalog.json)")
+
+    # Las fichas con la URL antigua (producto-x.html en la raíz) se retiran:
+    # ahora viven en bonsais/, y _redirects lleva a quien llegue por la vieja.
+    for vieja in sorted(PUBLICO.glob("producto-*.html")):
+        vieja.unlink()
+        print(f"  DEL {vieja.name} (ahora en /{CARPETA_BONSAIS}/)")
 
     creados, cambiados = [], []
     for pid, datos in paginas.items():
@@ -885,8 +896,60 @@ def main():
     escribir_sitemap(creados, cambiados)
     print("  OK  sitemap.xml")
 
+    total = escribir_redirecciones(creados)
+    print(f"  OK  _redirects ({total} URL(s) antiguas)")
+
     sin_cambio = len(creados) - len(cambiados)
     print(f"\nListo: {len(cambiados)} actualizada(s), {sin_cambio} sin cambios.")
+
+
+def articulos_publicados():
+    """Los artículos que están en línea: publicados y con su página en disco."""
+    return [
+        post for post in leer_articulos()
+        if not post.get("borrador")
+        and (PUBLICO / CARPETA_BLOG / f"{post['slug']}.html").is_file()
+    ]
+
+
+INICIO_REDIRECCIONES = "# --- URLs antiguas: las escribe generar_productos.py, no las edites ---"
+FIN_REDIRECCIONES = "# --- fin de las URLs antiguas ---"
+
+
+def escribir_redirecciones(fichas):
+    """Las URLs antiguas llevan a las nuevas con un 301, en _redirects.
+
+    Hasta octubre de 2026 las fichas eran /producto-x y los artículos /blog-x.
+    Esos enlaces ya circulan por WhatsApp, Instagram, anuncios y el índice de
+    Google: el 301 los lleva a la nueva y le dice a Google que el cambio es
+    definitivo, así la página conserva lo que ya había ganado.
+
+    Se escriben entre dos marcas y se rehacen en cada ejecución; lo demás del
+    archivo es tuyo y no se toca. Van todas las páginas actuales, también las
+    que nacieron después del cambio: una regla de más no hace daño.
+    """
+    lineas = [INICIO_REDIRECCIONES]
+    for archivo in sorted(fichas):
+        nueva = "/" + ruta_publica(archivo)
+        slug = nueva.rsplit("/", 1)[1]
+        lineas += [f"/producto-{slug}  {nueva}  301", f"/producto-{slug}.html  {nueva}  301"]
+    for post in articulos_publicados():
+        nueva = f"/{CARPETA_BLOG}/{post['slug']}"
+        lineas += [f"/blog-{post['slug']}  {nueva}  301", f"/blog-{post['slug']}.html  {nueva}  301"]
+    # /bonsais a secas no es una página: lleva al catálogo de la home.
+    lineas += [f"/{CARPETA_BONSAIS}  /#catalogo  302", f"/{CARPETA_BONSAIS}/  /#catalogo  302"]
+    lineas.append(FIN_REDIRECCIONES)
+    bloque = "\n".join(lineas)
+
+    actual = REDIRECCIONES.read_text(encoding="utf-8") if REDIRECCIONES.exists() else ""
+    patron = re.compile(re.escape(INICIO_REDIRECCIONES) + r".*?" + re.escape(FIN_REDIRECCIONES), re.S)
+    if patron.search(actual):
+        nuevo = patron.sub(lambda _: bloque, actual)
+    else:
+        nuevo = actual.rstrip("\n") + "\n\n" + bloque + "\n"
+    if nuevo != actual:
+        REDIRECCIONES.write_text(nuevo, encoding="utf-8")
+    return sum(1 for ln in lineas if ln.endswith(" 301")) // 2
 
 
 def escribir_sitemap(archivos, cambiados):
@@ -943,13 +1006,10 @@ def escribir_sitemap(archivos, cambiados):
     # editas el texto. Un retoque del CSS o de la plantilla no mueve esa fecha, y
     # está bien que no la mueva: lo que le importa a Google es si cambió lo que
     # se lee, no cómo se ve.
-    publicados = [
-        post for post in leer_articulos()
-        if not post.get("borrador") and (PUBLICO / f"blog-{post['slug']}.html").is_file()
-    ]
+    publicados = articulos_publicados()
     for post in publicados:
         urls.append((
-            SITIO + f"blog-{post['slug']}",
+            SITIO + f"{CARPETA_BLOG}/{post['slug']}",
             post.get("actualizado") or post["fecha"],
             "monthly",
             "0.6",

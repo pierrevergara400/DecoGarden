@@ -17,6 +17,24 @@ from rutas import PUBLICO
 
 _ENLACE = re.compile(r'(href|src)="([^"?:]+\.(?:css|js))(?:\?v=[0-9a-f]+)?"')
 
+# Una ruta relativa que empieza por una de estas carpetas del sitio, justo
+# después de una comilla o de un paréntesis: en atributos (src="Images/..."),
+# en JSON y JS dentro de la página ("imagen": "Images/...") y en url(...).
+_RELATIVA = re.compile(r'(["\'(])(?=(?:assets|Images|Media|Icons|data)/|manifest\.json)')
+
+
+def rutas_absolutas(html):
+    """Images/x.webp -> /Images/x.webp en toda la página.
+
+    Las fichas y los artículos viven en /bonsais/ y /blog/: desde ahí una ruta
+    relativa buscaría /bonsais/Images/x.webp, que no existe. Las rutas del
+    catálogo y de las plantillas se escriben relativas (así sirven en la home),
+    y esto las fija al generar, estén donde estén: en un src, en el JSON de la
+    pasarela o en el Markdown de un artículo. Una URL completa no se toca: ahí
+    la carpeta va después de una barra, no de una comilla.
+    """
+    return _RELATIVA.sub(r"\1/", html)
+
 
 def sellar_assets(html):
     """Pega la huella a cada href/src local que apunte a un .css o un .js."""

@@ -632,9 +632,9 @@
   function cargarDatos() {
     if (!cargando) {
       cargando = Promise.all([
-        leerJSON('data/test-bonsai.json'),
-        leerJSON('data/catalog.json'),
-        leerJSON('data/paginas.json', true),
+        leerJSON('/data/test-bonsai.json'),
+        leerJSON('/data/catalog.json'),
+        leerJSON('/data/paginas.json', true),
       ]).then(([config, catalogo, paginas]) => {
         estado.config = config;
         estado.productos = M.prepararProductos(catalogo, config);

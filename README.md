@@ -10,6 +10,8 @@ genera aquí, en tu máquina, a partir de unos pocos archivos de datos.
 public/        Lo que se publica. Cloudflare sirve esta carpeta tal cual
                (Build output directory = public, sin comando de build).
   *.html         las páginas: a mano (index, legales, 404) o generadas
+  bonsais/       las fichas, generadas: bonsais/guayacan.html -> /bonsais/guayacan
+  blog/          los artículos, generados: blog/<slug>.html -> /blog/<slug>
   assets/css/    estilos
   assets/js/     scripts del navegador
   data/          catalog.json y paginas.json, que lee app.js en el navegador
@@ -79,8 +81,8 @@ Y los tres generadores:
 
 | Script | Qué hace |
 | --- | --- |
-| `scripts/generar_blog.py` | `blog.json` → `blog.html` y un `blog-<slug>.html` por artículo |
-| `scripts/generar_productos.py` | `productos.json` + `catalog.json` → las fichas, el sitemap y el sellado de assets |
+| `scripts/generar_blog.py` | `blog.json` → `blog.html` (/blog) y un `blog/<slug>.html` por artículo |
+| `scripts/generar_productos.py` | `productos.json` + `catalog.json` → las fichas en `bonsais/`, el sitemap, las redirecciones y el sellado de assets |
 | `scripts/generar_guia.py` | La guía de cuidado cifrada |
 | `scripts/generar_qr.py` | Los QR de la guía de cuidado |
 
@@ -92,9 +94,22 @@ escribió el primero. El botón "Publicar" del panel los corre en ese orden.
 python scripts/generar_blog.py && python scripts/generar_productos.py
 ```
 
-Los `producto-*.html`, `blog*.html`, `sitemap.xml` y `paginas.json` se
+Los `bonsais/*.html`, `blog.html`, `blog/*.html`, `sitemap.xml` y `paginas.json` se
 sobrescriben enteros en cada ejecución: no los edites a mano, edita la plantilla
 (`plantillas/`) o el JSON.
+
+### Las URLs
+
+Las fichas viven en `/bonsais/<slug>` y los artículos en `/blog/<slug>`. Hasta
+octubre de 2026 eran `/producto-<slug>` y `/blog-<slug>`: esos enlaces siguen
+circulando (WhatsApp, Instagram, anuncios, Google), así que `generar_productos.py`
+escribe en `public/_redirects` un 301 de cada URL antigua a la nueva, entre dos
+marcas que rehace en cada ejecución. El resto de `_redirects` es tuyo.
+
+Las plantillas y el catálogo usan rutas relativas (`Images/...`), que sirven en
+la home. Como las fichas y los artículos están un nivel más abajo, los
+generadores las pasan a absolutas (`/Images/...`) al escribir la página
+(`rutas_absolutas()` en `scripts/sellado.py`).
 
 ## Envíos
 

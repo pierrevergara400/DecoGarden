@@ -309,7 +309,7 @@ function detallePost(post) {
   return `<div class="ad-detalle">
     <div class="ad-campos">
       ${campo(post, 'titulo', 'Título', { ancho: true })}
-      ${campo(post, 'slug', 'Slug', { pista: 'la URL: /blog-<slug>' })}
+      ${campo(post, 'slug', 'Slug', { pista: 'la URL: /blog/<slug>' })}
       ${campo(post, 'fecha', 'Fecha', { tipo: 'date' })}
       ${campoTitular(post)}
       ${campo(post, 'tituloSeo', 'Título para Google', { ancho: true, pista: 'hasta ~60 letras; si lo dejas vacío se usa el título' })}
@@ -352,7 +352,7 @@ function pintarBlog() {
         <div class="ad-item-texto">
           <span class="ad-item-nombre">${esc(post.titulo || 'Sin título')}</span>
           <div class="ad-item-sub">
-            <span class="ad-id">${esc(post.fecha || 'sin fecha')} · /blog-${esc(post.slug)}</span>
+            <span class="ad-id">${esc(post.fecha || 'sin fecha')} · /blog/${esc(post.slug)}</span>
             ${publicado
               ? '<span class="ad-marca-estado ad-marca-ok">Publicado</span>'
               : '<span class="ad-marca-estado ad-marca-neutra">Borrador</span>'}

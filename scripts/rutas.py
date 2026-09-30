@@ -35,5 +35,13 @@ ENVIOS = DATOS / "envios.json"
 
 IMAGENES_PRODUCTOS = PUBLICO / "Images" / "productos"
 SITEMAP = PUBLICO / "sitemap.xml"
+REDIRECCIONES = PUBLICO / "_redirects"
+
+# Las páginas generadas viven en carpetas, y la carpeta es la URL:
+#   public/bonsais/guayacan.html          -> /bonsais/guayacan
+#   public/blog/bonsai-de-interior.html   -> /blog/bonsai-de-interior
+# El índice del blog sigue siendo public/blog.html -> /blog.
+CARPETA_BONSAIS = "bonsais"
+CARPETA_BLOG = "blog"
 
 SITIO = "https://decogarden.pages.dev/"

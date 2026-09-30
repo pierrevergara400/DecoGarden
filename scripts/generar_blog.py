@@ -8,8 +8,9 @@ Genera el blog a partir de:
 Uso:
     python scripts/generar_blog.py
 
-Crea/actualiza un blog-<slug>.html por artículo publicado, más blog.html con el
-índice. No edites esos archivos a mano: se sobrescriben en cada ejecución.
+Crea/actualiza blog/<slug>.html (la URL /blog/<slug>) por artículo publicado,
+más blog.html con el índice (/blog). No edites esos archivos a mano: se
+sobrescriben en cada ejecución.
 
 Este script no toca el sitemap: de eso se encarga generar_productos.py, que
 recorre todas las páginas al final. El orden correcto para publicar es siempre:
@@ -25,8 +26,8 @@ import re
 import sys
 from datetime import date
 
-from rutas import BLOG, PLANTILLAS, PUBLICO, SITIO
-from sellado import sellar_assets
+from rutas import BLOG, CARPETA_BLOG, PLANTILLAS, PUBLICO, SITIO
+from sellado import rutas_absolutas, sellar_assets
 
 try:
     from PIL import Image
@@ -180,7 +181,7 @@ def esta_publicado(post):
 
 
 def archivo_de(post):
-    return f"blog-{post['slug']}.html"
+    return f"{CARPETA_BLOG}/{post['slug']}.html"
 
 
 def ruta_publica(archivo):
@@ -309,6 +310,7 @@ def escribir_si_cambia(ruta, contenido):
     contenido = sellar_assets(contenido)
     if ruta.exists() and ruta.read_text(encoding="utf-8") == contenido:
         return False
+    ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(contenido, encoding="utf-8")
     return True
 
@@ -346,7 +348,8 @@ def generar_post(post, publicados, plantilla):
         "{{RELACIONADOS}}": relacionados(post, publicados),
         "{{SCHEMA}}": schema_articulo(post),
     })
-    return archivo, escribir_si_cambia(PUBLICO / archivo, salida)
+    # El artículo vive en /blog/: sin esto, cada Images/... buscaría /blog/Images/...
+    return archivo, escribir_si_cambia(PUBLICO / archivo, rutas_absolutas(salida))
 
 
 def generar_indice(publicados, plantilla):
@@ -452,6 +455,12 @@ def main():
         if ruta.exists():
             ruta.unlink()
             print(f"  DEL {ruta.name} (borrador)")
+
+    # Los artículos con la URL antigua (blog-x.html en la raíz) se retiran:
+    # ahora viven en blog/, y _redirects lleva a quien llegue por la vieja.
+    for vieja in sorted(PUBLICO.glob("blog-*.html")):
+        vieja.unlink()
+        print(f"  DEL {vieja.name} (ahora en /{CARPETA_BLOG}/)")
 
     plantilla_post = PLANTILLA_POST.read_text(encoding="utf-8")
     for post in publicados:

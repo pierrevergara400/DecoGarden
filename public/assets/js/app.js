@@ -275,8 +275,8 @@ async function loadCatalog() {
   try {
     // paginas.json es opcional: si falta, las tarjetas siguen yendo a WhatsApp.
     const [res, resPaginas] = await Promise.all([
-      fetch('data/catalog.json'),
-      fetch('data/paginas.json').catch(() => null)
+      fetch('/data/catalog.json'),
+      fetch('/data/paginas.json').catch(() => null)
     ]);
     if (resPaginas && resPaginas.ok) {
       paginasProducto = await resPaginas.json().catch(() => ({}));

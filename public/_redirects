@@ -6,3 +6,26 @@
 # http://localhost:8435/admin sigue abriendo el panel.
 /admin       /  302
 /admin.html  /  302
+
+# --- URLs antiguas: las escribe generar_productos.py, no las edites ---
+/producto-arbol-del-te  /bonsais/arbol-del-te  301
+/producto-arbol-del-te.html  /bonsais/arbol-del-te  301
+/producto-bequia-imperial  /bonsais/bequia-imperial  301
+/producto-bequia-imperial.html  /bonsais/bequia-imperial  301
+/producto-bequia-pequena  /bonsais/bequia-pequena  301
+/producto-bequia-pequena.html  /bonsais/bequia-pequena  301
+/producto-gardenia  /bonsais/gardenia  301
+/producto-gardenia.html  /bonsais/gardenia  301
+/producto-guayacan  /bonsais/guayacan  301
+/producto-guayacan.html  /bonsais/guayacan  301
+/producto-junipero-cascada-mini  /bonsais/junipero-cascada-mini  301
+/producto-junipero-cascada-mini.html  /bonsais/junipero-cascada-mini  301
+/producto-junipero-shakan  /bonsais/junipero-shakan  301
+/producto-junipero-shakan.html  /bonsais/junipero-shakan  301
+/blog-cada-cuanto-regar-un-bonsai  /blog/cada-cuanto-regar-un-bonsai  301
+/blog-cada-cuanto-regar-un-bonsai.html  /blog/cada-cuanto-regar-un-bonsai  301
+/blog-bonsai-de-interior  /blog/bonsai-de-interior  301
+/blog-bonsai-de-interior.html  /blog/bonsai-de-interior  301
+/bonsais  /#catalogo  302
+/bonsais/  /#catalogo  302
+# --- fin de las URLs antiguas ---

@@ -524,10 +524,16 @@ class ManejadorPages(SimpleHTTPRequestHandler):
             return str(destino if destino.is_relative_to(PANEL) else PANEL / "no-existe")
         ruta = super().translate_path(path)
         destino = Path(ruta)
-        if not destino.exists():
-            con_html = Path(f"{ruta}.html")
+        if not destino.is_file():
+            # /blog es blog.html aunque exista también la carpeta blog/ (la de
+            # los artículos): el .html manda, como en Cloudflare.
+            con_html = Path(ruta.rstrip("/\\") + ".html")
             if con_html.is_file():
                 return str(con_html)
+            # Una carpeta sin index.html es un 404 en Cloudflare, no un listado
+            # de archivos: /bonsais/ o /Images/ no enseñan lo que hay dentro.
+            if destino.is_dir() and not (destino / "index.html").is_file():
+                return str(PUBLICO / "no-existe")
         return ruta
 
     def send_error(self, code, message=None, explain=None):
