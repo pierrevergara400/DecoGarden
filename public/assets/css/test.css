@@ -379,14 +379,16 @@ h2 em {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 45%;
+  /* La foto real tiene la maceta en el tercio de abajo: se encuadra un poco
+     más abajo del centro para que no quede bajo el degradado. */
+  object-position: 50% 62%;
 }
 
 .t-inicio-foto::after {
   content: "";
   position: absolute;
   inset: auto 0 0;
-  height: 40%;
+  height: 22%;
   background: linear-gradient(to bottom, rgba(248, 244, 231, 0), var(--paper));
 }
 

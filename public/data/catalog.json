@@ -11,7 +11,7 @@
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
-    "imagen": "Images/bonsai-junipero-shakan.webp",
+    "imagen": "Images/productos/juniperus-shakan/1-principal.webp",
     "whatsappMsg": "Hola DecoGarden, vi el Juniperus Estilo Shakan y me gustaria empezar con ese. Esta disponible?"
   },
   {
@@ -26,7 +26,7 @@
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
-    "imagen": "Images/bonsai-guayacan.webp",
+    "imagen": "Images/productos/guayacan/1-principal.webp",
     "whatsappMsg": "Hola DecoGarden, me interesa el Guayacan del catalogo. Esta disponible?"
   },
   {
@@ -41,7 +41,7 @@
     "detallePrecio": "ficha + garantía + soporte",
     "badgeClass": "ok",
     "badgeTexto": "Disponible",
-    "imagen": "Images/bonsai-arbol-del-te.webp",
+    "imagen": "Images/productos/arbol-del-te/1-principal.webp",
     "whatsappMsg": "Hola DecoGarden, quiero saber mas sobre el Arbol del Te Manuka. Esta disponible?"
   },
   {
@@ -58,6 +58,36 @@
     "badgeTexto": "Disponible",
     "imagen": "Images/bonsai-junipero-cascada-mini.webp",
     "whatsappMsg": "Hola DecoGarden, me interesa el Junipero Cascada Mini de 20 cm. Esta disponible?"
+  },
+  {
+    "id": "gardenia",
+    "nombre": "Bonsái Gardenia",
+    "especie": "Gardenia jasminoides",
+    "altura": "25 cm",
+    "edad": "5 años",
+    "categoria": "entrada",
+    "descripcion": "Hojas de un verde brillante y flores blancas de perfume suave. La Gardenia es para quien quiere un bonsái que no solo se vea bonito, sino que florezca en su espacio y lo llene de aroma.",
+    "precio": "$30",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "ok",
+    "badgeTexto": "Disponible",
+    "imagen": "Images/productos/gardenia/1-principal.webp",
+    "whatsappMsg": "Hola DecoGarden, me interesa el Bonsai de Gardenia. Esta disponible?"
+  },
+  {
+    "id": "bequia-imperial",
+    "nombre": "Bonsái Bequia Imperial o Árbol de la Vida",
+    "especie": "Tsuga canadensis",
+    "altura": "60 cm",
+    "edad": "24 años",
+    "categoria": "coleccion",
+    "descripcion": "24 años de historia condensados en un solo árbol. Esta Bequia, el Árbol de la Vida, es de nuestras piezas más grandes y exclusivas: la que eliges cuando quieres algo que se sienta como un legado, no solo una planta.",
+    "precio": "$150",
+    "detallePrecio": "ficha + garantía + soporte",
+    "badgeClass": "last",
+    "badgeTexto": "Última pieza",
+    "imagen": "Images/bonsai-bequia-imperial.webp",
+    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Imperial, el Arbol de la Vida. Esta disponible?"
   },
   {
     "id": "azalea",
@@ -89,21 +119,6 @@
     "imagen": "Images/bonsai-pino-estrella.webp",
     "whatsappMsg": "Hola DecoGarden, me encanto el Bonsai de Pino Estrella. Esta disponible?",
     "activo": false
-  },
-  {
-    "id": "bequia-imperial",
-    "nombre": "Bonsái Bequia Imperial o Árbol de la Vida",
-    "especie": "Tsuga canadensis",
-    "altura": "60 cm",
-    "edad": "24 años",
-    "categoria": "coleccion",
-    "descripcion": "24 años de historia condensados en un solo árbol. Esta Bequia, el Árbol de la Vida, es de nuestras piezas más grandes y exclusivas: la que eliges cuando quieres algo que se sienta como un legado, no solo una planta.",
-    "precio": "$150",
-    "detallePrecio": "ficha + garantía + soporte",
-    "badgeClass": "last",
-    "badgeTexto": "Última pieza",
-    "imagen": "Images/bonsai-bequia-imperial.webp",
-    "whatsappMsg": "Hola DecoGarden, me interesa la Bequia Imperial, el Arbol de la Vida. Esta disponible?"
   },
   {
     "id": "bosque-guayacanes",
@@ -179,22 +194,6 @@
     "badgeTexto": "Última pieza",
     "imagen": "Images/bonsai-flor-arana.webp",
     "whatsappMsg": "Hola DecoGarden, me interesa la Flor de Araña. Esta disponible?"
-  },
-  {
-    "id": "gardenia",
-    "nombre": "Bonsái Gardenia",
-    "especie": "",
-    "altura": "",
-    "edad": "",
-    "categoria": "entrada",
-    "descripcion": "DEMO — Ficha por completar: foto, precio, especie, altura, edad y esta descripción. Está apagado: no sale en la web ni en el test hasta que lo completes y lo enciendas.",
-    "precio": "Por definir",
-    "detallePrecio": "ficha + garantía + soporte",
-    "badgeClass": "ok",
-    "badgeTexto": "Disponible",
-    "imagen": "Images/pendiente.svg",
-    "whatsappMsg": "Hola DecoGarden, me interesa el Bonsai de Gardenia. Esta disponible?",
-    "activo": false
   },
   {
     "id": "calamondin",

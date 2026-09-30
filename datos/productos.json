@@ -555,5 +555,98 @@
         "nombre": "Guayacán"
       }
     ]
+  },
+  "gardenia": {
+    "nombreCorto": "Gardenia",
+    "h1": [
+      "Bonsái",
+      "Gardenia"
+    ],
+    "metaDescripcion": "Bonsái Gardenia (Gardenia jasminoides), 25 cm y 5 años de formación, de flores blancas y perfume suave. Incluye ficha de cuidado, garantía de llegada sana y acompañamiento por WhatsApp durante 30 días.",
+    "beneficios": [
+      "Flores blancas de perfume suave",
+      "Guía de cuidado incluida",
+      "Acompañamiento 30 días por WhatsApp"
+    ],
+    "specsExtra": {
+      "Maceta": "Incluida",
+      "Nivel": "Intermedio",
+      "Flor": "Blanca, perfumada"
+    },
+    "resumen": "Hojas de un verde brillante y flores blancas de perfume suave. La Gardenia es para quien quiere un bonsái que no solo se vea bonito, sino que florezca en su espacio y lo llene de aroma.",
+    "porQue": [
+      {
+        "titulo": "Se disfruta también con el olfato",
+        "texto": "Sus flores blancas se abren entre hojas de verde brillante y dejan un perfume suave en el ambiente. Es de los pocos bonsáis que se notan antes de verlos."
+      },
+      {
+        "titulo": "Cinco años de formación",
+        "texto": "Detrás de sus 25 centímetros hay cinco años de trabajo en el vivero. El tronco y la copa ya tienen su forma: no empiezas de cero."
+      },
+      {
+        "titulo": "Llega listo, no en kit",
+        "texto": "Con ficha de cuidado, garantía de llegada sana y acompañamiento por WhatsApp durante tus primeros 30 días. Lo desempacas y ya está en su sitio."
+      }
+    ],
+    "cuidado": [
+      {
+        "etiqueta": "Para quien quiere flores en casa",
+        "titulo": "Un bonsái que perfuma",
+        "texto": "Ponla donde pases seguido: junto a la ventana más clara de la sala o del escritorio. Cuando florece, el aroma llega antes que la vista.",
+        "foto": "foto — la gardenia en flor"
+      },
+      {
+        "etiqueta": "Para quien ya cuida plantas",
+        "titulo": "Pide un poco más, y lo devuelve en flores",
+        "texto": "Es de nivel intermedio: le gusta la humedad sin encharcar y, cada 20 días, un riego por inmersión con un poco de vinagre para acelerar la floración. Todo viene en su ficha, y me tienes por WhatsApp tus primeros 30 días.",
+        "foto": "foto — ficha de cuidado impresa"
+      },
+      {
+        "etiqueta": "Para quien busca un regalo distinto",
+        "titulo": "Un regalo que florece después",
+        "texto": "Un árbol vivo con flores perfumadas, en vez de un ramo que dura una semana. Coordinamos entrega para la fecha que necesites.",
+        "foto": "foto — la gardenia empacada para el envío"
+      }
+    ],
+    "cierre": {
+      "titulo": "Cinco años de forma, y las flores las ves tú",
+      "texto": "El vivero puso los primeros cinco años. Lo que viene —cada flor nueva y su perfume— ya pasa en tu casa."
+    },
+    "faq": [
+      {
+        "p": "¿Qué tamaño tiene exactamente?",
+        "r": "25 cm de alto contando la maceta, con 5 años de formación. Cada árbol es una pieza cultivada a mano, así que puede variar levemente de la foto."
+      },
+      {
+        "p": "¿Dónde la pongo?",
+        "r": "Junto a la ventana más soleada, o en un balcón con sol de la mañana. Necesita mucha luz para estar bien y florecer."
+      },
+      {
+        "p": "¿Cómo se riega?",
+        "r": "Cuando la superficie de la tierra se sienta seca al tacto: le gusta la humedad, pero sin encharcar. Para acelerar la floración, cada 20 días riégala por inmersión con agua con una cucharada de vinagre diluida. Todo esto viene en su ficha de cuidado."
+      },
+      {
+        "p": "¿Cuánto cuesta el envío?",
+        "r": "$6 a cualquier ciudad del Ecuador continental, y es por pedido: si llevas dos árboles pagas $6 una sola vez. Desde $60 el envío va gratis. A domicilio solo llegamos a Quito, donde llega al día siguiente del despacho; al resto del país el árbol viaja con Urbano Express y lo retiras en la oficina que elijas de tu ciudad. Los envíos salen los miércoles y viernes desde San Antonio de Ibarra y tardan entre 48 y 72 horas según tu ciudad. Pagas con tarjeta (link de pago) o por transferencia bancaria."
+      },
+      {
+        "p": "¿Y si llega mal?",
+        "r": "Te lo repongo. Si el árbol llega dañado o no supera sus primeros días siguiendo la ficha de cuidado, me mandas una foto por WhatsApp y lo resolvemos. Mi negocio depende de que el tuyo viva."
+      }
+    ],
+    "relacionados": [
+      {
+        "id": "arbol-del-te",
+        "nombre": "Árbol del Té Mānuka"
+      },
+      {
+        "id": "guayacan",
+        "nombre": "Guayacán"
+      },
+      {
+        "id": "bequia-pequena",
+        "nombre": "Árbol de la Vida Mini"
+      }
+    ]
   }
 }

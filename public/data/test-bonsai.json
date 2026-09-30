@@ -272,7 +272,7 @@
         {
           "id": "elegante",
           "texto": "Elegante y minimalista",
-          "imagen": "Images/bonsai-junipero-shakan.webp"
+          "imagen": "Images/productos/juniperus-shakan/1-principal.webp"
         },
         {
           "id": "frondoso",
@@ -287,7 +287,7 @@
         {
           "id": "delicado",
           "texto": "Pequeño y delicado",
-          "imagen": "Images/bonsai-arbol-del-te.webp"
+          "imagen": "Images/productos/arbol-del-te/1-principal.webp"
         },
         {
           "id": "sorpresa",
@@ -878,8 +878,8 @@
       "riego": "Cuando la superficie de la tierra se sienta seca al tacto."
     },
     "gardenia": {
-      "validado": false,
-      "fuente": "DEMO: perfil propuesto sin validar. Completa la ficha en el catálogo, revisa este perfil y márcalo como validado.",
+      "validado": true,
+      "fuente": "Datos de DecoGarden (2026-09-29): precio, especie, tamaño, edad, nivel, luz, ubicación y riego. El filtro de luz es sol y exterior por la regla de nunca interior sin sol.",
       "luz": [
         "sol",
         "exterior"
@@ -910,9 +910,9 @@
         "aprender"
       ],
       "dificultad": "media",
-      "luzTexto": "por completar",
-      "ubicacionTexto": "Por completar.",
-      "riego": "Pídenos la ficha de cuidado de esta especie."
+      "luzTexto": "mucha luz indirecta",
+      "ubicacionTexto": "Junto a la ventana más soleada, o en un balcón con sol de la mañana.",
+      "riego": "Cuando la superficie de la tierra se sienta seca al tacto; le gusta la humedad, sin encharcar. Para acelerar la floración, cada 20 días riégala por inmersión con agua con 1 cucharada de vinagre diluida."
     },
     "calamondin": {
       "validado": false,
