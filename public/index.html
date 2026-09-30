@@ -53,7 +53,7 @@
   </noscript>
 
   <link rel="stylesheet" href="assets/css/tokens.css?v=024e730f">
-  <link rel="stylesheet" href="assets/css/style.css?v=9688aa2b">
+  <link rel="stylesheet" href="assets/css/style.css?v=9f1c8e15">
   <link rel="preload" as="fetch" href="data/catalog.json" crossorigin>
 
   <!-- Datos estructurados: negocio local -->
@@ -311,6 +311,40 @@
       </div>
     </section>
 
+    <!-- El test «Encuentra tu bonsái ideal»: justo antes del catálogo, que es
+         donde aparece la duda de cuál elegir. Las fotos son reales del vivero. -->
+    <section class="test-cta blk" id="test" aria-labelledby="testCtaTitulo">
+      <div class="wrap">
+        <div class="test-cta-caja rv">
+          <div class="test-cta-texto">
+            <span class="eyebrow">¿No sabes cuál elegir?</span>
+            <h2 id="testCtaTitulo">Encuentra el bonsái <em>perfecto para ti</em> en un minuto.</h2>
+            <p>Cinco preguntas sobre tu espacio, la luz que le llega y tu presupuesto. Te recomendamos tres bonsáis
+              que pueden vivir bien donde los vas a poner, y te decimos por qué.</p>
+            <ul class="test-cta-puntos">
+              <li>Sin registrarte ni dejar tus datos</li>
+              <li>Solo bonsáis que aguantan la luz de tu espacio</li>
+              <li>Con cada uno, su cuidado y dónde ponerlo</li>
+            </ul>
+            <a class="btn test-cta-btn" href="/encuentra-tu-bonsai">
+              Hacer el test
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
+          <div class="test-cta-fotos" aria-hidden="true">
+            <figure class="test-cta-foto"><img src="Images/productos/arbol-del-te/1-principal.webp" alt=""
+                width="1080" height="1080" loading="lazy" decoding="async"><span>1</span></figure>
+            <figure class="test-cta-foto"><img src="Images/productos/gardenia/1-principal.webp" alt=""
+                width="1080" height="1080" loading="lazy" decoding="async"><span>2</span></figure>
+            <figure class="test-cta-foto"><img src="Images/productos/guayacan/1-principal.webp" alt=""
+                width="1080" height="1080" loading="lazy" decoding="async"><span>3</span></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="catalog blk" id="catalogo">
       <div class="wrap">
         <div class="kicker-wrap rv">
@@ -360,6 +394,9 @@
         <div class="more-wrap" style="display:none">
           <button class="btn-more" id="verMas">Ver más bonsáis</button>
         </div>
+
+        <p class="catalog-note rv">¿Dudas entre varios? <a href="/encuentra-tu-bonsai">Haz el test de un minuto y te
+            recomendamos tres →</a></p>
 
         <p class="catalog-note rv">¿No ves la especie que buscas? <a
             href="https://wa.me/593963136655?text=Hola%20DecoGarden%2C%20busco%20una%20especie%20en%20particular.%20%C2%BFMe%20ayudas%3F"

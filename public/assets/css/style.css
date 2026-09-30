@@ -2112,3 +2112,255 @@
     font-size: 46px;
   }
 }
+
+/* ==========================================================================
+   Acceso al test «Encuentra tu bonsái ideal» (home, antes del catálogo)
+   Una tarjeta oscura sobre el fondo claro, con el botón en el amarillo que la
+   paleta reserva para lo que tiene que saltar a la vista, y tres fotos reales
+   en abanico: se entiende sin leer que el test recomienda tres.
+   ========================================================================== */
+
+.test-cta {
+  padding-bottom: 72px;
+}
+
+.test-cta-caja {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  gap: 48px;
+  background: var(--pine-deep);
+  color: var(--on-dark);
+  border-radius: 24px;
+  padding: 56px 56px 56px 60px;
+  overflow: hidden;
+  position: relative;
+}
+
+.test-cta-caja::before {
+  content: "";
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  right: -140px;
+  top: -160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(169, 199, 154, .18), transparent 68%);
+  pointer-events: none;
+}
+
+.test-cta .eyebrow {
+  color: var(--sunshine);
+}
+
+.test-cta .eyebrow::before {
+  background: var(--sunshine);
+}
+
+.test-cta h2 {
+  color: var(--on-dark);
+  font-size: clamp(32px, 4.2vw, 50px);
+  font-weight: 300;
+  line-height: 1.08;
+  margin: 18px 0 18px;
+  max-width: 15ch;
+}
+
+.test-cta h2 em {
+  font-style: italic;
+  color: var(--sage);
+}
+
+.test-cta-texto > p {
+  color: var(--on-dark-soft);
+  font-size: 17px;
+  line-height: 1.65;
+  max-width: 46ch;
+  margin: 0 0 22px;
+}
+
+.test-cta-puntos {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: grid;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--on-dark-soft);
+}
+
+.test-cta-puntos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.test-cta-puntos li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 202, 38, .16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFCA26' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4L18 8'/%3E%3C/svg%3E") center / 11px no-repeat;
+}
+
+.test-cta-btn {
+  background: var(--sunshine);
+  color: var(--ink);
+  font-size: 16.5px;
+  padding: 18px 34px;
+  border-radius: 999px;
+  box-shadow: 0 14px 30px -14px rgba(255, 202, 38, .6);
+}
+
+.test-cta-btn:hover {
+  background: #FFD84F;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -14px rgba(255, 202, 38, .75);
+}
+
+.test-cta-btn svg {
+  transition: transform .3s;
+}
+
+.test-cta-btn:hover svg {
+  transform: translateX(4px);
+}
+
+/* Las tres fotos, en abanico */
+.test-cta-fotos {
+  position: relative;
+  height: 340px;
+}
+
+.test-cta-foto {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52%;
+  margin: 0;
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 5px solid var(--paper);
+  box-shadow: 0 22px 40px -18px rgba(0, 0, 0, .55);
+  transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+.test-cta-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.test-cta-foto span {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sunshine);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  font-family: var(--body);
+}
+
+.test-cta-foto:nth-child(1) {
+  transform: translate(-100%, -46%) rotate(-9deg);
+}
+
+.test-cta-foto:nth-child(2) {
+  transform: translate(-50%, -54%);
+  z-index: 2;
+}
+
+.test-cta-foto:nth-child(3) {
+  transform: translate(0%, -46%) rotate(9deg);
+}
+
+/* La del medio tapa la esquina izquierda de la tercera: su número va a la derecha */
+.test-cta-foto:nth-child(3) span {
+  left: auto;
+  right: 10px;
+}
+
+.test-cta-caja:hover .test-cta-foto:nth-child(1) {
+  transform: translate(-106%, -46%) rotate(-12deg);
+}
+
+.test-cta-caja:hover .test-cta-foto:nth-child(3) {
+  transform: translate(6%, -46%) rotate(12deg);
+}
+
+/* Si hay dos avisos al pie del catálogo, el segundo va pegado al primero */
+.catalog-note + .catalog-note {
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .test-cta-caja {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 44px 32px 40px;
+  }
+
+  .test-cta-fotos {
+    order: -1;
+    height: 230px;
+  }
+
+  .test-cta-foto {
+    width: 38%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 560px) {
+  .test-cta {
+    padding-bottom: 56px;
+  }
+
+  .test-cta-caja {
+    padding: 32px 22px 30px;
+    border-radius: 20px;
+  }
+
+  .test-cta-fotos {
+    height: 170px;
+  }
+
+  .test-cta-foto {
+    width: 42%;
+    border-width: 4px;
+  }
+
+  .test-cta-foto span {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    top: 7px;
+    left: 7px;
+  }
+
+  .test-cta-foto:nth-child(3) span {
+    left: auto;
+    right: 7px;
+  }
+
+  .test-cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .test-cta-foto,
+  .test-cta-btn svg {
+    transition: none;
+  }
+}
