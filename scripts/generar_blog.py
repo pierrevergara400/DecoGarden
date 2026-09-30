@@ -187,11 +187,14 @@ def tarjeta(post, titulo="h2"):
     página); en la home, un h3, porque va dentro de una sección con su h2."""
     destino = "/" + ruta_publica(archivo_de(post))
     portada = post.get("portada")
+    # Sin portada va un recuadro del mismo tamaño: al lado de una tarjeta con
+    # foto, una sin ella quedaba con medio hueco vacío.
     figura = (
         f'        <div class="post-card-pic">'
         f'<img src="{esc(portada)}" alt="{esc(post.get("portadaAlt", post["titulo"]))}" '
         f'loading="lazy" decoding="async"></div>\n'
-        if portada else ""
+        if portada else
+        '        <div class="post-card-pic post-card-pic-vacia" aria-hidden="true"></div>\n'
     )
     etiquetas = "".join(
         f'<span class="post-tag">{esc(t)}</span>' for t in post.get("tags", [])

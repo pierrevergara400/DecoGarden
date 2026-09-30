@@ -240,8 +240,11 @@
   margin: 0 0 22px;
 }
 
+/* Va en el mismo elemento que .wrap: solo arriba y abajo, o el «0» de los
+   lados le quitaría el margen de .wrap y en el móvil quedaría pegado al borde. */
 .post-relacionados {
-  padding: 64px 0 88px;
+  padding-top: 64px;
+  padding-bottom: 88px;
 }
 
 .post-relacionados h2 {
