@@ -28,6 +28,11 @@ from datetime import date
 from rutas import BLOG, PLANTILLAS, PUBLICO, SITIO
 from sellado import sellar_assets
 
+try:
+    from PIL import Image
+except ImportError:  # sin Pillow, la previsualización usa la portada tal cual
+    Image = None
+
 PLANTILLA_POST = PLANTILLAS / "post.html"
 PLANTILLA_INDICE = PLANTILLAS / "blog.html"
 
@@ -234,6 +239,35 @@ def schema_articulo(post):
     return json.dumps(datos, ensure_ascii=False, indent=2)
 
 
+OG_GENERICA = "Images/og-preview.jpg"
+OG_DIR = PUBLICO / "Images" / "og"
+
+
+def imagen_para_compartir(post):
+    """La imagen que sale al compartir el artículo por WhatsApp o redes.
+
+    La portada va en WebP, que pesa bastante menos en la página, pero el
+    rastreador de WhatsApp trata mal el WebP y la tarjeta saldría en blanco.
+    Así que de una portada WebP se saca una copia JPG en Images/og/, igual que
+    hace generar_productos.py con las fichas. Una portada JPG o PNG se usa tal cual.
+    """
+    portada = post.get("portada")
+    if not portada:
+        return OG_GENERICA
+    origen = PUBLICO / portada
+    if not portada.lower().endswith(".webp") or Image is None or not origen.is_file():
+        return portada
+
+    destino = OG_DIR / f"blog-{post['slug']}.jpg"
+    # Solo se rehace si la portada cambió: así el JPG no cambia en cada ejecución.
+    if not destino.exists() or destino.stat().st_mtime < origen.stat().st_mtime:
+        OG_DIR.mkdir(parents=True, exist_ok=True)
+        with Image.open(origen) as im:
+            im.convert("RGB").save(destino, "JPEG", quality=85, optimize=True, progressive=True)
+        print(f"  IMG {destino.relative_to(PUBLICO).as_posix()} ({destino.stat().st_size // 1024} KB)")
+    return destino.relative_to(PUBLICO).as_posix()
+
+
 def relacionados(post, publicados):
     """Los dos artículos más recientes que no son este.
 
@@ -287,7 +321,7 @@ def generar_post(post, publicados, plantilla):
     )
     archivo = archivo_de(post)
     portada = post.get("portada")
-    og = SITIO + portada if portada else SITIO + "Images/og-preview.jpg"
+    og = SITIO + imagen_para_compartir(post)
 
     salida = rellenar(plantilla, {
         "{{TITULO}}": esc(post.get("tituloSeo", post["titulo"])),
