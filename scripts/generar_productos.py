@@ -21,6 +21,7 @@ import json
 import re
 import sys
 from datetime import date
+from urllib.parse import quote
 
 try:
     from PIL import Image
@@ -821,6 +822,130 @@ def sellar_paginas_a_mano():
     return tocadas
 
 
+# --- Catálogo de la home, escrito en el HTML ---
+#
+# app.js pinta el catálogo desde catalog.json, pero Google no siempre ejecuta
+# ese JavaScript: al indexar la home se saltó app.js y catalog.json ("Other
+# error" en Search Console) y se quedó con los esqueletos de carga. Para él la
+# home no enlazaba a ninguna ficha, y las fichas no tenían por dónde ser
+# descubiertas. Por eso escribimos aquí las primeras tarjetas en el HTML, con el
+# mismo marcado que renderCatalog(); app.js las reemplaza al cargar, para los
+# filtros y el "Ver más".
+
+# Tarjetas que se ven antes del "Ver más". Igual que LIMIT en app.js.
+TARJETAS_HOME = 6
+
+# Lo que app.js exige para pintar una tarjeta (REQUIRED_FIELDS en app.js).
+CAMPOS_TARJETA = ("nombre", "imagen", "categoria", "precio", "whatsappMsg")
+
+INICIO_CATALOGO = "<!-- catalogo:inicio"
+FIN_CATALOGO = "<!-- catalogo:fin -->"
+
+WHATSAPP_TARJETA = "https://wa.me/593963136655?text="
+
+FLECHA_SVG = """<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>"""
+
+WHATSAPP_SVG = """<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2m0 18.15c-1.53 0-3.03-.41-4.34-1.19l-.31-.18-3.12.82.83-3.04-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43-.14 0-.31-.01-.48-.01a.92.92 0 0 0-.66.31c-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28" />
+                </svg>"""
+
+
+def tarjeta_valida(item):
+    """La misma condición que isValidCatalogItem() en app.js."""
+    if not all(isinstance(item.get(c), str) and item[c].strip() for c in CAMPOS_TARJETA):
+        return False
+    return item["categoria"] in ("entrada", "coleccion")
+
+
+def tarjeta_home(item, pagina):
+    """Una tarjeta del catálogo, como la arma renderCatalog() en app.js.
+
+    La foto lleva ya la clase "loaded": en la versión de app.js la pone el
+    script al cargar la imagen, y sin ella la foto queda invisible (opacity 0).
+    """
+    nombre = esc(item["nombre"])
+    imagen = (
+        f'<img class="loaded" src="{esc(item["imagen"])}" alt="{nombre}" '
+        f'onerror="this.remove()" loading="lazy" decoding="async">'
+    )
+    badge = (
+        f'<span class="badge {esc(item.get("badgeClass", "ok"))}">'
+        f'{esc(item.get("badgeTexto", "Disponible"))}</span>'
+    )
+
+    if pagina:
+        foto = f"""<a class="shot" href="{pagina}" aria-label="Ver {nombre}">
+              {imagen}
+              {badge}
+            </a>"""
+        titulo = f'<h3><a href="{pagina}">{nombre}</a></h3>'
+        cta = f"""<a class="btn btn-primary" href="{pagina}">
+                Ver bonsái
+                {FLECHA_SVG}
+              </a>"""
+    else:
+        foto = f"""<div class="shot">
+              {imagen}
+              {badge}
+            </div>"""
+        titulo = f"<h3>{nombre}</h3>"
+        # Como encodeURIComponent() de JavaScript
+        texto = quote(item["whatsappMsg"], safe="-_.!~*'()")
+        cta = f"""<a class="btn btn-primary" href="{WHATSAPP_TARJETA}{texto}" target="_blank" rel="noopener">
+                {WHATSAPP_SVG}
+                Lo quiero
+              </a>"""
+
+    chip = "Para empezar" if item["categoria"] == "entrada" else "De colección"
+    envio = "free" if envio_gratis(item["precio"]) else "paid"
+    meta = " · ".join(esc(item.get(c, "")) for c in ("especie", "altura", "edad"))
+
+    return f"""          <article class="bonsai-card" data-cat="{esc(item["categoria"])}">
+            {foto}
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">{chip}</span>
+                <span class="ship-tag {envio}">{etiqueta_envio(item["precio"])}</span>
+              </div>
+              {titulo}
+              <div class="meta">{meta}</div>
+              <p class="desc">{esc(item.get("descripcion", ""))}</p>
+              <div class="price">{esc(item["precio"])} <small>· {esc(item.get("detallePrecio", ""))}</small></div>
+              <div class="buy">
+              {cta}
+              </div>
+            </div>
+          </article>"""
+
+
+def escribir_catalogo_home(catalogo, enlaces):
+    """Escribe en index.html las tarjetas que la home muestra al abrir.
+
+    Va entre las marcas catalogo:inicio y catalogo:fin. Solo escribe si algo
+    cambió: la fecha de index.html es el lastmod de la home en el sitemap.
+    Devuelve cuántas tarjetas escribió, o None si index.html no tiene las marcas.
+    """
+    index = PUBLICO / "index.html"
+    antes = index.read_text(encoding="utf-8")
+    inicio = antes.find(INICIO_CATALOGO)
+    fin = antes.find(FIN_CATALOGO)
+    if inicio < 0 or fin < inicio:
+        return None
+
+    # La marca de inicio es un comentario de varias líneas: se conserva entero
+    cierre = antes.index("-->", inicio) + len("-->")
+    visibles = [p for p in catalogo.values() if tarjeta_valida(p)][:TARJETAS_HOME]
+    tarjetas = "\n".join(tarjeta_home(p, enlaces.get(p["id"])) for p in visibles)
+
+    despues = antes[:cierre] + "\n" + tarjetas + "\n          " + antes[fin:]
+    if despues != antes:
+        index.write_text(despues, encoding="utf-8")
+    return len(visibles)
+
+
 def main():
     for ruta in (PLANTILLA, PRODUCTOS, CATALOGO):
         if not ruta.exists():
@@ -888,6 +1013,13 @@ def main():
         json.dumps(solo_creados, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(f"  OK  paginas.json ({len(solo_creados)} enlace(s))")
+
+    # Antes de sellar: el sellado vuelve a leer index.html del disco
+    tarjetas = escribir_catalogo_home(catalogo, solo_creados)
+    if tarjetas is None:
+        print("  ! index.html no tiene las marcas catalogo:inicio/fin: catálogo sin escribir")
+    else:
+        print(f"  OK  index.html ({tarjetas} tarjeta(s) del catálogo)")
 
     selladas = sellar_paginas_a_mano()
     for nombre in selladas:

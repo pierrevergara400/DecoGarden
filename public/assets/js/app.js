@@ -292,8 +292,9 @@ async function loadCatalog() {
     injectCatalogSchema(catalogData);
   } catch (err) {
     console.error('Error cargando los bonsáis:', err);
-    // Fallback: mostrar mensaje en el catálogo
-    if (grid) {
+    // Fallback: mostrar mensaje en el catálogo. Si el HTML ya trae las tarjetas
+    // que escribe generar_productos.py, se quedan: siguen siendo válidas.
+    if (grid && !grid.querySelector('.bonsai-card')) {
       grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px 0;">No se pudo cargar el catálogo de bonsáis en este momento. Por favor, escríbeme directamente por WhatsApp.</p>';
     }
   }

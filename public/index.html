@@ -379,16 +379,155 @@
         </div>
 
         <div class="catalog-grid">
-          <!-- Skeleton mientras carga catalog.json; renderCatalog() en app.js lo reemplaza -->
-          <div class="bonsai-card skeleton-card">
-            <div class="shot"></div>
-          </div>
-          <div class="bonsai-card skeleton-card">
-            <div class="shot"></div>
-          </div>
-          <div class="bonsai-card skeleton-card">
-            <div class="shot"></div>
-          </div>
+          <!-- catalogo:inicio
+            Lo escribe scripts/generar_productos.py desde catalog.json: no lo
+            edites a mano. Así Google ve las tarjetas y sus enlaces aunque no
+            ejecute app.js; renderCatalog() las reemplaza al cargar. -->
+          <article class="bonsai-card" data-cat="entrada">
+            <a class="shot" href="/bonsais/junipero-shakan" aria-label="Ver Bonsái Juniperus Estilo Shakan">
+              <img class="loaded" src="Images/productos/juniperus-shakan/1-principal.webp" alt="Bonsái Juniperus Estilo Shakan" onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="badge ok">Disponible</span>
+            </a>
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">Para empezar</span>
+                <span class="ship-tag paid">+ $6 de envío</span>
+              </div>
+              <h3><a href="/bonsais/junipero-shakan">Bonsái Juniperus Estilo Shakan</a></h3>
+              <div class="meta">Juniperus Chinensis · 30 cm · 10 años</div>
+              <p class="desc">El bonsái que perdona tus primeras veces. Un Juniperus fuerte, de raíz noble, que aguanta si te olvidas de regarlo un día y sigue creciendo igual. Ideal si nunca has tenido uno y quieres empezar sin miedo.</p>
+              <div class="price">$55 <small>· ficha + garantía + soporte</small></div>
+              <div class="buy">
+              <a class="btn btn-primary" href="/bonsais/junipero-shakan">
+                Ver bonsái
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              </div>
+            </div>
+          </article>
+          <article class="bonsai-card" data-cat="entrada">
+            <a class="shot" href="/bonsais/guayacan" aria-label="Ver Bonsái Guayacán">
+              <img class="loaded" src="Images/productos/guayacan/1-principal.webp" alt="Bonsái Guayacán" onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="badge ok">Disponible</span>
+            </a>
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">Para empezar</span>
+                <span class="ship-tag paid">+ $6 de envío</span>
+              </div>
+              <h3><a href="/bonsais/guayacan">Bonsái Guayacán</a></h3>
+              <div class="meta">Handroanthus chrysanthus · 40 cm · 11 años</div>
+              <p class="desc">Un Guayacán con la resistencia de quien ya ha vivido varias estaciones. Crece rápido, perdona los descuidos de principiante y te da la confianza de ver resultados pronto. El primer bonsái de muchos coleccionistas ecuatorianos.</p>
+              <div class="price">$25 <small>· ficha + garantía + soporte</small></div>
+              <div class="buy">
+              <a class="btn btn-primary" href="/bonsais/guayacan">
+                Ver bonsái
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              </div>
+            </div>
+          </article>
+          <article class="bonsai-card" data-cat="entrada">
+            <a class="shot" href="/bonsais/arbol-del-te" aria-label="Ver Bonsái del Árbol del Té o Mānuka">
+              <img class="loaded" src="Images/productos/arbol-del-te/1-principal.webp" alt="Bonsái del Árbol del Té o Mānuka" onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="badge ok">Disponible</span>
+            </a>
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">Para empezar</span>
+                <span class="ship-tag paid">+ $6 de envío</span>
+              </div>
+              <h3><a href="/bonsais/arbol-del-te">Bonsái del Árbol del Té o Mānuka</a></h3>
+              <div class="meta">Leptospermum scoparium · 20 cm · 6 años</div>
+              <p class="desc">Hojas diminutas, flores blancas casi todo el año: el Mānuka es ese detalle que transforma un escritorio o una repisa vacía en un rincón con vida propia. Pequeño en tamaño, generoso en presencia.</p>
+              <div class="price">$20 <small>· ficha + garantía + soporte</small></div>
+              <div class="buy">
+              <a class="btn btn-primary" href="/bonsais/arbol-del-te">
+                Ver bonsái
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              </div>
+            </div>
+          </article>
+          <article class="bonsai-card" data-cat="entrada">
+            <a class="shot" href="/bonsais/junipero-cascada-mini" aria-label="Ver Bonsái Junípero Cascada Mini">
+              <img class="loaded" src="Images/bonsai-junipero-cascada-mini.webp" alt="Bonsái Junípero Cascada Mini" onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="badge ok">Disponible</span>
+            </a>
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">Para empezar</span>
+                <span class="ship-tag paid">+ $6 de envío</span>
+              </div>
+              <h3><a href="/bonsais/junipero-cascada-mini">Bonsái Junípero Cascada Mini</a></h3>
+              <div class="meta">Juniperus horizontalis · 20 cm · 3 años</div>
+              <p class="desc">El bonsái con el que se aprende. Ramas largas y flexibles que ya caen en cascada, perfectas para practicar el alambrado sin miedo a arruinar nada. Veinte centímetros, resistente y con garantía: el primero de muchos, o un regalo que sí se cuida.</p>
+              <div class="price">$20 <small>· ficha + garantía + soporte</small></div>
+              <div class="buy">
+              <a class="btn btn-primary" href="/bonsais/junipero-cascada-mini">
+                Ver bonsái
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              </div>
+            </div>
+          </article>
+          <article class="bonsai-card" data-cat="entrada">
+            <a class="shot" href="/bonsais/gardenia" aria-label="Ver Bonsái Gardenia">
+              <img class="loaded" src="Images/productos/gardenia/1-principal.webp" alt="Bonsái Gardenia" onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="badge ok">Disponible</span>
+            </a>
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">Para empezar</span>
+                <span class="ship-tag paid">+ $6 de envío</span>
+              </div>
+              <h3><a href="/bonsais/gardenia">Bonsái Gardenia</a></h3>
+              <div class="meta">Gardenia jasminoides · 25 cm · 5 años</div>
+              <p class="desc">Hojas de un verde brillante y flores blancas de perfume suave. La Gardenia es para quien quiere un bonsái que no solo se vea bonito, sino que florezca en su espacio y lo llene de aroma.</p>
+              <div class="price">$30 <small>· ficha + garantía + soporte</small></div>
+              <div class="buy">
+              <a class="btn btn-primary" href="/bonsais/gardenia">
+                Ver bonsái
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              </div>
+            </div>
+          </article>
+          <article class="bonsai-card" data-cat="coleccion">
+            <a class="shot" href="/bonsais/bequia-imperial" aria-label="Ver Bonsái Bequia Imperial o Árbol de la Vida">
+              <img class="loaded" src="Images/bonsai-bequia-imperial.webp" alt="Bonsái Bequia Imperial o Árbol de la Vida" onerror="this.remove()" loading="lazy" decoding="async">
+              <span class="badge last">Última pieza</span>
+            </a>
+            <div class="info">
+              <div class="card-tags">
+                <span class="chip">De colección</span>
+                <span class="ship-tag free">Envío gratis</span>
+              </div>
+              <h3><a href="/bonsais/bequia-imperial">Bonsái Bequia Imperial o Árbol de la Vida</a></h3>
+              <div class="meta">Tsuga canadensis · 60 cm · 24 años</div>
+              <p class="desc">24 años de historia condensados en un solo árbol. Esta Bequia, el Árbol de la Vida, es de nuestras piezas más grandes y exclusivas: la que eliges cuando quieres algo que se sienta como un legado, no solo una planta.</p>
+              <div class="price">$150 <small>· ficha + garantía + soporte</small></div>
+              <div class="buy">
+              <a class="btn btn-primary" href="/bonsais/bequia-imperial">
+                Ver bonsái
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              </div>
+            </div>
+          </article>
+          <!-- catalogo:fin -->
         </div>
 
         <div class="more-wrap" style="display:none">
@@ -644,7 +783,7 @@
     <span>Escríbeme</span>
   </a>
 
-  <script src="assets/js/app.js?v=677f9b65" defer></script>
+  <script src="assets/js/app.js?v=0a48c97f" defer></script>
 </body>
 
 </html>
